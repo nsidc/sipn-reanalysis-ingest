@@ -7,7 +7,7 @@
 import glob
 import tarfile
 
-import Nio
+# import Nio
 
 
 def process_cfsr():
@@ -36,11 +36,13 @@ def untar_files():
 
 
 def read_grib(vars):
-    numfiles = glob.glob("*19790101*.grb2")
-    for i in numfiles:
-        fn = Nio.open_file(i)
-        for v in vars:
-            var = fn.variables[v]
+    raise NotImplementedError()
+    # numfiles = glob.glob("*19790101*.grb2")
+    # for i in numfiles:
+    #     fn = Nio.open_file(i)
+    #     for v in vars:
+    #         var = fn.variables[v]
+    #         ...
 
 
 if __name__ == "__main__":
