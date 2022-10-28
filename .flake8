@@ -1,0 +1,19 @@
+[flake8]
+exclude = .ipynb_checkpoints
+
+# Ignored as recommended for Black-compatibility
+#     https://black.readthedocs.io/en/stable/guides/using_black_with_other_tools.html#id2
+extend-ignore = E203
+
+max-line-length = 90
+max-complexity = 8
+
+# flake8-import-order
+application_import_names = sipn_reanalysis_plots
+import_order_style = pycharm
+
+# D1: Ignore errors requiring docstrings on everything
+# E266: Allow multiple # in comments
+# W503: Line breaks should occur after the binary operator to keep all variable
+# names aligned.
+ignore = D1,E266,W503

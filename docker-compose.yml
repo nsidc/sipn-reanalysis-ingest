@@ -1,0 +1,19 @@
+version: '3.7'
+
+x-base: &base
+  restart: "on-failure"
+  logging:
+    options:
+      max-size: "1m"
+      max-file: "5"
+
+
+services:
+  sipn-reanalysis-ingest:
+    <<: *base
+    # TODO: Use a real version!
+    image: "nsidc/sipn-reanalysis-ingest:dev"
+    # TODO: Remove build config; this should not be built in a non-dev environment
+    build: .
+    volumes:
+      - "${DATA_DIR}:/data:rw"
