@@ -24,11 +24,11 @@ dependencies:
   - cryptography=38.0.2=py310h600f1e7_2
   - curl=7.86.0=h2283fc2_0
   - dataclasses=0.8=pyhc8e2a94_3
-  - exceptiongroup=1.0.0rc9=pyhd8ed1ab_0
+  - exceptiongroup=1.0.0=pyhd8ed1ab_0
   - expat=2.5.0=h27087fc_0
   - flake8=4.0.1=pyhd8ed1ab_2
   - flake8-bugbear=22.3.23=pyhd8ed1ab_0
-  - flake8-comprehensions=3.10.0=pyhd8ed1ab_0
+  - flake8-comprehensions=3.10.1=pyhd8ed1ab_0
   - flake8-docstrings=1.6.0=pyhd8ed1ab_0
   - flake8-use-fstring=1.4=pyhd8ed1ab_0
   - font-ttf-dejavu-sans-mono=2.37=hab24e00_0
@@ -46,7 +46,7 @@ dependencies:
   - geotiff=1.7.1=ha76d385_4
   - gettext=0.21.1=h27087fc_0
   - giflib=5.2.1=h36c2ea0_2
-  - hdf4=4.2.15=h9772cbc_4
+  - hdf4=4.2.15=h9772cbc_5
   - hdf5=1.12.2=nompi_h4df4325_100
   - hdfeos2=2.20=hca1e490_1001
   - hdfeos5=5.1.16=hc2f950b_10
@@ -63,7 +63,7 @@ dependencies:
   - kealib=1.4.15=ha7026e8_1
   - keyutils=1.6.1=h166bdaf_0
   - krb5=1.19.3=h08a2579_0
-  - lcms2=2.12=hddcbb42_0
+  - lcms2=2.14=h6ed2654_0
   - ld_impl_linux-64=2.39=hc81fddc_0
   - lerc=4.0.0=h27087fc_0
   - libblas=3.9.0=16_linux64_openblas
@@ -75,7 +75,7 @@ dependencies:
   - libev=4.33=h516909a_1
   - libffi=3.4.2=h7f98852_5
   - libgcc-ng=12.2.0=h65d4601_19
-  - libgdal=3.5.2=h27ae5c1_5
+  - libgdal=3.5.3=h27ae5c1_0
   - libgfortran-ng=12.2.0=h69a702a_19
   - libgfortran5=12.2.0=h337968e_19
   - libglib=2.74.1=h7a41b64_0
@@ -84,7 +84,7 @@ dependencies:
   - libiconv=1.17=h166bdaf_0
   - libkml=1.3.0=h37653c0_1015
   - liblapack=3.9.0=16_linux64_openblas
-  - libnetcdf=4.8.1=nompi_h21705cb_104
+  - libnetcdf=4.8.1=nompi_h261ec11_106
   - libnghttp2=1.47.0=hff17c54_1
   - libnsl=2.0.0=h7f98852_0
   - libopenblas=0.3.21=pthreads_h78a6416_3
@@ -102,6 +102,7 @@ dependencies:
   - libxml2=2.10.3=h7463322_0
   - libzip=1.9.2=hc929e4a_1
   - libzlib=1.2.13=h166bdaf_4
+  - loguru=0.6.0=py310hff52083_2
   - lz4-c=1.9.3=h9c3ff4c_1
   - mccabe=0.6.1=py_1
   - mypy=0.982=py310h5764c6d_0
@@ -111,7 +112,7 @@ dependencies:
   - nss=3.78=h2350873_0
   - numpy=1.23.4=py310h53a5b5f_1
   - openjpeg=2.5.0=h7d73246_1
-  - openssl=3.0.5=h166bdaf_2
+  - openssl=3.0.7=h166bdaf_0
   - packaging=21.3=pyhd8ed1ab_0
   - pathspec=0.10.1=pyhd8ed1ab_0
   - pcre=8.45=h9c3ff4c_0
@@ -119,7 +120,7 @@ dependencies:
   - pip=22.3=pyhd8ed1ab_0
   - pixman=0.40.0=h36c2ea0_0
   - platformdirs=2.5.2=pyhd8ed1ab_1
-  - pluggy=1.0.0=py310hff52083_4
+  - pluggy=1.0.0=pyhd8ed1ab_5
   - poppler=22.10.0=h92391eb_0
   - poppler-data=0.4.11=hd8ed1ab_0
   - postgresql=14.5=ha105346_1
@@ -130,7 +131,7 @@ dependencies:
   - pycparser=2.21=pyhd8ed1ab_0
   - pydocstyle=6.1.1=pyhd8ed1ab_0
   - pyflakes=2.4.0=pyhd8ed1ab_0
-  - pynio=1.5.5=py310h8fc73c3_18
+  - pynio=1.5.5=py310h8fc73c3_19
   - pyopenssl=22.1.0=pyhd8ed1ab_0
   - pyparsing=3.0.9=pyhd8ed1ab_0
   - pysocks=1.7.1=pyha2e5f31_6
@@ -147,11 +148,10 @@ dependencies:
   - tiledb=2.11.3=h3f4058f_1
   - tk=8.6.12=h27826a3_0
   - tomli=2.0.1=pyhd8ed1ab_0
-  - typed-ast=1.5.4=py310h5764c6d_0
-  - typing-extensions=4.4.0=hd8ed1ab_0
+  - typed-ast=1.5.4=py310h5764c6d_1
   - typing_extensions=4.4.0=pyha770c72_0
   - tzcode=2022e=h166bdaf_0
-  - tzdata=2022e=h191b570_0
+  - tzdata=2022f=h191b570_0
   - urllib3=1.26.11=pyhd8ed1ab_0
   - wheel=0.37.1=pyhd8ed1ab_0
   - xerces-c=3.2.4=h55805fa_1
