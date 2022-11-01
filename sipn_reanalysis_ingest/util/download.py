@@ -118,7 +118,7 @@ def download_cfsr_5day_tar(
     logger.info(f'Downloading {url}...')
     filepath.parent.mkdir(parents=True, exist_ok=True)
     with open(filepath, 'wb') as f:
-        logger.info(f'Downloading to {filepath}')
+        logger.debug(f'Downloading to {filepath}')
         for chunk in response.iter_content(chunk_size=1024):
             if chunk:
                 f.write(chunk)
