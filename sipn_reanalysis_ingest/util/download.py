@@ -100,7 +100,6 @@ def download_cfsr_5day_tar(
     url = cfsr_5day_tar_url(start_date=start_date)
 
     response = session.get(url, stream=True)
-    breakpoint()
 
     if not response.ok:
         msg = f'There was an error downloading {url}. Status: {response.status_code}.'
