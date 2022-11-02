@@ -5,73 +5,19 @@ from pathlib import Path
 import requests
 from loguru import logger
 
-from sipn_reanalysis_ingest._types import CfsrPeriod
 from sipn_reanalysis_ingest.constants.creds import RDA_PASSWORD, RDA_USER
-from sipn_reanalysis_ingest.constants.download import (
-    DOWNLOAD_AUTH_URL,
-    DOWNLOAD_FILE_URL_TEMPLATES,
-)
-from sipn_reanalysis_ingest.errors import DownloadError, ProgrammerError
-
-
-@cache
-def cfsr_tar_url_template(
-    *,
-    start_date: dt.date,
-    periodicity: CfsrPeriod,
-) -> str:
-    """Return the correct template for the given date and periodicity."""
-    templates_by_date_range = DOWNLOAD_FILE_URL_TEMPLATES[periodicity]
-    templates_matching_date = [
-        value
-        for key, value in templates_by_date_range.items()
-        if key[0] <= start_date <= key[1]
-    ]
-    if len(templates_matching_date) > 1:
-        raise ProgrammerError(
-            f'Error in download URL templates. >1 match for date {start_date}'
-        )
-
-    return templates_matching_date[0]
-
-
-def _5day_end_date_from_start_date(start_date: dt.date) -> dt.date:
-    """Calculate end date based on start date.
-
-    Because the CFSR files are named with inclusive intervals, the actual difference
-    between the start and end dates is 4 days, although the files each contain 5 days of
-    data.
-    """
-    if start_date.day % 5 != 1:
-        raise ProgrammerError(
-            f'Start date ({start_date:%Y-%m-%d}) day portion must be a multiple of 5'
-            ' plus one, e.g.: 1, 6, 11, 16, ...'
-        )
-    plus_5 = start_date + dt.timedelta(days=4)
-    if plus_5.month == start_date.month:
-        return plus_5
-
-    # Calculate the last day of the previous month, e.g.:
-    #    Feb 3 - 3 = Jan 31
-    return plus_5 - dt.timedelta(plus_5.day)
-
-
-def cfsr_5day_tar_url(
-    *,
-    start_date: dt.date,
-) -> str:
-    template = cfsr_tar_url_template(start_date=start_date, periodicity='five_daily')
-    end_date = _5day_end_date_from_start_date(start_date)
-    fn = f'pgbhnl.gdas.{start_date:%Y%m%d}-{end_date:%Y%m%d}.tar'
-
-    filled = template.format(year=start_date.year, filename=fn)
-
-    return filled
+from sipn_reanalysis_ingest.constants.download import DOWNLOAD_AUTH_URL
+from sipn_reanalysis_ingest.errors import DownloadError
+from sipn_reanalysis_ingest.util.url import cfsr_5day_tar_url
 
 
 @cache
 def rda_auth_session() -> requests.Session:
-    """Return a pre-authenticated session with RDA."""
+    """Return a pre-authenticated session with RDA.
+
+    WARNING: This function MUST be cached to avoid being banned from RDA for authing too
+    much.
+    """
     session = requests.Session()
 
     session.post(

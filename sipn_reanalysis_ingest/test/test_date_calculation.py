@@ -3,7 +3,7 @@ import datetime as dt
 import pytest
 
 from sipn_reanalysis_ingest.errors import ProgrammerError
-from sipn_reanalysis_ingest.util.download import _5day_end_date_from_start_date
+from sipn_reanalysis_ingest.util.url import _5day_end_date_from_start_date
 
 
 @pytest.mark.parametrize(
