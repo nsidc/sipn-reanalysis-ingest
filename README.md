@@ -28,7 +28,16 @@ TODO
 
 ## Usage
 
+### With Docker
+
 TODO
+
+
+### Without Docker
+
+```
+PYTHONPATH=. python sipn_reanalysis_ingest/cli.py
+```
 
 
 ## Troubleshooting
