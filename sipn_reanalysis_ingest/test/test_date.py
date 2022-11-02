@@ -3,7 +3,29 @@ import datetime as dt
 import pytest
 
 from sipn_reanalysis_ingest.errors import ProgrammerError
-from sipn_reanalysis_ingest.util.url import _5day_end_date_from_start_date
+from sipn_reanalysis_ingest.util.date import (
+    cfsr_5day_window_end_from_start_date,
+    date_range,
+)
+
+
+@pytest.mark.parametrize(
+    'range_endpoints,expected_len',
+    [
+        pytest.param(
+            (dt.date(2000, 1, 1), dt.date(2000, 1, 5)),
+            5,
+        ),
+        pytest.param(
+            (dt.date(1979, 1, 1), dt.date(2020, 1, 1)),
+            14_976,
+        ),
+    ],
+)
+def test_date_range(range_endpoints, expected_len):
+    actual = date_range(*range_endpoints)
+    assert len(list(actual)) == expected_len
+    assert all(isinstance(d, dt.date) for d in actual)
 
 
 @pytest.mark.parametrize(
@@ -35,12 +57,12 @@ from sipn_reanalysis_ingest.util.url import _5day_end_date_from_start_date
         ),
     ],
 )
-def test__5day_end_date_from_start_date(start_date, expected):
+def test_cfsr_5day_window_end_from_start_date(start_date, expected):
     if isinstance(expected, dt.date):
-        actual = _5day_end_date_from_start_date(start_date)
+        actual = cfsr_5day_window_end_from_start_date(start_date)
         assert actual == expected
         return
 
     # If the `expected` is not a date, assume it's a pytest.raises context
     with expected:
-        _5day_end_date_from_start_date(start_date)
+        cfsr_5day_window_end_from_start_date(start_date)
