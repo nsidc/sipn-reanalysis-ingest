@@ -18,7 +18,7 @@ nsidc@nsidc.org for more information.
 
 ## Requirements
 
-Python
+* Python
 
 
 ## Installation
