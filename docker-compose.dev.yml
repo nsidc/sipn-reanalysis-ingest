@@ -3,6 +3,12 @@ version: '3.7'
 services:
 
   luigi:
+    image: "nsidc/sipn-reanalysis-ingest:dev"
+    build:
+      args:
+        NEW_MAMBA_USER_ID: "${MAMBA_USER_ID}"
+        NEW_MAMBA_USER_GID: "${MAMBA_USER_GID}"
+
     volumes:
       - "./sipn_reanalysis_ingest:/app/sipn_reanalysis_ingest:ro"
       - "./tasks:/app/tasks:ro"

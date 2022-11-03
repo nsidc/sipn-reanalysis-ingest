@@ -12,10 +12,11 @@ services:
   luigi:
     <<: *base
     # TODO: Use a real version!
-    image: "nsidc/sipn-reanalysis-ingest:dev"
+    image: "nsidc/sipn-reanalysis-ingest:FIXME"
     # TODO: Remove build config; this should not be built in a non-dev environment
-    build: .
+    build: "."
 
+    command: "luigid"
     container_name: "luigi"
 
     environment:

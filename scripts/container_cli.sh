@@ -12,4 +12,8 @@ else
 fi
 
 cd "$REPO_ROOT_DIR"
-docker exec ${tty_opt} luigi sipn-reanalysis-ingest "$@"
+# TODO: Why does the command have to be fully qualified? If not, get
+# "executable not found". But it works unqualified from an interactive
+# prompt... $PATH is different in these two situations.
+docker exec ${tty_opt} luigi \
+    /opt/conda/bin/sipn-reanalysis-ingest "$@"
