@@ -14,6 +14,7 @@ fi
 cd "$REPO_ROOT_DIR"
 # TODO: Why does the command have to be fully qualified? If not, get
 # "executable not found". But it works unqualified from an interactive
-# prompt... $PATH is different in these two situations.
+# prompt... $PATH is different in these two situations. See GitHub:
+#     https://github.com/mamba-org/micromamba-docker/issues/233
 docker exec ${tty_opt} luigi \
-    /opt/conda/bin/sipn-reanalysis-ingest "$@"
+    bash -i -c "sipn-reanalysis-ingest "$@""

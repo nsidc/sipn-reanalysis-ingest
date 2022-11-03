@@ -57,5 +57,7 @@ USER $MAMBA_USER
 RUN python -c "import sipn_reanalysis_ingest"
 RUN which sipn-reanalysis-ingest
 
+# NOTE: This image doesn't work out of the box with `docker exec`. See GitHub:
+#       https://github.com/mamba-org/micromamba-docker/issues/233
 # NOTE: Default entrypoint is `ENTRYPOINT ["/usr/local/bin/_entrypoint.sh"]`.
 #       Do not override, or env will not correctly activate.
