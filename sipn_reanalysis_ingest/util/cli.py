@@ -8,6 +8,7 @@ class DateParameter(click.ParamType):
 
     Click currently only supports datetimes out of the box.
     """
+
     name = 'date'
 
     def __init__(self, formats=None):

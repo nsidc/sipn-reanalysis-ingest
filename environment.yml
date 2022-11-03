@@ -29,3 +29,7 @@ dependencies:
   - loguru ~=0.6.0
   - requests ~=2.28
   - pynio ~=1.5
+
+  # Implicit dependencies:
+  ## required by luigi to run a tasks db in remote scheduler
+  - sqlalchemy ~=1.4

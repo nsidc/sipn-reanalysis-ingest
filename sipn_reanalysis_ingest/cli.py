@@ -1,5 +1,3 @@
-import datetime as dt
-
 import click
 
 from sipn_reanalysis_ingest.util.cli import DateParameter
@@ -43,15 +41,12 @@ def process(workers, start_date, end_date):
     # during sphinx-click's analysis of this module.
     import luigi
 
+    from sipn_reanalysis_ingest.luigitasks.main import ProcessDateRange
 
-    print('cli')
-    # luigi.build(
-    #     [
-    #         MakeNetCdf(date=date)
-    #         for date in range(start_date, end_date)
-    #     ],
-    #     workers=workers,
-    # )
+    luigi.build(
+        [ProcessDateRange(start_date=start_date, end_date=end_date)],
+        workers=workers,
+    )
 
 
 if __name__ == '__main__':

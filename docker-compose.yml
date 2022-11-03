@@ -4,16 +4,29 @@ x-base: &base
   restart: "on-failure"
   logging:
     options:
-      max-size: "1m"
+      max-size: "10m"
       max-file: "5"
 
 
 services:
-  sipn-reanalysis-ingest:
+  luigi:
     <<: *base
     # TODO: Use a real version!
     image: "nsidc/sipn-reanalysis-ingest:dev"
     # TODO: Remove build config; this should not be built in a non-dev environment
     build: .
+
+    container_name: "luigi"
+
+    environment:
+      LUIGI_CONFIG_PARSER: "toml"
+      RDA_USER: "${RDA_USER}"
+      RDA_PASSWORD: "${RDA_PASSWORD}"
+
     volumes:
       - "${DATA_DIR}:/data:rw"
+      - "${LOGS_DIR}:/logs:rw"
+
+    ports:
+      # Luigi Web Interface:
+      - "8082:8082"

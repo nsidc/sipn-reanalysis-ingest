@@ -2,7 +2,9 @@ version: '3.7'
 
 services:
 
-  sipn-reanalysis-ingest:
+  luigi:
     volumes:
       - "./sipn_reanalysis_ingest:/app/sipn_reanalysis_ingest:ro"
       - "./tasks:/app/tasks:ro"
+      - "./pyproject.toml:/app/pyproject.toml"
+      - "./luigi.toml:/app/luigi.toml"

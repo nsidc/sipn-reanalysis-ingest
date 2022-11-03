@@ -1,0 +1,36 @@
+[core]
+no_configure_logging = false
+# The TOML logging configuration seems to have a bug, so we use the .conf
+# method: https://github.com/spotify/luigi/issues/2879
+logging_conf_file = "/app/logging.conf"
+
+
+[scheduler]
+record_task_history = true
+# Number of times a task can fail within disable_window_seconds before the
+# scheduler will automatically disable it. If not set, the scheduler will not
+# automatically disable jobs:
+retry_count = 1
+# Number of seconds to wait after a task failure to mark it pending again.
+# Defaults to 900 (15 minutes):
+# NOTE: Doesn't seem to work as expected; always takes about 1 minute for a job
+# to retry.
+retry_delay = 1
+
+
+[worker]
+# If true, workers will stay alive when they run out of jobs to run, as long as
+# they have some pending job waiting to be run (REQUIRED for retry
+# functionality):
+keep_alive = true
+
+
+# NOTE: We struggled with enabling Luigi's resource management system; job would
+# end up "DISABLED" for unknown reasons. Related to this issue?
+#     https://github.com/spotify/luigi/issues/2829
+# [resources]
+# memory_gb = 16
+
+
+[task_history]
+db_connection = "sqlite:////data/luigi-task-hist.db"

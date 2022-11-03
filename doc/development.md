@@ -31,3 +31,9 @@ Run static analysis with:
 ```
 inv test
 ```
+
+
+## TODO
+
+* Figure out how to handle users within container. How can we use the current user?
+* Settle on a consistent logging mechanism. Make luigi logger into a constant?
