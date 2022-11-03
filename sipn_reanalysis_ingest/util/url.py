@@ -2,8 +2,8 @@ import datetime as dt
 
 from sipn_reanalysis_ingest._types import CfsrPeriod
 from sipn_reanalysis_ingest.constants.download import DOWNLOAD_FILE_URL_TEMPLATES
-from sipn_reanalysis_ingest.util.misc import range_lookup
 from sipn_reanalysis_ingest.util.date import cfsr_5day_window_end_from_start_date
+from sipn_reanalysis_ingest.util.misc import range_lookup
 
 
 def cfsr_tar_url_template(

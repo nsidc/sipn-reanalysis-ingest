@@ -8,6 +8,8 @@ setup(
     author="National Snow and Ice Data Center",
     author_email="nsidc@nsidc.org",
     packages=find_packages(),
-    entry_points={"console_scripts": ["sipn-reanalysis-ingest = sipn_reanalysis_ingest.cli:cli"]},
+    entry_points={
+        "console_scripts": ["sipn-reanalysis-ingest = sipn_reanalysis_ingest.cli:cli"]
+    },
     include_package_data=True,
 )
