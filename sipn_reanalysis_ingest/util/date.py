@@ -12,6 +12,26 @@ def date_range(start: dt.date, end: dt.date) -> Iterator[dt.date]:
         yield start + dt.timedelta(days=i)
 
 
+def _nearest_5day_start_before_date(date: dt.date) -> dt.date:
+    """Find the nearest valid 5-day window start before `date`."""
+    window_size = 5
+    offset = 1
+    if date.day % window_size == offset:
+        # This is already a valid start date!
+        return date
+
+    # Find nearest (smaller) multiple of 5, then add 1 (since the month starts on 1st).
+    day = (((date.day - 1) // window_size) * window_size) + offset
+    return dt.date(date.year, date.month, day)
+
+
+def cfsr_5day_window_containing_date(date: dt.date) -> tuple[dt.date, dt.date]:
+    """Calculate a CFSR 5-day window containing `date`."""
+    start_date = _nearest_5day_start_before_date(date)
+    end_date = cfsr_5day_window_end_from_start_date(start_date)
+    return (start_date, end_date)
+
+
 def cfsr_5day_window_end_from_start_date(start_date: dt.date) -> dt.date:
     """Calculate end date of CFSR 5-day window based on start date.
 

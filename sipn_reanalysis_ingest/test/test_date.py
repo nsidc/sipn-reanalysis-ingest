@@ -4,9 +4,48 @@ import pytest
 
 from sipn_reanalysis_ingest.errors import ProgrammerError
 from sipn_reanalysis_ingest.util.date import (
+    cfsr_5day_window_containing_date,
     cfsr_5day_window_end_from_start_date,
     date_range,
 )
+
+
+@pytest.mark.parametrize(
+    'date,expected',
+    [
+        pytest.param(
+            dt.date(2020, 1, 1),
+            (dt.date(2020, 1, 1), dt.date(2020, 1, 5)),
+        ),
+        pytest.param(
+            dt.date(2020, 1, 2),
+            (dt.date(2020, 1, 1), dt.date(2020, 1, 5)),
+        ),
+        pytest.param(
+            dt.date(2020, 1, 3),
+            (dt.date(2020, 1, 1), dt.date(2020, 1, 5)),
+        ),
+        pytest.param(
+            dt.date(2020, 1, 4),
+            (dt.date(2020, 1, 1), dt.date(2020, 1, 5)),
+        ),
+        pytest.param(
+            dt.date(2020, 1, 5),
+            (dt.date(2020, 1, 1), dt.date(2020, 1, 5)),
+        ),
+        pytest.param(
+            dt.date(2020, 2, 29),
+            (dt.date(2020, 2, 26), dt.date(2020, 2, 29)),
+        ),
+        pytest.param(
+            dt.date(2020, 12, 31),
+            (dt.date(2020, 12, 31), dt.date(2020, 12, 31)),
+        ),
+    ],
+)
+def test_cfsr_5day_window_containing_date(date, expected):
+    actual = cfsr_5day_window_containing_date(date)
+    assert actual == expected
 
 
 @pytest.mark.parametrize(
