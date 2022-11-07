@@ -16,7 +16,7 @@ def cli():
     '--workers',
     help='Number of Luigi workers to use. 1 worker recommended for development',
     type=int,
-    default=2,
+    default=1,
     show_default=True,
 )
 @click.option(
