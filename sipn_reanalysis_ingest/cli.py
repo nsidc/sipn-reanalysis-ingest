@@ -24,12 +24,14 @@ def cli():
     '--start-date',
     help='Start date (YYYY-MM-DD)',
     type=DateParameter(),
+    required=True,
 )
 @click.option(
     '-e',
     '--end-date',
     help='End date (YYYY-MM-DD)',
     type=DateParameter(),
+    required=True,
 )
 def process(workers, start_date, end_date):
     """Create NetCDFs with only data we care about from CFSR source data.
