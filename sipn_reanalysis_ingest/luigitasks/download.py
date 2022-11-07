@@ -2,9 +2,9 @@ from pathlib import Path
 
 import luigi
 
+from sipn_reanalysis_ingest.constants.paths import DATA_DOWNLOAD_DIR, DATA_UNTAR_DIR
 from sipn_reanalysis_ingest.util.download import download_cfsr_5day_tar
 from sipn_reanalysis_ingest.util.untar import untar_cfsr_5day_tar
-from sipn_reanalysis_ingest.constants.paths import DATA_DOWNLOAD_DIR, DATA_UNTAR_DIR
 
 
 class UntarInput(luigi.Task):
@@ -31,10 +31,10 @@ class UntarInput(luigi.Task):
             tmp_dir.mkdir()
             untar_cfsr_5day_tar(
                 Path(self.input().path),
-                output_dir=tmp_dir, 
+                output_dir=tmp_dir,
             )
 
-
+            Path(self.input().path).unlink()
 
 
 class DownloadInput(luigi.Task):

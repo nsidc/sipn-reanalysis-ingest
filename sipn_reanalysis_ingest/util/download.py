@@ -66,4 +66,4 @@ def download_cfsr_5day_tar(
                 f.write(chunk)
 
     logger.info(f'Downloaded {url} to {output_fp}')
-    return output_fp 
+    return output_fp
