@@ -3,7 +3,7 @@ import logging
 import luigi
 
 from sipn_reanalysis_ingest.constants.paths import DATA_FINISHED_DIR
-from sipn_reanalysis_ingest.luigitasks.download import UntarInput
+from sipn_reanalysis_ingest.luigitasks.untar import UntarInput
 from sipn_reanalysis_ingest.util.date import cfsr_5day_window_containing_date
 
 logger = logging.getLogger('luigi-interface')
