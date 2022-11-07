@@ -1,8 +1,17 @@
 import luigi
 
 from sipn_reanalysis_ingest.constants.date import DEFAULT_PROCESSING_DAY
-from sipn_reanalysis_ingest.luigitasks.process import ProcessDate
+from sipn_reanalysis_ingest.luigitasks.convert import Grib2ToNc
 from sipn_reanalysis_ingest.util.date import date_range
+
+
+class ProcessDate(luigi.WrapperTask):
+    """Wraps processing needed to create an output for a given date."""
+
+    date = luigi.DateParameter(default=DEFAULT_PROCESSING_DAY)
+
+    def requires(self):
+        return Grib2ToNc(date=self.date)
 
 
 # TODO: Should this be a wrapper task?
@@ -20,5 +29,8 @@ class ProcessDateRange(luigi.Task):
         ...
 
     def run(self):
-        print('Processing TODO!')
+        print(
+            'Finalization processing TODO!'
+            ' If none needed, convert this to WrapperTask!'
+        )
         ...

@@ -35,7 +35,7 @@ def rda_auth_session() -> requests.Session:
 def download_cfsr_5day_tar(
     *,
     start_date: dt.date,
-    output_dir: Path,
+    output_fp: Path,
 ) -> Path:
     """Download a 5-day .tar file from RDA.
 
@@ -52,22 +52,18 @@ def download_cfsr_5day_tar(
         logger.error(msg)
         raise DownloadError(msg)
 
-    # NOTE: RDA doesn't provide a content-disposition header, so we have to calculate
-    # filename from the URL
-    filename = url.split('/')[-1]
-    filepath = output_dir / filename
-    if filepath.exists():
-        msg = f'Already exists: {filepath}'
+    if output_fp.exists():
+        msg = f'Already exists: {output_fp}'
         logger.error(msg)
         raise DownloadError(msg)
 
     logger.info(f'Downloading {url}...')
-    filepath.parent.mkdir(parents=True, exist_ok=True)
-    with open(filepath, 'wb') as f:
-        logger.debug(f'Downloading to {filepath}')
+    output_fp.parent.mkdir(parents=True, exist_ok=True)
+    with open(output_fp, 'wb') as f:
+        logger.debug(f'Downloading to {output_fp}')
         for chunk in response.iter_content(chunk_size=1024):
             if chunk:
                 f.write(chunk)
 
-    logger.info(f'Downloaded {url} to {filepath}')
-    return filepath
+    logger.info(f'Downloaded {url} to {output_fp}')
+    return output_fp 
