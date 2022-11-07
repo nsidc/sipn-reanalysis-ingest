@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from sipn_reanalysis_ingest.util.log import logger 
+from sipn_reanalysis_ingest.util.log import logger
 
 
 def convert_grib2s_to_nc(
