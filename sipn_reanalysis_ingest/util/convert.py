@@ -9,7 +9,7 @@ def convert_grib2s_to_nc(
     output_path: Path,
 ) -> Path:
     with open(output_path, 'w') as f:
-        f.write('NetCDF data goes in here!')
+        f.write('NetCDF data goes in here!\n')
 
     logger.info(f'Created {output_path}')
     return output_path
