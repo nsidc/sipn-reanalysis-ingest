@@ -2,12 +2,19 @@
 
 ## Running
 
-Start the job scheduler with the below command. Omit `-b` if you don't need to build the
-image:
+Start the job scheduler with the below command (omit `-b` if you don't need to build the
+image):
 
 ```
-./scripts/dev_up.sh -b
+./scripts/dev/up.sh -b
 ```
+
+Restart the job scheduler with (omit `-b` if you don't need to build the image):
+
+```
+./scripts/dev/recreate.sh -b
+```
+
 
 ### Submitting jobs to scheduler
 
@@ -16,14 +23,40 @@ image:
 ```
 
 
+### Debugging
+
+Ensure the number of workers is set to 1 so attaching to a debugger in the container is
+easy (simply trigger a `breakpoint()` in your code).
+
+To get a shell prompt within the container:
+
+```
+./scripts/container_prompt.sh
+```
+
+
 ## Using tooling outside Docker
 
-This software runs in Docker, but You may want to have dependencies on your host for
+This software runs in Docker, but you may want to have dependencies on your host for
 e.g. running tests. To install dependencies to a new conda environment:
 
 ```
 conda env create
+conda activate sipn-reanalysis-ingest
 ```
+
+To list available tooling:
+
+```
+invoke --list
+```
+
+...or use the shorter `inv` alias:
+
+```
+inv --list
+```
+
 
 ### Changing dependencies
 
@@ -44,9 +77,9 @@ inv format
 ```
 
 
-### Static analysis
+### Static analysis and tests
 
-Run static analysis with:
+Run all tests, including static anlysis with flake8 and mypy, with:
 
 ```
 inv test
@@ -55,6 +88,4 @@ inv test
 
 ## TODO
 
-* Figure out how to handle users within container. How can we use the current user?
-  * A build script passing in the correct ARG values?
-* Settle on a consistent logging mechanism. Make luigi logger into a constant?
+* Settle on a consistent logging mechanism.
