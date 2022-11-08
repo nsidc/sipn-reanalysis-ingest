@@ -8,7 +8,27 @@ from sipn_reanalysis_ingest.util.date import (
     cfsr_5day_window_end_from_start_date,
     date_range,
     date_range_windows,
+    is_valid_cfsr_window_start_date,
 )
+
+
+@pytest.mark.parametrize(
+    'date,expected',
+    [
+        pytest.param(dt.date(2020, 1, 1), True),
+        pytest.param(dt.date(2020, 1, 2), False),
+        pytest.param(dt.date(2020, 1, 5), False),
+        pytest.param(dt.date(2020, 1, 31), True),
+        pytest.param(dt.date(2020, 2, 26), True),
+        pytest.param(dt.date(2020, 2, 29), False),
+        pytest.param(dt.date(2021, 2, 26), True),
+        pytest.param(dt.date(2021, 2, 28), False),
+        pytest.param(dt.date(2021, 12, 31), True),
+    ],
+)
+def test_is_valid_cfsr_window_start_date(date, expected):
+    actual = is_valid_cfsr_window_start_date(date)
+    assert actual == expected
 
 
 @pytest.mark.parametrize(

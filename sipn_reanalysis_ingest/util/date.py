@@ -4,6 +4,13 @@ from typing import Iterator
 from sipn_reanalysis_ingest.errors import ProgrammerError
 
 
+# TODO: Unit test
+def is_valid_cfsr_window_start_date(date: dt.date) -> bool:
+    if date.day % 5 == 1:
+        return True
+    return False
+
+
 def date_range(start: dt.date, end: dt.date) -> Iterator[dt.date]:
     """Generate list of dates between start and end, inclusive."""
     delta = end - start
@@ -21,7 +28,9 @@ def date_range_windows(
     The first and last windows will be smaller if the start or end date (respectively)
     do not land on the start or end of a CFSR 5-day interval.
     """
-    cfsr_start_dates_in_range = [d for d in date_range(start, end) if d.day % 5 == 1]
+    cfsr_start_dates_in_range = [
+        d for d in date_range(start, end) if is_valid_cfsr_window_start_date(d)
+    ]
 
     if len(cfsr_start_dates_in_range) == 0:
         yield (start, end)
@@ -67,7 +76,7 @@ def cfsr_5day_window_end_from_start_date(start_date: dt.date) -> dt.date:
     between the start and end dates is 4 days, although the files each contain 5 days of
     data.
     """
-    if start_date.day % 5 != 1:
+    if not is_valid_cfsr_window_start_date(start_date):
         raise ProgrammerError(
             f'Start date ({start_date:%Y-%m-%d}) day portion must be a multiple of 5'
             ' plus one, e.g.: 1, 6, 11, 16, ...'
