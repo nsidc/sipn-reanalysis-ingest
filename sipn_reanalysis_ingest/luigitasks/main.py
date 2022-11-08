@@ -14,7 +14,7 @@ from sipn_reanalysis_ingest.util.log import logger
 from sipn_reanalysis_ingest.util.untar import untar_dir
 
 
-class ProcessDateWindow(luigi.Task):
+class ProcessDateWindow(luigi.WrapperTask):
     """Wraps processing needed to create outputs for a given date window.
 
     Date window must align to the 5-day CFSR "grid".
