@@ -7,7 +7,7 @@ from sipn_reanalysis_ingest.constants.date import DEFAULT_PROCESSING_DAY
 from sipn_reanalysis_ingest.luigitasks.convert import Grib2ToNc
 from sipn_reanalysis_ingest.util.log import logger
 from sipn_reanalysis_ingest.util.date import (
-    cfsr_5day_window_end_from_start_date,
+    cfsr_5day_window_containing_date,
     date_range,
     date_range_windows,
 )
@@ -25,10 +25,8 @@ class ProcessDateWindow(luigi.Task):
 
     @property
     def untar_dir(self) -> Path:
-        return untar_dir(
-            self.window_start_date,
-            cfsr_5day_window_end_from_start_date(self.window_start_date),
-        )
+        cfsr_5day_window = cfsr_5day_window_containing_date(self.window_start_date)
+        return untar_dir(*cfsr_5day_window)
 
     def requires(self):
         return [
