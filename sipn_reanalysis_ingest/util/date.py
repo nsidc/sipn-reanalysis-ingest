@@ -23,6 +23,10 @@ def date_range_windows(
     """
     cfsr_start_dates_in_range = [d for d in date_range(start, end) if d.day % 5 == 1]
 
+    if len(cfsr_start_dates_in_range) == 0:
+        yield (start, end)
+        return
+
     if start < cfsr_start_dates_in_range[0]:
         # The first interval starts late:
         yield (start, cfsr_start_dates_in_range[0] - dt.timedelta(days=1))

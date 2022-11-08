@@ -85,6 +85,12 @@ def test_date_range(range_endpoints, expected_len):
             ],
         ),
         pytest.param(
+            (dt.date(2001, 1, 4), dt.date(2001, 1, 5)),
+            [
+                (dt.date(2001, 1, 4), dt.date(2001, 1, 5)),
+            ],
+        ),
+        pytest.param(
             (dt.date(2001, 1, 10), dt.date(2001, 1, 17)),
             [
                 (dt.date(2001, 1, 10), dt.date(2001, 1, 10)),
