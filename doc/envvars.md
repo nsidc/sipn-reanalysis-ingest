@@ -2,6 +2,8 @@
 
 * `$DATA_DIR`: Where the ingested CFSR daily and monthly files live.
 * `$LOGS_DIR`: Where the log files live.
+* `$RDA_USER`: Username for logging into `rda.ucar.edu/` to download files.
+* `$RDA_PASSWORD`: Password for logging into `rda.ucar.edu/` to download files.
 
 
 ## Dev
