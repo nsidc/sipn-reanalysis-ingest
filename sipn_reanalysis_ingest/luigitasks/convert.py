@@ -26,7 +26,7 @@ class Grib2ToNc(luigi.Task):
         )
 
     def output(self):
-        return luigi.LocalTarget(DATA_FINISHED_DIR / f'{self.date}.nc')
+        return luigi.LocalTarget(DATA_FINISHED_DIR / f'{self.date:%Y%m%d}.nc')
 
     def run(self):
         input_path = Path(self.input().path)
