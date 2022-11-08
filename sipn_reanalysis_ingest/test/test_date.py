@@ -7,6 +7,7 @@ from sipn_reanalysis_ingest.util.date import (
     cfsr_5day_window_containing_date,
     cfsr_5day_window_end_from_start_date,
     date_range,
+    date_range_windows,
 )
 
 
@@ -65,6 +66,55 @@ def test_date_range(range_endpoints, expected_len):
     actual = date_range(*range_endpoints)
     assert len(list(actual)) == expected_len
     assert all(isinstance(d, dt.date) for d in actual)
+
+
+@pytest.mark.parametrize(
+    'range_endpoints,expected',
+    [
+        pytest.param(
+            (dt.date(2001, 1, 1), dt.date(2001, 1, 5)),
+            [
+                (dt.date(2001, 1, 1), dt.date(2001, 1, 5)),
+            ],
+        ),
+        pytest.param(
+            (dt.date(2001, 1, 1), dt.date(2001, 1, 6)),
+            [
+                (dt.date(2001, 1, 1), dt.date(2001, 1, 5)),
+                (dt.date(2001, 1, 6), dt.date(2001, 1, 6)),
+            ],
+        ),
+        pytest.param(
+            (dt.date(2001, 1, 10), dt.date(2001, 1, 17)),
+            [
+                (dt.date(2001, 1, 10), dt.date(2001, 1, 10)),
+                (dt.date(2001, 1, 11), dt.date(2001, 1, 15)),
+                (dt.date(2001, 1, 16), dt.date(2001, 1, 17)),
+            ],
+        ),
+        pytest.param(
+            (dt.date(2001, 1, 1), dt.date(2001, 2, 28)),
+            [
+                (dt.date(2001, 1, 1), dt.date(2001, 1, 5)),
+                (dt.date(2001, 1, 6), dt.date(2001, 1, 10)),
+                (dt.date(2001, 1, 11), dt.date(2001, 1, 15)),
+                (dt.date(2001, 1, 16), dt.date(2001, 1, 20)),
+                (dt.date(2001, 1, 21), dt.date(2001, 1, 25)),
+                (dt.date(2001, 1, 26), dt.date(2001, 1, 30)),
+                (dt.date(2001, 1, 31), dt.date(2001, 1, 31)),
+                (dt.date(2001, 2, 1), dt.date(2001, 2, 5)),
+                (dt.date(2001, 2, 6), dt.date(2001, 2, 10)),
+                (dt.date(2001, 2, 11), dt.date(2001, 2, 15)),
+                (dt.date(2001, 2, 16), dt.date(2001, 2, 20)),
+                (dt.date(2001, 2, 21), dt.date(2001, 2, 25)),
+                (dt.date(2001, 2, 26), dt.date(2001, 2, 28)),
+            ],
+        ),
+    ],
+)
+def test_date_range_windows(range_endpoints, expected):
+    actual = list(date_range_windows(*range_endpoints))
+    assert actual == expected
 
 
 @pytest.mark.parametrize(

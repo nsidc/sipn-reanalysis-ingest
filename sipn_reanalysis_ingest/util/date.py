@@ -12,6 +12,30 @@ def date_range(start: dt.date, end: dt.date) -> Iterator[dt.date]:
         yield start + dt.timedelta(days=i)
 
 
+def date_range_windows(
+    start: dt.date,
+    end: dt.date,
+) -> Iterator[tuple[dt.date, dt.date]]:
+    """Generate list of ~5-day windows between `start` and `end`, inclusive.
+
+    The first and last windows will be smaller if the start or end date (respectively)
+    do not land on the start or end of a CFSR 5-day interval.
+    """
+    cfsr_start_dates_in_range = [d for d in date_range(start, end) if d.day % 5 == 1]
+
+    if start < cfsr_start_dates_in_range[0]:
+        # The first interval starts late:
+        yield (start, cfsr_start_dates_in_range[0] - dt.timedelta(days=1))
+
+    for cfsr_start_date in cfsr_start_dates_in_range:
+        cfsr_end_date = cfsr_5day_window_end_from_start_date(cfsr_start_date)
+        if cfsr_end_date <= end:
+            yield (cfsr_start_date, cfsr_end_date)
+        else:
+            # The last interval is truncated to `end`
+            yield (cfsr_start_date, end)
+
+
 def _nearest_5day_start_before_date(date: dt.date) -> dt.date:
     """Find the nearest valid 5-day window start before `date`."""
     window_size = 5

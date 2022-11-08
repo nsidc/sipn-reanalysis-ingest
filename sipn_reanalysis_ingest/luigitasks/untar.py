@@ -2,9 +2,8 @@ from pathlib import Path
 
 import luigi
 
-from sipn_reanalysis_ingest.constants.paths import DATA_UNTAR_DIR
 from sipn_reanalysis_ingest.luigitasks.download import DownloadInput
-from sipn_reanalysis_ingest.util.untar import untar_cfsr_5day_tar
+from sipn_reanalysis_ingest.util.untar import untar_cfsr_5day_tar, untar_dir
 
 
 class UntarInput(luigi.Task):
@@ -21,8 +20,7 @@ class UntarInput(luigi.Task):
 
     def output(self):
         return luigi.LocalTarget(
-            DATA_UNTAR_DIR
-            / f'{self.start_5day_window:%Y%m%d}-{self.end_5day_window:%Y%m%d}'
+            untar_dir(self.start_5day_window, self.end_5day_window),
         )
 
     def run(self):

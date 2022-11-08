@@ -89,7 +89,3 @@ inv test
 ## TODO
 
 * Settle on a consistent logging mechanism.
-* Improve cleanup code. Once a group of `Grib2ToNc` jobs depending on the same input
-  tar is complete, then all contents of that tar should be cleaned up. Currently, if
-  e.g. 1 day is requested, then only 1 day of GRIB2 files will be cleaned up, and 4 will
-  be remaining on disk.
