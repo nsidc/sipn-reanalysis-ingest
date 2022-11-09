@@ -10,22 +10,22 @@ from sipn_reanalysis_ingest.util.untar import untar_cfsr_5day_tar, untar_dir
 class UntarCfsr5DayFile(luigi.Task):
     """Untar a 5-day CFSR tar file."""
 
-    start_5day_window = luigi.DateParameter()
-    end_5day_window = luigi.DateParameter()
+    window_start = luigi.DateParameter()
+    window_end = luigi.DateParameter()
     product_type = luigi.EnumParameter(enum=CfsrProductType)
 
     def requires(self):
         return DownloadInput(
-            start_5day_window=self.start_5day_window,
-            end_5day_window=self.end_5day_window,
+            window_start=self.window_start,
+            window_end=self.window_end,
             product_type=self.product_type,
         )
 
     def output(self):
         return luigi.LocalTarget(
             untar_dir(
-                window_start=self.start_5day_window,
-                window_end=self.end_5day_window,
+                window_start=self.window_start,
+                window_end=self.window_end,
                 product_type=self.product_type,
             ),
         )

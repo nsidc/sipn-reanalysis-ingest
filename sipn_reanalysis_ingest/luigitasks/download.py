@@ -9,15 +9,15 @@ from sipn_reanalysis_ingest.util.download import download_cfsr_5day_tar, downloa
 class DownloadInput(luigi.Task):
     """Download a 5-day CFSR tar file."""
 
-    start_5day_window = luigi.DateParameter()
-    end_5day_window = luigi.DateParameter()
+    window_start = luigi.DateParameter()
+    window_end = luigi.DateParameter()
     product_type = luigi.EnumParameter(enum=CfsrProductType)
 
     def output(self):
         return luigi.LocalTarget(
             download_dir(
-                window_start=self.start_5day_window,
-                window_end=self.end_5day_window,
+                window_start=self.window_start,
+                window_end=self.window_end,
                 product_type=self.product_type,
             ),
         )
@@ -27,6 +27,7 @@ class DownloadInput(luigi.Task):
         with self.output().temporary_path() as tmpf:
             tmp_fp = Path(tmpf)
             download_cfsr_5day_tar(
-                start_date=self.start_5day_window,
+                window_start=self.window_start,
+                product_type=self.product_type,
                 output_fp=tmp_fp,
             )
