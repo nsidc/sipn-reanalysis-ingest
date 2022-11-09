@@ -42,7 +42,6 @@ def select_forecast_grib2s(grib2_dirs: list[Path], *, date: dt.date) -> list[Pat
         list(d.glob('*.grb2')) for d in grib2_dirs
     ))
     forecast_grib2s = _select_forecast_gribs(all_grib2s, date=date)
-    breakpoint()
     return forecast_grib2s
 
 
