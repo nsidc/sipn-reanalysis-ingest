@@ -6,8 +6,9 @@ from sipn_reanalysis_ingest.util.log import logger
 
 
 def convert_grib2s_to_nc(
-    grib2_files: list[Path],
     *,
+    analysis_inputs: list[Path],
+    forecast_inputs: list[Path],
     output_path: Path,
 ) -> Path:
     with open(output_path, 'w') as f:
