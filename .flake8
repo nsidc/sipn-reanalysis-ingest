@@ -19,5 +19,6 @@ import_order_style = pycharm
 ignore = D1,E266,W503
 
 # E501: Line too long. Long strings, e.g. URLs, are common in config.
+# FS003: f-string missing prefix, e.g. templates for evaluating later.
 per-file-ignores =
-  sipn_reanalysis_ingest/constants/download.py: E501
+  sipn_reanalysis_ingest/constants/download.py: E501, FS003

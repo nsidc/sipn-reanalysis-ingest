@@ -2,8 +2,8 @@ from pathlib import Path
 
 import luigi
 
-from sipn_reanalysis_ingest.constants.paths import DATA_DOWNLOAD_DIR
-from sipn_reanalysis_ingest.util.download import download_cfsr_5day_tar
+from sipn_reanalysis_ingest._types import CfsrProductType
+from sipn_reanalysis_ingest.util.download import download_cfsr_5day_tar, download_dir
 
 
 class DownloadInput(luigi.Task):
@@ -11,11 +11,15 @@ class DownloadInput(luigi.Task):
 
     start_5day_window = luigi.DateParameter()
     end_5day_window = luigi.DateParameter()
+    product_type = luigi.EnumParameter(enum=CfsrProductType)
 
     def output(self):
         return luigi.LocalTarget(
-            DATA_DOWNLOAD_DIR
-            / f'{self.start_5day_window:%Y%m%d}-{self.end_5day_window:%Y%m%d}.tar'
+            download_dir(
+                window_start=self.start_5day_window,
+                window_end=self.end_5day_window,
+                product_type=self.product_type,
+            ),
         )
 
     def run(self):

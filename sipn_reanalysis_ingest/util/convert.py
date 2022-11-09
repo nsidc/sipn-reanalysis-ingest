@@ -18,13 +18,16 @@ def convert_grib2s_to_nc(
 
 
 if __name__ == '__main__':
+
     @click.command()
     @click.argument(
         'grib2_files',
         nargs=-1,
     )
     @click.option(
-        '-o', '--output', 'output_path',
+        '-o',
+        '--output',
+        'output_path',
         type=click.Path(),
         help='The path the output .nc file will be written to',
         required=True,

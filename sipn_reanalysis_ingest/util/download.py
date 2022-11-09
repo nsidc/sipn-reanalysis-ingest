@@ -5,10 +5,27 @@ from pathlib import Path
 import requests
 from loguru import logger
 
+from sipn_reanalysis_ingest._types import CfsrProductType
 from sipn_reanalysis_ingest.constants.creds import RDA_PASSWORD, RDA_USER
 from sipn_reanalysis_ingest.constants.download import DOWNLOAD_AUTH_URL
+from sipn_reanalysis_ingest.constants.paths import DATA_DOWNLOAD_DIR
 from sipn_reanalysis_ingest.errors import CredentialsError, DownloadError
+from sipn_reanalysis_ingest.util.cfsr import cfsr_5day_input_identifier
 from sipn_reanalysis_ingest.util.url import cfsr_5day_tar_url
+
+
+def download_dir(
+    *,
+    window_start: dt.date,
+    window_end: dt.date,
+    product_type: CfsrProductType,
+) -> Path:
+    subdir_name = cfsr_5day_input_identifier(
+        window_start=window_start,
+        window_end=window_end,
+        product_type=product_type,
+    )
+    return DATA_DOWNLOAD_DIR / subdir_name
 
 
 @cache
@@ -39,16 +56,20 @@ def rda_auth_session() -> requests.Session:
 
 def download_cfsr_5day_tar(
     *,
-    start_date: dt.date,
+    window_start: dt.date,
+    product_type: CfsrProductType,
     output_fp: Path,
 ) -> Path:
     """Download a 5-day .tar file from RDA.
 
-    The end date is calculated from `start_date`; the last day of the month is used if
-    `start_date + 5` is in the next month.
+    The end date is calculated from `window_start`; the last day of the month is used if
+    `window_start + 5` is in the next month.
     """
     session = rda_auth_session()
-    url = cfsr_5day_tar_url(start_date=start_date)
+    url = cfsr_5day_tar_url(
+        window_start=window_start,
+        product_type=product_type,
+    )
 
     response = session.get(url, stream=True)
 
