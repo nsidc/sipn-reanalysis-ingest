@@ -66,8 +66,8 @@ class Grib2ToNc(luigi.Task):
         analysis_inputs = select_analysis_grib2s(analysis_dir, date=self.date)
 
         forecast_dirs = [
-            Path(d.path) for d in
-            luigi.task.flatten(self.input()[CfsrProductType.FORECAST])
+            Path(d.path)
+            for d in luigi.task.flatten(self.input()[CfsrProductType.FORECAST])
         ]
         forecast_inputs = select_forecast_grib2s(forecast_dirs, date=self.date)
 

@@ -24,7 +24,9 @@ def select_analysis_grib2s(grib2_dir: Path, *, date: dt.date) -> list[Path]:
     analysis_grib2s = list(grib2_dir.glob(f'*.{date:%Y%m%d}*.grb2'))
 
     if len(analysis_grib2s) != 4:
-        raise CfsrInputDataError(f'Expected four forecast files. Found: {analysis_grib2s}')
+        raise CfsrInputDataError(
+            f'Expected four forecast files. Found: {analysis_grib2s}'
+        )
 
     return analysis_grib2s
 
@@ -38,9 +40,9 @@ def select_forecast_grib2s(grib2_dirs: list[Path], *, date: dt.date) -> list[Pat
     hours, because each file contains expected measurements 6 hours in the future from
     the date in the filename.
     """
-    all_grib2s = list(itertools.chain.from_iterable(
-        list(d.glob('*.grb2')) for d in grib2_dirs
-    ))
+    all_grib2s = list(
+        itertools.chain.from_iterable(list(d.glob('*.grb2')) for d in grib2_dirs)
+    )
     forecast_grib2s = _select_forecast_gribs(all_grib2s, date=date)
     return forecast_grib2s
 
@@ -48,8 +50,7 @@ def select_forecast_grib2s(grib2_dirs: list[Path], *, date: dt.date) -> list[Pat
 def _select_forecast_gribs(grib2_files: list[Path], *, date: dt.date) -> list[Path]:
     valid_suffixes = _expected_forecast_suffixes_for_date(date)
     valid_grib2s = [
-        p for p in grib2_files
-        if any(str(p).endswith(v) for v in valid_suffixes)
+        p for p in grib2_files if any(str(p).endswith(v) for v in valid_suffixes)
     ]
 
     if len(valid_grib2s) != 4:
