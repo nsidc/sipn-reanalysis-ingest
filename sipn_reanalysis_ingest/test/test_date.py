@@ -18,12 +18,13 @@ from sipn_reanalysis_ingest.util.date import (
         pytest.param(dt.date(2020, 1, 1), True),
         pytest.param(dt.date(2020, 1, 2), False),
         pytest.param(dt.date(2020, 1, 5), False),
-        pytest.param(dt.date(2020, 1, 31), True),
+        pytest.param(dt.date(2020, 1, 26), True),
+        pytest.param(dt.date(2020, 1, 31), False),
         pytest.param(dt.date(2020, 2, 26), True),
         pytest.param(dt.date(2020, 2, 29), False),
         pytest.param(dt.date(2021, 2, 26), True),
         pytest.param(dt.date(2021, 2, 28), False),
-        pytest.param(dt.date(2021, 12, 31), True),
+        pytest.param(dt.date(2021, 12, 31), False),
     ],
 )
 def test_is_valid_cfsr_window_start_date(date, expected):
@@ -59,8 +60,12 @@ def test_is_valid_cfsr_window_start_date(date, expected):
             (dt.date(2020, 2, 26), dt.date(2020, 2, 29)),
         ),
         pytest.param(
+            dt.date(2020, 11, 29),
+            (dt.date(2020, 11, 26), dt.date(2020, 11, 30)),
+        ),
+        pytest.param(
             dt.date(2020, 12, 31),
-            (dt.date(2020, 12, 31), dt.date(2020, 12, 31)),
+            (dt.date(2020, 12, 26), dt.date(2020, 12, 31)),
         ),
     ],
 )
@@ -126,8 +131,7 @@ def test_date_range(range_endpoints, expected_len):
                 (dt.date(2001, 1, 11), dt.date(2001, 1, 15)),
                 (dt.date(2001, 1, 16), dt.date(2001, 1, 20)),
                 (dt.date(2001, 1, 21), dt.date(2001, 1, 25)),
-                (dt.date(2001, 1, 26), dt.date(2001, 1, 30)),
-                (dt.date(2001, 1, 31), dt.date(2001, 1, 31)),
+                (dt.date(2001, 1, 26), dt.date(2001, 1, 31)),
                 (dt.date(2001, 2, 1), dt.date(2001, 2, 5)),
                 (dt.date(2001, 2, 6), dt.date(2001, 2, 10)),
                 (dt.date(2001, 2, 11), dt.date(2001, 2, 15)),
@@ -163,12 +167,20 @@ def test_date_range_windows(range_endpoints, expected):
             pytest.raises(ProgrammerError),
         ),
         pytest.param(
+            dt.date(2000, 1, 26),
+            dt.date(2000, 1, 31),
+        ),
+        pytest.param(
             dt.date(2000, 2, 26),
             dt.date(2000, 2, 29),
         ),
         pytest.param(
             dt.date(2001, 2, 26),
             dt.date(2001, 2, 28),
+        ),
+        pytest.param(
+            dt.date(2000, 4, 26),
+            dt.date(2000, 4, 30),
         ),
     ],
 )

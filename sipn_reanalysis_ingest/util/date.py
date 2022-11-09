@@ -1,3 +1,4 @@
+import calendar
 import datetime as dt
 from typing import Iterator
 
@@ -6,8 +7,17 @@ from sipn_reanalysis_ingest.errors import ProgrammerError
 
 # TODO: Unit test
 def is_valid_cfsr_window_start_date(date: dt.date) -> bool:
+    """Validate whether `date` is a valid start date of a ~5-day CFSR window.
+
+    Windows start on 1st, 6th, 11th, ..., and 26th. Depending on the length of the
+    month, the final window may have from 3 to 6 days.
+    """
+    if date.day > 26:
+        return False
+
     if date.day % 5 == 1:
         return True
+
     return False
 
 
@@ -50,7 +60,10 @@ def date_range_windows(
 
 
 def _nearest_5day_start_before_date(date: dt.date) -> dt.date:
-    """Find the nearest valid 5-day window start before `date`."""
+    """Find the nearest valid 5-day window start less than or equal to `date`."""
+    if date.day >= 26:
+        return dt.date(date.year, date.month, 26)
+
     window_size = 5
     offset = 1
     if date.day % window_size == offset:
@@ -79,8 +92,13 @@ def cfsr_5day_window_end_from_start_date(start_date: dt.date) -> dt.date:
     if not is_valid_cfsr_window_start_date(start_date):
         raise ProgrammerError(
             f'Start date ({start_date:%Y-%m-%d}) day portion must be a multiple of 5'
-            ' plus one, e.g.: 1, 6, 11, 16, ...'
+            ' plus one, e.g.: 1, 6, 11, 16, ..., 26'
         )
+    if start_date.day == 26:
+        # Return the last day of the month:
+        last_day = calendar.monthrange(start_date.year, start_date.month)[1]
+        return dt.date(start_date.year, start_date.month, last_day)
+
     plus_5 = start_date + dt.timedelta(days=4)
     if plus_5.month == start_date.month:
         return plus_5
