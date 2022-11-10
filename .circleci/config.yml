@@ -15,6 +15,10 @@ jobs:
       - run:
           name: 'Create conda environment'
           command: |
+            if [ -d '/opt/conda/envs/sipn-reanalysis-ingest' ]; then
+              echo "Environment exists in cache. Skipping build!"
+              exit 0
+            fi
             conda env create --quiet --file environment-lock.yml 
             conda init bash
       - save_cache:
