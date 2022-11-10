@@ -3,10 +3,10 @@ import shutil
 import luigi
 
 from sipn_reanalysis_ingest.constants.date import DEFAULT_PROCESSING_DAY
+from sipn_reanalysis_ingest.constants.paths import DATA_UNTAR_DIR
 from sipn_reanalysis_ingest.luigitasks.convert import Grib2ToNc
 from sipn_reanalysis_ingest.util.date import date_range
 from sipn_reanalysis_ingest.util.log import logger
-from sipn_reanalysis_ingest.util.untar import untar_dir
 
 
 # TODO: Move data from wip dir to final location. Change from WrapperTask to regular
@@ -27,5 +27,5 @@ class ProcessDateRange(luigi.WrapperTask):
         ]
 
     def run(self):
-        shutil.rmtree(untar_dir)
+        shutil.rmtree(DATA_UNTAR_DIR)
         logger.info(f'Cleaned up untar data in {untar_dir}')
