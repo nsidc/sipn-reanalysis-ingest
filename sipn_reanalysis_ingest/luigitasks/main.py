@@ -28,4 +28,4 @@ class ProcessDateRange(luigi.WrapperTask):
 
     def run(self):
         shutil.rmtree(DATA_UNTAR_DIR)
-        logger.info(f'Cleaned up untar data in {untar_dir}')
+        logger.info(f'Cleaned up untar data in {DATA_UNTAR_DIR}')
