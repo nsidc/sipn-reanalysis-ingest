@@ -2,6 +2,7 @@ from pathlib import Path
 
 import click
 
+from sipn_reanalysis_ingest.errors import CfsrInputDataError
 from sipn_reanalysis_ingest.util.log import logger
 
 
@@ -11,10 +12,7 @@ def convert_grib2s_to_nc(
     forecast_inputs: list[Path],
     output_path: Path,
 ) -> Path:
-    if not (
-        len(analysis_inputs) == 4
-        and len(forecast_inputs) == 4
-    ):
+    if not (len(analysis_inputs) == 4 and len(forecast_inputs) == 4):
         raise CfsrInputDataError(
             'Expected 4 of each type of file. Received:'
             f' {analysis_inputs=}; {forecast_inputs=}'
