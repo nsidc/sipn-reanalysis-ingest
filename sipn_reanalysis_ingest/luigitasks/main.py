@@ -5,10 +5,7 @@ import luigi
 from sipn_reanalysis_ingest.constants.date import DEFAULT_PROCESSING_DAY
 from sipn_reanalysis_ingest.luigitasks.convert import Grib2ToNc
 from sipn_reanalysis_ingest.util.log import logger
-from sipn_reanalysis_ingest.util.date import (
-    date_range,
-    date_range_windows,
-)
+from sipn_reanalysis_ingest.util.date import date_range
 from sipn_reanalysis_ingest.util.untar import untar_dir
 
 

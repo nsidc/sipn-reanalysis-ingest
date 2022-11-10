@@ -13,6 +13,15 @@ def convert_grib2s_to_nc(
 ) -> Path:
     with open(output_path, 'w') as f:
         f.write('NetCDF data goes in here!\n')
+        f.write('\n')
+
+        f.write('>> Analysis inputs:\n')
+        for analysis_input in analysis_inputs:
+            f.write(f'  * {analysis_input}\n')
+
+        f.write('>> Forecast inputs:\n')
+        for forecast_input in forecast_inputs:
+            f.write(f'  * {forecast_input}\n')
 
     logger.info(f'Created {output_path}')
     return output_path
