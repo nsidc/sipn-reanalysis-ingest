@@ -1,10 +1,13 @@
-"""
-   Functions to read in the grib data
+# DELETEME: down to and including "noqa" line.
+# Skip static analysis on this file, it's a WIP.
+# mypy: ignore-errors
+# flake8: noqa
+"""Functions to read in the grib data.
 
-   Begin: 11/7/22
-   Who wrote this?: Liz Cassano
+Begin: 11/7/22
+Who wrote this?: Liz Cassano
 
-   Will return an array of daily data for eventual output to a single netcdf file
+Will return an array of daily data for eventual output to a single netcdf file
 """
 
 import glob

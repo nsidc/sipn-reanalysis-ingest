@@ -1,11 +1,10 @@
-'''
-   Program to process CFSR data
+"""Program to process CFSR data.
 
-   This program:
-	-untars the CFSR data
-	-Extracts the necessary data
-	-Writes output to netcdf files, 1 for each day
-'''
+This program:
+    -untars the CFSR data
+    -Extracts the necessary data
+    -Writes output to netcdf files, 1 for each day
+"""
 
 import glob
 import tarfile
