@@ -1,8 +1,8 @@
 import numpy as np
 import Ngl, Nio
 
-def write_netcdf(array):
 
+def write_netcdf(array):
    outf=Nio.open_file("cfsr."+date+".nc","c")
 
    outf.create_dimension('lat_0',array.dimensions['lat_0'] 

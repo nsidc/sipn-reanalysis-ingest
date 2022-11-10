@@ -10,6 +10,7 @@
 import glob
 import Nio
 
+
 def read_grib(vars):
    numfiles=glob.glob("*.grb2")
    for i in numfiles:
