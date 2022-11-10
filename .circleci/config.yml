@@ -11,14 +11,14 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: "conda-{{ checksum `environment-lock.yml` }}"
+          key: 'conda-{{ checksum "environment-lock.yml" }}'
       - run:
           name: 'Create conda environment'
           command: |
             conda env create --quiet --file environment-lock.yml 
             conda init bash
       - save_cache:
-          key: "conda-{{ checksum `environment-lock.yml` }}"
+          key: 'conda-{{ checksum "environment-lock.yml" }}'
           paths: "/opt/conda"
       - run:
           name: 'Run all tests (lint, config validation, etc.)'
