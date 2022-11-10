@@ -10,11 +10,19 @@ jobs:
     <<: *setup
     steps:
       - checkout
+      - restore_cache:
+          key: "conda-{{ checksum 'environment-lock.yml' }}"
       - run:
-          name: 'Run all tests (lint, config validation, etc.)'
+          name: 'Create conda environment'
           command: |
             conda env create --quiet --file environment-lock.yml 
             conda init bash
+      - save_cache:
+          key: "conda-{{ checksum 'environment-lock.yml' }}"
+          paths: "/opt/conda"
+      - run:
+          name: 'Run all tests (lint, config validation, etc.)'
+          command: |
             /bin/bash --login -c "conda activate sipn-reanalysis-ingest && inv test"
 
   # release:
