@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
         e.g.:
 
-            PYTHONPATH=. python sipn_reanalysis_ingest/util/convert.py
+            PYTHONPATH=. python sipn_reanalysis_ingest/util/convert/__init__.py
         """
         convert_grib2s_to_nc(
             analysis_inputs=analysis_inputs,
