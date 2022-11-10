@@ -6,6 +6,10 @@ class CredentialsError(DownloadError):
     """A credential was not found."""
 
 
+class CfsrDateError(Exception):
+    """There was a problem with a CFSR date."""
+
+
 class CfsrInputDataError(Exception):
     """There was a problem finding the needed CFSR input data."""
 

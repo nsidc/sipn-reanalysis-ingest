@@ -11,7 +11,7 @@ from sipn_reanalysis_ingest.util.cfsr import (
     select_forecast_grib2s,
 )
 from sipn_reanalysis_ingest.util.convert import convert_grib2s_to_nc
-from sipn_reanalysis_ingest.util.date import cfsr_5day_window_containing_date
+from sipn_reanalysis_ingest.util.date import Cfsr5ishDayWindow
 from sipn_reanalysis_ingest.util.log import logger
 
 
@@ -25,32 +25,32 @@ class Grib2ToNc(luigi.Task):
     date = luigi.DateParameter()
 
     def requires(self):
-        five_day_window = cfsr_5day_window_containing_date(date=self.date)
+        five_day_window = Cfsr5ishDayWindow.from_date_in_window(self.date)
 
         req = {
             CfsrProductType.ANALYSIS: UntarCfsr5DayFile(
-                window_start=five_day_window[0],
-                window_end=five_day_window[1],
+                window_start=five_day_window.start,
+                window_end=five_day_window.end,
                 product_type=CfsrProductType.ANALYSIS,
             ),
             CfsrProductType.FORECAST: UntarCfsr5DayFile(
-                window_start=five_day_window[0],
-                window_end=five_day_window[1],
+                window_start=five_day_window.start,
+                window_end=five_day_window.end,
                 product_type=CfsrProductType.FORECAST,
             ),
         }
 
         # If the first day of analysis window, we also need the forecast files for the
         # previous window!
-        if self.date == five_day_window[0]:
-            forecast_5day_window = cfsr_5day_window_containing_date(
-                date=self.date - dt.timedelta(days=1)
+        if self.date == five_day_window.start:
+            forecast_5day_window = Cfsr5ishDayWindow.from_date_in_window(
+                self.date - dt.timedelta(days=1)
             )
             req[CfsrProductType.FORECAST] = [
                 req[CfsrProductType.FORECAST],
                 UntarCfsr5DayFile(
-                    window_start=forecast_5day_window[0],
-                    window_end=forecast_5day_window[1],
+                    window_start=forecast_5day_window.start,
+                    window_end=forecast_5day_window.end,
                     product_type=CfsrProductType.FORECAST,
                 ),
             ]

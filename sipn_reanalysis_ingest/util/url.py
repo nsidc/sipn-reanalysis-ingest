@@ -5,7 +5,7 @@ from sipn_reanalysis_ingest.constants.download import (
     DOWNLOAD_FILE_NAME_TEMPLATES,
     DOWNLOAD_FILE_URL_TEMPLATES,
 )
-from sipn_reanalysis_ingest.util.date import cfsr_5day_window_end_from_start_date
+from sipn_reanalysis_ingest.util.date import Cfsr5ishDayWindow
 from sipn_reanalysis_ingest.util.misc import range_lookup
 
 
@@ -53,7 +53,7 @@ def cfsr_5day_tar_url(
     window_start: dt.date,
     product_type: CfsrProductType,
 ) -> str:
-    window_end = cfsr_5day_window_end_from_start_date(window_start)
+    window_end = Cfsr5ishDayWindow.calculate_window_end_from_start(window_start)
     fn = cfsr_tar_filename(
         window_start=window_start,
         window_end=window_end,
