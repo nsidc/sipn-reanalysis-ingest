@@ -28,7 +28,7 @@ def select_analysis_grib2s(grib2_dir: Path, *, date: dt.date) -> list[Path]:
             f'Expected four forecast files. Found: {analysis_grib2s}'
         )
 
-    return analysis_grib2s
+    return sorted(analysis_grib2s)
 
 
 def select_forecast_grib2s(grib2_dirs: list[Path], *, date: dt.date) -> list[Path]:
