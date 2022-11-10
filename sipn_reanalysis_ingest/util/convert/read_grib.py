@@ -8,12 +8,13 @@
 """
 
 import glob
+
 import Nio
 
 
 def read_grib(vars):
-   numfiles=glob.glob("*.grb2")
-   for i in numfiles:
-      fn=Nio.open_file(i)
-      for v in vars:
-         var=fn.variables[v]
+    numfiles = glob.glob("*.grb2")
+    for i in numfiles:
+        fn = Nio.open_file(i)
+        for v in vars:
+            var = fn.variables[v]

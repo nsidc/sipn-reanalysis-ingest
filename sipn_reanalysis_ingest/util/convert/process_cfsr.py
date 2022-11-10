@@ -29,10 +29,10 @@ def process_cfsr():
 
 
 def untar_files():
-    datadir="/data/ecassano/Current_projects/SIPN2/CFSR/"
-    numfiles=glob.glob(datadir+"*.1979*tar")
+    datadir = "/data/ecassano/Current_projects/SIPN2/CFSR/"
+    numfiles = glob.glob(datadir + "*.1979*tar")
     for i in numfiles:
-        tar=tarfile.open(i)
+        tar = tarfile.open(i)
         tar.extractall()
         tar.close()
 
