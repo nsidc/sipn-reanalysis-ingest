@@ -4,7 +4,8 @@ import luigi
 
 from sipn_reanalysis_ingest._types import CfsrProductType
 from sipn_reanalysis_ingest.luigitasks.download import DownloadInput
-from sipn_reanalysis_ingest.util.untar import untar_cfsr_5day_tar, untar_dir
+from sipn_reanalysis_ingest.util.paths import untar_dir
+from sipn_reanalysis_ingest.util.untar import untar_cfsr_5day_tar
 
 
 class UntarCfsr5DayFile(luigi.Task):

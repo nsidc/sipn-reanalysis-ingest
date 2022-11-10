@@ -3,7 +3,8 @@ from pathlib import Path
 import luigi
 
 from sipn_reanalysis_ingest._types import CfsrProductType
-from sipn_reanalysis_ingest.util.download import download_cfsr_5day_tar, download_dir
+from sipn_reanalysis_ingest.util.download import download_cfsr_5day_tar
+from sipn_reanalysis_ingest.util.paths import download_dir
 
 
 class DownloadInput(luigi.Task):

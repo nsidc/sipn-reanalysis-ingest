@@ -4,7 +4,7 @@ import pytest
 
 from sipn_reanalysis_ingest._types import CfsrProductType
 from sipn_reanalysis_ingest.constants.paths import DATA_DOWNLOAD_DIR
-from sipn_reanalysis_ingest.util.download import download_dir
+from sipn_reanalysis_ingest.util.paths import download_dir
 
 
 @pytest.mark.parametrize(
