@@ -7,7 +7,7 @@ from sipn_reanalysis_ingest.util.url import cfsr_tar_url_template
 
 # TODO: Monthly url tests
 @pytest.mark.parametrize(
-    'start_date,periodicity,expected',
+    'window_start,periodicity,expected',
     [
         pytest.param(
             dt.date(1990, 1, 1),
@@ -31,6 +31,6 @@ from sipn_reanalysis_ingest.util.url import cfsr_tar_url_template
         ),
     ],
 )
-def test_cfsr_tar_url_template(start_date, periodicity, expected):
-    actual = cfsr_tar_url_template(start_date=start_date, periodicity=periodicity)
+def test_cfsr_tar_url_template(window_start, periodicity, expected):
+    actual = cfsr_tar_url_template(window_start=window_start, periodicity=periodicity)
     assert actual == expected

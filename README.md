@@ -18,17 +18,52 @@ nsidc@nsidc.org for more information.
 
 ## Requirements
 
-* Python
+Docker + docker-compose
+
+_OR_
+
+Python + Conda
 
 
 ## Installation
 
-TODO
+Install a pre-built image from DockerHub (TODO: Add a link here after first release):
+
+```
+docker pull nsidc/sipn-reanalysis-ingest
+```
+
+See [development documentation](doc/development.md) to learn how to build from source.
 
 
 ## Usage
 
-TODO
+*Before continuing*: Ensure the correct [environment variables](doc/envvars.md) are
+populated.
+
+For development usage, see [development documentation](doc/development.md).
+
+
+### With Docker
+
+Start the task scheduler service:
+
+```
+./scripts/container_start.sh
+```
+
+Submit a job:
+
+```
+./scripts/container_cli.sh --help
+```
+
+
+### Without Docker
+
+```
+PYTHONPATH=. python sipn_reanalysis_ingest/cli.py
+```
 
 
 ## Troubleshooting

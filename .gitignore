@@ -1,3 +1,7 @@
+# Development ephemera
+/.data
+/.logs
+
 # Python ephemera
 __pycache__/
 

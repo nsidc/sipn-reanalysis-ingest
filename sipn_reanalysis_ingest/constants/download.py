@@ -1,6 +1,10 @@
 import datetime as dt
 
-from sipn_reanalysis_ingest._types import DownloadFileUrlTemplates
+from sipn_reanalysis_ingest._types import (
+    Cfsr5DayProductDownloadTypes,
+    CfsrProductType,
+    DownloadFileUrlTemplates,
+)
 
 DOWNLOAD_BASE_URL = 'https://rda.ucar.edu'
 
@@ -32,4 +36,19 @@ DOWNLOAD_FILE_URL_TEMPLATES: DownloadFileUrlTemplates = {
     #         f'{DOWNLOAD_FILE_ROOT_URL}/ds094.2/{{year}}/{{filename}}'
     #     ),
     # },
+}
+
+DOWNLOAD_FILE_NAME_TEMPLATES: Cfsr5DayProductDownloadTypes = {
+    CfsrProductType.ANALYSIS: {
+        'tar_filename_template': (
+            'pgbhnl.gdas.{window_start:%Y%m%d}-{window_end:%Y%m%d}.tar'
+        ),
+        'grib2_filename_template': 'pgbhnl.gdas.{datetime:%Y%m%d%H%M}.grb2',
+    },
+    CfsrProductType.FORECAST: {
+        'tar_filename_template': (
+            'pgbh06.gdas.{window_start:%Y%m%d}-{window_end:%Y%m%d}.tar'
+        ),
+        'grib2_filename_template': 'pgbh06.gdas.{datetime:%Y%m%d%H%M}.grb2',
+    },
 }
