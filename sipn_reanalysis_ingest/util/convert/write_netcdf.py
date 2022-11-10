@@ -10,4 +10,4 @@ def write_netcdf(array):
 
    outf.create_variable('lat_0',lat_0.typecode(),lat.dimensions)
 
-   outf.create_variable('t','f',('time','lat','lon')
+   outf.create_variable('t','f',('time','lat','lon'))
