@@ -1,0 +1,27 @@
+[core]
+no_configure_logging = false
+# The TOML logging configuration seems to have a bug, so we use the .conf
+# method: https://github.com/spotify/luigi/issues/2879
+logging_conf_file = "/app/logging.conf"
+
+
+[scheduler]
+record_task_history = true
+
+
+[worker]
+# If true, workers will stay alive when they run out of jobs to run, as long as
+# they have some pending job waiting to be run (REQUIRED for retry
+# functionality):
+keep_alive = false
+
+
+# NOTE: We struggled with enabling Luigi's resource management system; job would
+# end up "DISABLED" for unknown reasons. Related to this issue?
+#     https://github.com/spotify/luigi/issues/2829
+# [resources]
+# memory_gb = 16
+
+
+[task_history]
+db_connection = "sqlite:////data/luigi-task-hist.db"
