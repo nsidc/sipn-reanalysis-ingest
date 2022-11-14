@@ -2,8 +2,11 @@ from pathlib import Path
 
 import click
 
+import sipn_reanalysis_ingest.constants.variables as variables
 from sipn_reanalysis_ingest.errors import CfsrInputDataError
 from sipn_reanalysis_ingest.util.log import logger
+from sipn_reanalysis_ingest.util.convert.read_grib import read_grib
+from sipn_reanalysis_ingest.util.convert.write_netcdf import write_netcdf
 
 
 def convert_grib2s_to_nc(
@@ -18,17 +21,19 @@ def convert_grib2s_to_nc(
             f' {analysis_inputs=}; {forecast_inputs=}'
         )
 
-    with open(output_path, 'w') as f:
-        f.write('NetCDF data goes in here!\n')
-        f.write('\n')
+    create_netcdf(date,lat_0,lon_0)
+    read_grib(variables.t,analysis_inputs,forecast_inputs)
 
-        f.write('>> Analysis inputs:\n')
-        for analysis_input in analysis_inputs:
-            f.write(f'  * {analysis_input}\n')
+    array = ...
 
-        f.write('>> Forecast inputs:\n')
-        for forecast_input in forecast_inputs:
-            f.write(f'  * {forecast_input}\n')
+    write_netcdf(array)
+    read_grib(variables.v)
+    read_grib(variables.u)
+    read_grib(variables.sh)
+    read_grib(variables.rh)
+    read_grib(variables.hgt)
+    read_grib(variables.pwat)
+    read_grib(variables.slp)
 
     logger.info(f'Created {output_path}')
     return output_path
