@@ -6,7 +6,7 @@ import requests
 from loguru import logger
 
 from sipn_reanalysis_ingest._types import CfsrProductType
-from sipn_reanalysis_ingest.constants.creds import RDA_PASSWORD, RDA_USER
+from sipn_reanalysis_ingest.constants.creds import RDA_PASSWORD, RDA_USERNAME
 from sipn_reanalysis_ingest.constants.download import DOWNLOAD_AUTH_URL
 from sipn_reanalysis_ingest.errors import CredentialsError, DownloadError
 from sipn_reanalysis_ingest.util.url import cfsr_5day_tar_url
@@ -21,8 +21,8 @@ def rda_auth_session() -> requests.Session:
     """
     session = requests.Session()
 
-    if not RDA_USER:
-        raise CredentialsError('$RDA_USER must be set.')
+    if not RDA_USERNAME:
+        raise CredentialsError('$RDA_USERNAME must be set.')
     if not RDA_PASSWORD:
         raise CredentialsError('$RDA_PASSWORD must be set.')
 
@@ -30,7 +30,7 @@ def rda_auth_session() -> requests.Session:
         DOWNLOAD_AUTH_URL,
         data={
             'action': 'login',
-            'email': RDA_USER,
+            'email': RDA_USERNAME,
             'passwd': RDA_PASSWORD,
         },
     )
