@@ -58,7 +58,7 @@ def unittest(ctx):
 
 
 @task(
-    pre=[lint, formatcheck, typecheck, unittest],
+    pre=[typecheck, unittest, lint, formatcheck],
     default=True,
 )
 def all(ctx):
