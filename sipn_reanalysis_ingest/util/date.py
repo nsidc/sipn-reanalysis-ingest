@@ -7,6 +7,15 @@ from sipn_reanalysis_ingest.errors import CfsrDateError, ProgrammerError
 
 
 @dataclass
+class YearMonth:
+    year: int
+    month: int
+
+    def __str__(self):
+        return f'{self.year}{self.month:02}'
+
+
+@dataclass
 class Cfsr5ishDayWindow:
     """Represents a ~5-day window for downloading 6-hourly CFSR products.
 
@@ -133,34 +142,37 @@ def date_range(start: dt.date, end: dt.date) -> Iterator[dt.date]:
         yield start + dt.timedelta(days=i)
 
 
-# TODO: Refactor to take a window object
-def date_range_windows(
+def _months_since_0ad(date: dt.date) -> int:
+    """Calculate the number of months between 0 AD and `month`.
+
+    Ignore day portion of `date`.
+
+    NOTE: Python's built-in datetime module doesn't support 0AD. This is only a hack for
+    calculating month ranges, since Python's built-in datetime module also doesn't
+    support adding or subtracting months (ignoring month length).
+    """
+    num_months = (12 * date.year) + date.month
+    return num_months
+
+
+def month_range(
     start: dt.date,
     end: dt.date,
-) -> Iterator[tuple[dt.date, dt.date]]:
-    """Generate list of ~5-day windows between `start` and `end`, inclusive.
+) -> list[YearMonth]:
+    """List months that lie within `start` and `end`.
 
-    The first and last windows will be smaller if the start or end date (respectively)
-    do not land on the start or end of a CFSR 5-day interval.
+    The result is inclusive, e.g. if `end` is `2022-01-01`, then `(2022, 1)` will be in
+    the result.
     """
-    cfsr_start_dates_in_range = [
-        d for d in date_range(start, end) if Cfsr5ishDayWindow.is_valid_start(d)
+    start_months_since_0ad = _months_since_0ad(start)
+    end_months_since_0ad = _months_since_0ad(end)
+
+    # Add 1 to generate inclusive closed interval result
+    month_indexes_since_0ad = range(start_months_since_0ad, end_months_since_0ad + 1)
+    years_and_0indexed_months = (divmod(m, 12) for m in month_indexes_since_0ad)
+
+    months: list[YearMonth] = [
+        YearMonth(year=year, month=month_0indexed)
+        for year, month_0indexed in years_and_0indexed_months
     ]
-
-    if len(cfsr_start_dates_in_range) == 0:
-        yield (start, end)
-        return
-
-    if start < cfsr_start_dates_in_range[0]:
-        # The first interval starts late:
-        yield (start, cfsr_start_dates_in_range[0] - dt.timedelta(days=1))
-
-    for cfsr_start_date in cfsr_start_dates_in_range:
-        cfsr_end_date = Cfsr5ishDayWindow.calculate_window_end_from_start(
-            cfsr_start_date,
-        )
-        if cfsr_end_date <= end:
-            yield (cfsr_start_date, cfsr_end_date)
-        else:
-            # The last interval is truncated to `end`
-            yield (cfsr_start_date, end)
+    return months

@@ -32,3 +32,19 @@ class DateParameter(click.ParamType):
                 continue
 
         self.fail(f'{value} is not a valid date. Expected one of: {self.formats}')
+
+
+class MonthParameter(DateParameter):
+    """Support month parameters in Click CLIs.
+
+    Year and month are expected. The final value is a `dt.date(YYYY, MM, 1)`.
+    """
+
+    name = 'month'
+
+    def __init__(self, formats=None):
+        default = ['%Y-%m', '%Y%m']
+        self.formats = formats or default
+
+    def __repr__(self):
+        return 'Month'
