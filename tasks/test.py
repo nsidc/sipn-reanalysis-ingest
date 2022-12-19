@@ -51,7 +51,7 @@ def unittest(ctx):
     from sipn_reanalysis_ingest.constants.paths import PACKAGE_DIR
 
     print_and_run(
-        f'PYTHONPATH={PROJECT_DIR} pytest --verbose {PACKAGE_DIR}/test/',
+        f'PYTHONPATH={PROJECT_DIR} pytest -vv {PACKAGE_DIR}/test/',
         pty=True,
     )
     print('🎉🛠️  Unit tests passed.')
