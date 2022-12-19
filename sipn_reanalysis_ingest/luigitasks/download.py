@@ -7,10 +7,12 @@ from sipn_reanalysis_ingest.util.date import YearMonth
 from sipn_reanalysis_ingest.util.download import (
     download_cfsr_5day_tar,
     download_cfsr_monthly_tar,
+    download_cfsr_yearly_tar,
 )
 from sipn_reanalysis_ingest.util.paths import (
     download_5day_tar_path,
     download_monthly_tar_path,
+    download_yearly_tar_path,
 )
 
 
@@ -43,13 +45,28 @@ class DownloadCfsr5DayTar(luigi.Task):
 
 
 class DownloadCfsrV1MonthlyTar(luigi.Task):
-    """Download a monthly CFSRv1 data, which are delivered in yearly tar files."""
+    """Download monthly CFSRv1 data, which are delivered in yearly tar files."""
 
     year = luigi.IntParameter()
     product_type = luigi.EnumParameter(enum=CfsrGranuleProductType)
 
-    def __init__(self):
-        raise NotImplementedError()
+    def output(self):
+        return luigi.LocalTarget(
+            download_yearly_tar_path(
+                year=self.year,
+                product_type=self.product_type,
+            ),
+        )
+
+    def run(self):
+        with self.output().temporary_path() as tmpf:
+            tmp_fp = Path(tmpf)
+            tmp_fp.parent.mkdir(parents=True, exist_ok=True)
+            download_cfsr_yearly_tar(
+                year=self.year,
+                product_type=self.product_type,
+                output_fp=tmp_fp,
+            )
 
 
 class DownloadCfsrV2MonthlyTar(luigi.Task):
@@ -68,7 +85,6 @@ class DownloadCfsrV2MonthlyTar(luigi.Task):
         return luigi.LocalTarget(download_monthly_tar_path(month=self.yearmonth))
 
     def run(self):
-        # TODO: Validate window
         with self.output().temporary_path() as tmpf:
             tmp_fp = Path(tmpf)
             tmp_fp.parent.mkdir(parents=True, exist_ok=True)

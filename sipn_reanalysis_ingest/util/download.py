@@ -10,7 +10,11 @@ from sipn_reanalysis_ingest.constants.creds import RDA_PASSWORD, RDA_USERNAME
 from sipn_reanalysis_ingest.constants.download import DOWNLOAD_AUTH_URL
 from sipn_reanalysis_ingest.errors import CredentialsError, DownloadError
 from sipn_reanalysis_ingest.util.date import YearMonth
-from sipn_reanalysis_ingest.util.url import cfsr_5day_tar_url, cfsr_monthly_tar_url
+from sipn_reanalysis_ingest.util.url import (
+    cfsr_5day_tar_url,
+    cfsr_monthly_tar_url,
+    cfsr_yearly_tar_url,
+)
 
 
 @cache
@@ -64,6 +68,7 @@ def download_tar(url: str, output_fp: Path) -> Path:
     return output_fp
 
 
+# TODO: The functions below this line are awfully repetetive. DRY
 def download_cfsr_5day_tar(
     *,
     window_start: dt.date,
@@ -89,7 +94,7 @@ def download_cfsr_monthly_tar(
     month: YearMonth,
     output_fp: Path,
 ) -> Path:
-    """Download a monthly .tar file from RDA."""
+    """Download a monthly .tar file from RDA (containing v2 monthly data)."""
     url = cfsr_monthly_tar_url(month=month)
     output_fp = download_tar(url, output_fp)
 
@@ -102,4 +107,8 @@ def download_cfsr_yearly_tar(
     product_type: CfsrGranuleProductType,
     output_fp: Path,
 ) -> Path:
-    raise NotImplementedError()
+    """Download a yearly .tar file from RDA (containing v1 monthly data)."""
+    url = cfsr_yearly_tar_url(year=year, product_type=product_type)
+    output_fp = download_tar(url, output_fp)
+
+    return output_fp
