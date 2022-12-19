@@ -37,7 +37,9 @@ def select_6hourly_analysis_grib2s(grib2_dir: Path, *, date: dt.date) -> list[Pa
     return sorted(analysis_grib2s)
 
 
-def select_6hourly_forecast_grib2s(grib2_dirs: list[Path], *, date: dt.date) -> list[Path]:
+def select_6hourly_forecast_grib2s(
+    grib2_dirs: list[Path], *, date: dt.date
+) -> list[Path]:
     """Filter forecast grib2s in `grib2_dirs`, selecting those relevant to `date`.
 
     `grib2_dirs` may contain up to 2 paths.
@@ -53,7 +55,9 @@ def select_6hourly_forecast_grib2s(grib2_dirs: list[Path], *, date: dt.date) -> 
     return forecast_grib2s
 
 
-def _select_6hourly_forecast_gribs(grib2_files: list[Path], *, date: dt.date) -> list[Path]:
+def _select_6hourly_forecast_gribs(
+    grib2_files: list[Path], *, date: dt.date
+) -> list[Path]:
     valid_suffixes = _expected_6hourly_forecast_suffixes_for_date(date)
     valid_grib2s = [
         p for p in grib2_files if any(str(p).endswith(v) for v in valid_suffixes)
@@ -85,7 +89,7 @@ def select_monthly_grib2(
 ) -> Path:
     """Select CFSR monthly granule matching `month` and `product_type`."""
     prefix = cfsr_product_type_prefix(product_type)
-    grib2s = []
+    grib2s: list[Path] = []
     for ext in ['grb2', 'grib2']:
         grib2s.extend(grib2_dir.glob(f'{prefix}.{month}.{ext}'))
 

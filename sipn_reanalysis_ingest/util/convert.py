@@ -62,7 +62,6 @@ if __name__ == '__main__':
         """
         pass
 
-
     @cli.command()
     @click.option(
         '-a',
@@ -95,7 +94,6 @@ if __name__ == '__main__':
             forecast_inputs=forecast_inputs,
             output_path=output_path,
         )
-
 
     @cli.command()
     @click.option(
