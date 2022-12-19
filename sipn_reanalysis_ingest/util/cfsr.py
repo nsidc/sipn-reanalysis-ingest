@@ -21,6 +21,14 @@ def cfsr_monthly_input_identifier(*, month: YearMonth) -> str:
     return f'{month}'
 
 
+def cfsr_yearly_input_identifier(
+    *,
+    year: int,
+    product_type: CfsrGranuleProductType,
+) -> str:
+    return f'{year}_{product_type.value}'
+
+
 # TODO: UNIT TEST!
 def select_6hourly_analysis_grib2s(grib2_dir: Path, *, date: dt.date) -> list[Path]:
     """Filter analysis grib2s in `grib2_dir`, selecting those relevant to `date`.

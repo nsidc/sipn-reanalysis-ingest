@@ -8,6 +8,7 @@ from sipn_reanalysis_ingest.constants.cfsr import CFSR_VERSION_BY_DATE
 from sipn_reanalysis_ingest.constants.paths import DATA_FINISHED_DIR
 from sipn_reanalysis_ingest.luigitasks.untar import (
     UntarCfsr5DayFile,
+    UntarCfsrV1MonthlyFile,
     UntarCfsrV2MonthlyFile,
 )
 from sipn_reanalysis_ingest.util.cfsr import (
@@ -114,18 +115,18 @@ class Grib2ToNcMonthly(luigi.Task):
     def requires(self):
         # TODO: Make return values more consistent
         if self.cfsr_version == 1:
-            # TODO: v1 data is in yearly tar files.
-            raise NotImplementedError('v1 monthly data not implemented')
-            # return {
-            #     CfsrGranuleProductType.ANALYSIS: UntarCfsrV1MonthlyFile(
-            #         month=self.month,
-            #         product_type=CfsrGranuleProductType.ANALYSIS,
-            #     ),
-            #     CfsrGranuleProductType.FORECAST: UntarCfsrV1MonthlyFile(
-            #         month=self.month,
-            #         product_type=CfsrGranuleProductType.FORECAST,
-            #     ),
-            # }
+            # v1 data is in yearly tar files that contain _either_ forecast _or_
+            # analysis data.
+            return {
+                CfsrGranuleProductType.ANALYSIS: UntarCfsrV1MonthlyFile(
+                    year=self.month.year,
+                    product_type=CfsrGranuleProductType.ANALYSIS,
+                ),
+                CfsrGranuleProductType.FORECAST: UntarCfsrV1MonthlyFile(
+                    year=self.month.year,
+                    product_type=CfsrGranuleProductType.FORECAST,
+                ),
+            }
         elif self.cfsr_version == 2:
             # v2 files are monthly and contain both analysis and forecast data in one.
             return UntarCfsrV2MonthlyFile(month=self.month)
@@ -136,19 +137,29 @@ class Grib2ToNcMonthly(luigi.Task):
 
     def run(self):
         if self.cfsr_version == 1:
-            raise NotImplementedError('v1 no yet')
+            # v1 data is in yearly tar files that contain _either_ forecast _or_
+            # analysis data.
+            analysis_files_dir = Path(
+                self.input()[CfsrGranuleProductType.ANALYSIS].path,
+            )
+            forecast_files_dir = Path(
+                self.input()[CfsrGranuleProductType.FORECAST].path,
+            )
         elif self.cfsr_version == 2:
-            input_files_dir = Path(self.input().path)
-            analysis_input = select_monthly_grib2(
-                input_files_dir,
-                month=self.yearmonth,
-                product_type=CfsrGranuleProductType.ANALYSIS,
-            )
-            forecast_input = select_monthly_grib2(
-                input_files_dir,
-                month=self.yearmonth,
-                product_type=CfsrGranuleProductType.FORECAST,
-            )
+            # v2 files are monthly and contain both analysis and forecast data in one.
+            analysis_files_dir = Path(self.input().path)
+            forecast_files_dir = Path(self.input().path)
+
+        analysis_input = select_monthly_grib2(
+            analysis_files_dir,
+            month=self.yearmonth,
+            product_type=CfsrGranuleProductType.ANALYSIS,
+        )
+        forecast_input = select_monthly_grib2(
+            forecast_files_dir,
+            month=self.yearmonth,
+            product_type=CfsrGranuleProductType.FORECAST,
+        )
 
         logger.info(f'Producing monthly NetCDF for month {self.yearmonth}...')
         logger.debug(f'>> Analysis input: {analysis_input}')
