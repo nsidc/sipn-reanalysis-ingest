@@ -157,11 +157,16 @@ def test_date_range(range_endpoints, expected_len):
             ],
         ),
         pytest.param(
-            (dt.date(2021, 1, 15), dt.date(2021, 3, 3)),
+            (dt.date(2021, 1, 15), dt.date(2021, 5, 3)),
+            [{'year': 2021, 'month': n} for n in range(1, 5 + 1)],
+        ),
+        pytest.param(
+            (dt.date(1981, 1, 1), dt.date(1982, 3, 1)),
             [
-                {'year': 2021, 'month': 1},
-                {'year': 2021, 'month': 2},
-                {'year': 2021, 'month': 3},
+                *[{'year': 1981, 'month': n} for n in range(1, 12 + 1)],
+                {'year': 1982, 'month': 1},
+                {'year': 1982, 'month': 2},
+                {'year': 1982, 'month': 3},
             ],
         ),
     ],
