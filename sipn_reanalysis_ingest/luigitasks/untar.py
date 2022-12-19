@@ -2,10 +2,18 @@ from pathlib import Path
 
 import luigi
 
-from sipn_reanalysis_ingest._types import CfsrProductType
-from sipn_reanalysis_ingest.luigitasks.download import DownloadInput
-from sipn_reanalysis_ingest.util.paths import untar_dir
-from sipn_reanalysis_ingest.util.untar import untar_cfsr_5day_tar
+from sipn_reanalysis_ingest._types import CfsrGranuleProductType
+from sipn_reanalysis_ingest.luigitasks.download import (  # DownloadCfsrV1MonthlyTar,
+    DownloadCfsr5DayTar,
+    DownloadCfsrV2MonthlyTar,
+)
+from sipn_reanalysis_ingest.util.date import YearMonth
+from sipn_reanalysis_ingest.util.paths import untar_5day_tar_dir, untar_monthly_tar_dir
+from sipn_reanalysis_ingest.util.untar import untar
+
+# TODO: GranuleTask mixin or luigi.Task subclass that modifies __init__ to calculate
+# `granule` instance attribute? Child class has to populate a `GranuleType` attibute to
+# make it work?
 
 
 class UntarCfsr5DayFile(luigi.Task):
@@ -13,10 +21,10 @@ class UntarCfsr5DayFile(luigi.Task):
 
     window_start = luigi.DateParameter()
     window_end = luigi.DateParameter()
-    product_type = luigi.EnumParameter(enum=CfsrProductType)
+    product_type = luigi.EnumParameter(enum=CfsrGranuleProductType)
 
     def requires(self):
-        return DownloadInput(
+        return DownloadCfsr5DayTar(
             window_start=self.window_start,
             window_end=self.window_end,
             product_type=self.product_type,
@@ -24,20 +32,69 @@ class UntarCfsr5DayFile(luigi.Task):
 
     def output(self):
         return luigi.LocalTarget(
-            untar_dir(
+            untar_5day_tar_dir(
                 window_start=self.window_start,
                 window_end=self.window_end,
                 product_type=self.product_type,
-            ),
+            )
+        )
+
+    def run(self):
+        with self.output().temporary_path() as tmpd:
+            tmp_dir = Path(tmpd)
+            untar(Path(self.input().path), output_dir=tmp_dir)
+
+            Path(self.input().path).unlink()
+
+
+class UntarCfsrV1MonthlyFile(luigi.Task):
+    """Untar monthly CFSRv1 data, which is packaged in a yearly tar file."""
+
+    year = luigi.IntParameter()
+    product_type = luigi.EnumParameter(enum=CfsrGranuleProductType)
+
+    def __init__(self):
+        raise NotImplementedError()
+
+    # def requires(self):
+    #     return DownloadCfsrV1MonthlyTar(
+    #         month=self.month,
+    #         product_type=self.product_type,
+    #     )
+
+    # def output(self):
+    #     return luigi.LocalTarget(self.granule.untar_dir)
+
+    # def run(self):
+    #     with self.output().temporary_path() as tmpd:
+    #         tmp_dir = Path(tmpd)
+    #         untar(Path(self.input().path), output_dir=tmp_dir)
+
+    #         Path(self.input().path).unlink()
+
+
+class UntarCfsrV2MonthlyFile(luigi.Task):
+    """Untar a monthly CFSRv2 tar file.
+
+    All product types, including those we don't want, are inluded in v2 monthly tars.
+    """
+
+    month = luigi.MonthParameter()
+
+    def requires(self):
+        return DownloadCfsrV2MonthlyTar(month=self.month)
+
+    def output(self):
+        return luigi.LocalTarget(
+            untar_monthly_tar_dir(
+                month=YearMonth(self.month.year, self.month.month),
+            )
         )
 
     def run(self):
         with self.output().temporary_path() as tmpd:
             tmp_dir = Path(tmpd)
             tmp_dir.mkdir()
-            untar_cfsr_5day_tar(
-                Path(self.input().path),
-                output_dir=tmp_dir,
-            )
+            untar(Path(self.input().path), output_dir=tmp_dir)
 
             Path(self.input().path).unlink()

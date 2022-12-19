@@ -2,7 +2,9 @@ import datetime as dt
 
 import pytest
 
-from sipn_reanalysis_ingest.util.cfsr import _expected_forecast_suffixes_for_date
+from sipn_reanalysis_ingest.util.cfsr import (
+    _expected_6hourly_forecast_suffixes_for_date,
+)
 
 
 @pytest.mark.parametrize(
@@ -28,6 +30,6 @@ from sipn_reanalysis_ingest.util.cfsr import _expected_forecast_suffixes_for_dat
         ),
     ],
 )
-def test__expected_forecast_suffixes_for_date(date, expected):
-    actual = _expected_forecast_suffixes_for_date(date)
+def test__expected_6hourly_forecast_suffixes_for_date(date, expected):
+    actual = _expected_6hourly_forecast_suffixes_for_date(date)
     assert actual == expected
