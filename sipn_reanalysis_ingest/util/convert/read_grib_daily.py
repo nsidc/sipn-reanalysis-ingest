@@ -14,8 +14,8 @@ import xarray as xr
 import Nio
 import numpy as np
 import rioxarray
-import sipn_reanalysis_ingest.constants.variables as variables
-from sipn_reanalysis_ingest.util.convert.reorg_xarr import reorg_xarr
+import sipn_reanalysis_ingest.constants.variables_daily as variables
+import sipn_reanalysis_ingest.util.convert.reorg_xarr_daily as reorg_xarr
 
 def read_grib_daily(afiles,ffiles,date):
 
@@ -38,6 +38,7 @@ def read_grib_daily(afiles,ffiles,date):
         combine = 'nested',
         parallel = True, 
         engine='pynio')
+
 # Analysis files
     afiles=[indir+f for f in afiles]
     fna = xr.open_mfdataset(afiles,

@@ -13,7 +13,7 @@ Will return the final xarray dataset to write out to netcdf
 import xarray as xr
 import numpy as np
 
-def reorg_xarr(dsin):
+def reorg_xarr_daily(dsin):
 
 # Temperature
    t1=dsin.TMP_P0_L103_GLL0
