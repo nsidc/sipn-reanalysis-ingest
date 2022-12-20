@@ -41,6 +41,7 @@ if __name__ == '__main__':
     @click.group()
     def cli():
         """Test conversion funcs from CLI.
+
         e.g.:
             PYTHONPATH=. python sipn_reanalysis_ingest/util/convert.py
         """
