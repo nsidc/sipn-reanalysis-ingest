@@ -2,13 +2,12 @@ from pathlib import Path
 
 import click
 
-import sipn_reanalysis_ingest.constants.variables as variables
 from sipn_reanalysis_ingest.errors import CfsrInputDataError
 from sipn_reanalysis_ingest.util.log import logger
-from sipn_reanalysis_ingest.util.convert.read_grib import read_grib
+import sipn_reanalysis_ingest.util.convert.read_grib_daily as read_grib_daily 
+import sipn_reanalysis_ingest.util.convert.read_grib_monthly as read_grib_monthly 
 
-
-def convert_grib2s_to_nc(
+def convert_6hourly_grib2s_to_nc(
     *,
     analysis_inputs: list[Path],
     forecast_inputs: list[Path],
@@ -20,18 +19,41 @@ def convert_grib2s_to_nc(
             f' {analysis_inputs=}; {forecast_inputs=}'
         )
 
-    create_netcdf(date,lat_0,lon_0)
-    read_grib(variables.t,analysis_inputs,forecast_inputs)
+    with open(output_path, 'w') as f:
+        f.write('NetCDF data goes in here!\n')
+        f.write('\n')
 
-    array = ...
+        f.write('>> Analysis inputs:\n')
+        for analysis_input in analysis_inputs:
+            f.write(f'  * {analysis_input}\n')
 
-    read_grib(variables.v)
-    read_grib(variables.u)
-    read_grib(variables.sh)
-    read_grib(variables.rh)
-    read_grib(variables.hgt)
-    read_grib(variables.pwat)
-    read_grib(variables.slp)
+        f.write('>> Forecast inputs:\n')
+        for forecast_input in forecast_inputs:
+            f.write(f'  * {forecast_input}\n')
+
+    datet=analysis_inputs[0] 
+    date=datet[12:21]
+    read_grib_daily(analysis_inputs,forecast_inputs,date)
+
+    logger.info(f'Created {output_path}')
+    return output_path
+
+
+def convert_monthly_grib2s_to_nc(
+    *,
+    analysis_input: Path,
+    forecast_input: Path,
+    output_path: Path,
+) -> Path:
+    with open(output_path, 'w') as f:
+        f.write('NetCDF data goes in here!\n')
+        f.write('\n')
+        f.write(f'>> Analysis input: {analysis_input}\n')
+        f.write(f'>> Forecast input: {forecast_input}\n')
+
+    datet=analysis_input
+    date=datet[12:21]
+    read_grib_monthly(analysis_input,forecast_input,date)
 
     logger.info(f'Created {output_path}')
     return output_path
@@ -39,7 +61,15 @@ def convert_grib2s_to_nc(
 
 if __name__ == '__main__':
 
-    @click.command()
+    @click.group()
+    def cli():
+        """Test conversion funcs from CLI.
+        e.g.:
+            PYTHONPATH=. python sipn_reanalysis_ingest/util/convert.py
+        """
+        pass
+
+    @cli.command()
     @click.option(
         '-a',
         '--analysis-inputs',
@@ -64,17 +94,44 @@ if __name__ == '__main__':
         help='The path the output .nc file will be written to',
         required=True,
     )
-    def cli_test_convert(analysis_inputs, forecast_inputs, output_path):
-        """Test this module from CLI.
-
-        e.g.:
-
-            PYTHONPATH=. python sipn_reanalysis_ingest/util/convert/__init__.py
-        """
-        convert_grib2s_to_nc(
+    def six_hourly(analysis_inputs, forecast_inputs, output_path):
+        """Test 6-hourly convert function."""
+        convert_6hourly_grib2s_to_nc(
             analysis_inputs=analysis_inputs,
             forecast_inputs=forecast_inputs,
             output_path=output_path,
         )
 
-    cli_test_convert()
+    @cli.command()
+    @click.option(
+        '-a',
+        '--analysis-input',
+        type=click.Path(),
+        help='A monthly CFSR analysis input.',
+        required=True,
+    )
+    @click.option(
+        '-f',
+        '--forecast-input',
+        type=click.Path(),
+        help='A monthly CFSR forecast input.',
+        required=True,
+    )
+    @click.option(
+        '-o',
+        '--output',
+        'output_path',
+        type=click.Path(),
+        help='The path the output .nc file will be written to',
+        required=True,
+    )
+    def monthly(analysis_input, forecast_input, output_path):
+        """Test monthly convert function."""
+        convert_monthly_grib2s_to_nc(
+            analysis_input=analysis_input,
+            forecast_input=forecast_input,
+            output_path=output_path,
+        )
+
+    cli()
+
