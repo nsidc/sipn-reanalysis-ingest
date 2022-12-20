@@ -17,6 +17,7 @@ import rioxarray
 import xarray as xr
 
 import sipn_reanalysis_ingest.constants.variables_monthly as variables
+from sipn_reanalysis_ingest.constants.crs import PROJ_SRC, PROJ_DEST
 from sipn_reanalysis_ingest.util.convert.reorg_xarr_monthly import (
     reorg_xarr_monthly as reorg_xarr,
 )
@@ -50,12 +51,10 @@ def read_grib_monthly(afile, ffile, output_path: Path):
     fnsm = fnsm.isel(lat_0=slice(0, 101, 1), lv_ISBL0=[21, 30, 33])
 
     # Reproject to northern hemisphere polar stereographic
-    fnsm.rio.write_crs("epsg:4326", inplace=True)
+    fnsm.rio.write_crs(PROJ_SRC, inplace=True)
     fnsm.rio.set_spatial_dims(x_dim="lon_0", y_dim="lat_0", inplace=True)
     fnsm.rio.write_coordinate_system(inplace=True)
-    dataproj = fnsm.rio.reproject(
-        "+proj=stere +lat_0=90 +lat_ts=70 +lon_0=-45 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m"
-    )
+    dataproj = fnsm.rio.reproject(PROJ_DEST)
 
     # Call function to restructure dataset with proper variable names, array sizes, etc.
     dataout = reorg_xarr(dataproj)

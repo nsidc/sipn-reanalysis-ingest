@@ -18,6 +18,7 @@ import rioxarray
 import xarray as xr
 
 import sipn_reanalysis_ingest.constants.variables_daily as variables
+from sipn_reanalysis_ingest.constants.crs import PROJ_SRC, PROJ_DEST
 from sipn_reanalysis_ingest.util.convert.reorg_xarr_daily import (
     reorg_xarr_daily as reorg_xarr,
 )
@@ -69,12 +70,10 @@ def read_grib_daily(afiles, ffiles, output_path: Path):
     newfn = fnsm.mean(dim='t', keep_attrs=True)
 
     # Reproject to northern hemisphere polar stereographic
-    newfn.rio.write_crs("epsg:4326", inplace=True)
+    newfn.rio.write_crs(PROJ_SRC, inplace=True)
     newfn.rio.set_spatial_dims(x_dim="lon_0", y_dim="lat_0", inplace=True)
     newfn.rio.write_coordinate_system(inplace=True)
-    dataproj = newfn.rio.reproject(
-        "+proj=stere +lat_0=90 +lat_ts=70 +lon_0=-45 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m"
-    )
+    dataproj = newfn.rio.reproject(PROJ_DEST)
 
     # Call function to restructure dataset with proper variable names, array sizes, etc.
     dataout = reorg_xarr(dataproj)
