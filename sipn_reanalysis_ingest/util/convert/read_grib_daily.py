@@ -18,7 +18,7 @@ import rioxarray
 import xarray as xr
 
 import sipn_reanalysis_ingest.constants.variables_daily as variables
-from sipn_reanalysis_ingest.constants.crs import PROJ_SRC, PROJ_DEST
+from sipn_reanalysis_ingest.constants.crs import PROJ_DEST, PROJ_SRC
 from sipn_reanalysis_ingest.util.convert.reorg_xarr_daily import (
     reorg_xarr_daily as reorg_xarr,
 )
