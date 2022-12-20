@@ -4,6 +4,8 @@
 
 # Python ephemera
 __pycache__/
+*.pyc
+*.egg-info
 
 # Docker ephemera
 docker-compose.override.yml

@@ -1,68 +1,155 @@
 import datetime as dt
 
-from sipn_reanalysis_ingest._types import CfsrPeriod, CfsrProductType
-from sipn_reanalysis_ingest.constants.download import (
-    DOWNLOAD_FILE_NAME_TEMPLATES,
-    DOWNLOAD_FILE_URL_TEMPLATES,
-)
-from sipn_reanalysis_ingest.util.date import Cfsr5ishDayWindow
+from sipn_reanalysis_ingest._types import CfsrGranuleProductType
+from sipn_reanalysis_ingest.constants.cfsr import CFSR_DATASET_IDS, CFSR_VERSION_BY_DATE
+from sipn_reanalysis_ingest.constants.download import DOWNLOAD_FILE_ROOT_URL
+from sipn_reanalysis_ingest.util.date import Cfsr5ishDayWindow, YearMonth
 from sipn_reanalysis_ingest.util.misc import range_lookup
+from sipn_reanalysis_ingest.util.product_type import cfsr_product_type_prefix
 
 
-def cfsr_tar_url_template(
-    *,
-    window_start: dt.date,
-    periodicity: CfsrPeriod,
-) -> str:
-    templates_by_date_range = DOWNLOAD_FILE_URL_TEMPLATES[periodicity]
-    template = range_lookup(templates_by_date_range, window_start)
+def _cfsr_5day_tar_baseurl(*, window_start: dt.date) -> str:
+    """Calculate a 5-day tar base URL (i.e. URL excluding filename).
 
-    return template
+    E.g.:
+    * analysis v1: 'https://rda.ucar.edu/data/ds093.0/1982'
+    * forecast v1: 'https://rda.ucar.edu/data/ds093.0/1980'
+    * analysis v2: 'https://rda.ucar.edu/data/ds094.0/2011'
+    * forecast v2: 'https://rda.ucar.edu/data/ds094.0/2011'
+    """
+    cfsr_version = range_lookup(CFSR_VERSION_BY_DATE, window_start)
+    dataset_id = CFSR_DATASET_IDS[('five_daily', cfsr_version)]
+    baseurl = f'{DOWNLOAD_FILE_ROOT_URL}/{dataset_id}/{window_start.year}'
 
-
-def cfsr_tar_url(
-    *,
-    window_start: dt.date,
-    periodicity: CfsrPeriod,
-    filename: str,
-) -> str:
-    """Return the correct template for the given date and periodicity."""
-    template = cfsr_tar_url_template(
-        window_start=window_start,
-        periodicity=periodicity,
-    )
-
-    url = template.format(year=window_start.year, filename=filename)
-    return url
+    return baseurl
 
 
-def cfsr_tar_filename(
+def _cfsr_5day_tar_filename(
     *,
     window_start: dt.date,
     window_end: dt.date,
-    product_type: CfsrProductType,
+    product_type: CfsrGranuleProductType,
 ) -> str:
-    template = DOWNLOAD_FILE_NAME_TEMPLATES[product_type]['tar_filename_template']
+    """Calculate a CFSR 5-day tar filename.
 
-    filename = template.format(window_start=window_start, window_end=window_end)
+    E.g.:
+    * analysis: 'pgbhnl.gdas.19820616-19820620.tar'
+    * forecast: 'pgbh06.gdas.19800306-19800310.tar'
+    """
+    prefix = cfsr_product_type_prefix(product_type)
+    filename = f'{prefix}.{window_start:%Y%m%d}-{window_end:%Y%m%d}.tar'
     return filename
 
 
 def cfsr_5day_tar_url(
     *,
     window_start: dt.date,
-    product_type: CfsrProductType,
+    product_type: CfsrGranuleProductType,
 ) -> str:
+    """Generate a 5-day tar URL.
+
+    E.g.:
+    * analysis v1:
+        'https://rda.ucar.edu/data/ds093.0/1982/pgbhnl.gdas.19820616-19820620.tar'
+    * forecast v1:
+        'https://rda.ucar.edu/data/ds093.0/1980/pgbh06.gdas.19800306-19800310.tar'
+    * analysis v2:
+        'https://rda.ucar.edu/data/ds094.0/2011/pgbhnl.gdas.20110326-20110331.tar'
+    * forecast v2:
+        'https://rda.ucar.edu/data/ds094.0/2011/pgbh06.gdas.20110326-20110331.tar'
+    """
     window_end = Cfsr5ishDayWindow.calculate_window_end_from_start(window_start)
-    fn = cfsr_tar_filename(
+    fn = _cfsr_5day_tar_filename(
         window_start=window_start,
         window_end=window_end,
         product_type=product_type,
     )
 
-    url = cfsr_tar_url(
-        window_start=window_start,
-        filename=fn,
-        periodicity='five_daily',
+    baseurl = _cfsr_5day_tar_baseurl(window_start=window_start)
+    return f'{baseurl}/{fn}'
+
+
+def _cfsr_monthly_tar_baseurl(
+    *,
+    month: YearMonth,
+) -> str:
+    """Calculate a CFSR monthly tar baseurl.
+
+    e.g.: 'https://rda.ucar.edu/data/ds094.2/regular'
+    """
+    dataset_id = CFSR_DATASET_IDS[('monthly', 2)]
+    baseurl = f'{DOWNLOAD_FILE_ROOT_URL}/{dataset_id}/regular'
+    return baseurl
+
+
+def _cfsr_monthly_tar_filename(
+    *,
+    month: YearMonth,
+) -> str:
+    """Calculate a CFSR monthly tar filename.
+
+    e.g.: 'pgbh.gdas.201101.tar'
+    """
+    fn = f'pgbh.gdas.{month}.tar'
+    return fn
+
+
+def cfsr_monthly_tar_url(*, month: YearMonth) -> str:
+    """Calculate a monthly tar URL.
+
+    NOTE: only v2 product provides monthly data in monthly tars.
+
+    e.g. forecast and analysis data combined:
+        'https://rda.ucar.edu/data/ds094.2/regular/pgbh.gdas.201101.tar'
+    """
+    cfsr_version = range_lookup(
+        CFSR_VERSION_BY_DATE,
+        dt.date(month.year, month.month, 1),
     )
-    return url
+    if cfsr_version != 2:
+        raise RuntimeError(f'{month=} is not valid for CFSRv2')
+
+    baseurl = _cfsr_monthly_tar_baseurl(month=month)
+    fn = _cfsr_monthly_tar_filename(month=month)
+    return f'{baseurl}/{fn}'
+
+
+def _cfsr_yearly_tar_baseurl() -> str:
+    dataset_id = CFSR_DATASET_IDS[('monthly', 1)]
+    baseurl = f'{DOWNLOAD_FILE_ROOT_URL}/{dataset_id}/regular'
+    return baseurl
+
+
+def _cfsr_yearly_tar_filename(
+    *,
+    year: int,
+    product_type: CfsrGranuleProductType,
+) -> str:
+    prefix = cfsr_product_type_prefix(product_type)
+    fn = f'{prefix}.{year}.tar'
+    return fn
+
+
+def cfsr_yearly_tar_url(
+    *,
+    year: int,
+    product_type: CfsrGranuleProductType,
+) -> str:
+    """Calculate a yearly tar URL.
+
+    NOTE: only v1 product provides monthly data in yearly tars.
+
+    E.g.
+    * analysis: 'https://rda.ucar.edu/data/ds093.2/regular/pgbhnl.gdas.1979.tar'
+    * forecast: 'https://rda.ucar.edu/data/ds093.2/regular/pgbh06.gdas.1979.tar'
+    """
+    cfsr_version = range_lookup(
+        CFSR_VERSION_BY_DATE,
+        dt.date(year, 1, 1),
+    )
+    if cfsr_version != 1:
+        raise RuntimeError(f'{year=} is not valid for CFSRv1')
+
+    baseurl = _cfsr_yearly_tar_baseurl()
+    fn = _cfsr_yearly_tar_filename(year=year, product_type=product_type)
+    return f'{baseurl}/{fn}'

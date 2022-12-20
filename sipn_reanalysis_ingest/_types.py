@@ -6,7 +6,9 @@ from typing_extensions import TypedDict
 
 TemplateUrlByDateRange = dict[tuple[dt.date, dt.date], str]
 # WARNING: Must be kept in Sync with DownloadFileUrlTemplates TypedDict
-CfsrPeriod = Literal['five_daily', 'monthly']
+CfsrDatasetVersion = Literal[1, 2]
+CfsrDatasetId = Literal['ds093.0', 'ds094.0', 'ds093.2', 'ds094.2']
+CfsrPeriodicity = Literal['five_daily', 'monthly']
 
 
 class DownloadFileUrlTemplates(TypedDict):
@@ -14,7 +16,7 @@ class DownloadFileUrlTemplates(TypedDict):
     monthly: TemplateUrlByDateRange
 
 
-class CfsrProductType(enum.Enum):
+class CfsrGranuleProductType(enum.Enum):
     """Define product types of CFSR 5-day files we can download.
 
     Analysis data are measured or calculated values for a given point in time.
@@ -27,11 +29,3 @@ class CfsrProductType(enum.Enum):
 
     ANALYSIS = 'analysis'
     FORECAST = 'forecast'
-
-
-class Cfsr5DayDownload(TypedDict):
-    tar_filename_template: str
-    grib2_filename_template: str
-
-
-Cfsr5DayProductDownloadTypes = dict[CfsrProductType, Cfsr5DayDownload]

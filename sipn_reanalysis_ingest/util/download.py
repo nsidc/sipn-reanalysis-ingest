@@ -5,11 +5,16 @@ from pathlib import Path
 import requests
 from loguru import logger
 
-from sipn_reanalysis_ingest._types import CfsrProductType
-from sipn_reanalysis_ingest.constants.creds import RDA_PASSWORD, RDA_USER
+from sipn_reanalysis_ingest._types import CfsrGranuleProductType
+from sipn_reanalysis_ingest.constants.creds import RDA_PASSWORD, RDA_USERNAME
 from sipn_reanalysis_ingest.constants.download import DOWNLOAD_AUTH_URL
 from sipn_reanalysis_ingest.errors import CredentialsError, DownloadError
-from sipn_reanalysis_ingest.util.url import cfsr_5day_tar_url
+from sipn_reanalysis_ingest.util.date import YearMonth
+from sipn_reanalysis_ingest.util.url import (
+    cfsr_5day_tar_url,
+    cfsr_monthly_tar_url,
+    cfsr_yearly_tar_url,
+)
 
 
 @cache
@@ -21,8 +26,8 @@ def rda_auth_session() -> requests.Session:
     """
     session = requests.Session()
 
-    if not RDA_USER:
-        raise CredentialsError('$RDA_USER must be set.')
+    if not RDA_USERNAME:
+        raise CredentialsError('$RDA_USERNAME must be set.')
     if not RDA_PASSWORD:
         raise CredentialsError('$RDA_PASSWORD must be set.')
 
@@ -30,7 +35,7 @@ def rda_auth_session() -> requests.Session:
         DOWNLOAD_AUTH_URL,
         data={
             'action': 'login',
-            'email': RDA_USER,
+            'email': RDA_USERNAME,
             'passwd': RDA_PASSWORD,
         },
     )
@@ -38,23 +43,8 @@ def rda_auth_session() -> requests.Session:
     return session
 
 
-def download_cfsr_5day_tar(
-    *,
-    window_start: dt.date,
-    product_type: CfsrProductType,
-    output_fp: Path,
-) -> Path:
-    """Download a 5-day .tar file from RDA.
-
-    The end date is calculated from `window_start`; the last day of the month is used if
-    `window_start + 5` is in the next month.
-    """
+def download_tar(url: str, output_fp: Path) -> Path:
     session = rda_auth_session()
-    url = cfsr_5day_tar_url(
-        window_start=window_start,
-        product_type=product_type,
-    )
-
     response = session.get(url, stream=True)
 
     if not response.ok:
@@ -68,7 +58,6 @@ def download_cfsr_5day_tar(
         raise DownloadError(msg)
 
     logger.info(f'Downloading {url}...')
-    output_fp.parent.mkdir(parents=True, exist_ok=True)
     with open(output_fp, 'wb') as f:
         logger.debug(f'Downloading to {output_fp}')
         for chunk in response.iter_content(chunk_size=1024):
@@ -76,4 +65,50 @@ def download_cfsr_5day_tar(
                 f.write(chunk)
 
     logger.info(f'Downloaded {url} to {output_fp}')
+    return output_fp
+
+
+# TODO: The functions below this line are awfully repetetive. DRY
+def download_cfsr_5day_tar(
+    *,
+    window_start: dt.date,
+    product_type: CfsrGranuleProductType,
+    output_fp: Path,
+) -> Path:
+    """Download a 5-day .tar file from RDA.
+
+    The end date is calculated from `window_start`; the last day of the month is used if
+    `window_start + 5` is in the next month.
+    """
+    url = cfsr_5day_tar_url(
+        window_start=window_start,
+        product_type=product_type,
+    )
+    output_fp = download_tar(url, output_fp)
+
+    return output_fp
+
+
+def download_cfsr_monthly_tar(
+    *,
+    month: YearMonth,
+    output_fp: Path,
+) -> Path:
+    """Download a monthly .tar file from RDA (containing v2 monthly data)."""
+    url = cfsr_monthly_tar_url(month=month)
+    output_fp = download_tar(url, output_fp)
+
+    return output_fp
+
+
+def download_cfsr_yearly_tar(
+    *,
+    year: int,
+    product_type: CfsrGranuleProductType,
+    output_fp: Path,
+) -> Path:
+    """Download a yearly .tar file from RDA (containing v1 monthly data)."""
+    url = cfsr_yearly_tar_url(year=year, product_type=product_type)
+    output_fp = download_tar(url, output_fp)
+
     return output_fp

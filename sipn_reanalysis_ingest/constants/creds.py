@@ -1,4 +1,4 @@
 import os
 
-RDA_USER = os.environ['RDA_USER']
+RDA_USERNAME = os.environ['RDA_USERNAME']
 RDA_PASSWORD = os.environ['RDA_PASSWORD']

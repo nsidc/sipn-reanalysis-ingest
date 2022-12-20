@@ -13,20 +13,22 @@ Will return the final xarray dataset to write out to netcdf
 import xarray as xr
 import numpy as np
 
+# TODO: Can we combine the monthly and daily reorg functions into one? The only
+# difference is variable names.
 def reorg_xarr_daily(dsin):
 
-# Temperature
+   # Temperature
    t1=dsin.TMP_P0_L103_GLL0
    t2=dsin.TMP_P0_L100_GLL0
 
-# Get coords
+   # Get coords
    x=t1.coords['x']
    y=t1.coords['y']
    lev1=['500mb','850mb','925mb','2m']
    lev2=['500mb','850mb','925mb','10m']
    lev3=['500mb','850mb','925mb']
-   lev4=['sealv']
-   lev5=['atmscol']
+   lev4=['sealv']  # sealevel
+   lev5=['atmscol']  # total atmospheric column
 
 # Call function to create an array that combines the surface and upper level data 
 # a single array
@@ -98,8 +100,15 @@ def reorg_xarr_daily(dsin):
       coords={'x':x,'y':y,'lev1':lev1,'lev2':lev2,'lev3':lev3,'lev4':lev4,'lev5':lev5})
    return dataout
 
-# Function to combine surface and upper level variables into a single data array
 def make_new3d(t1,t2):
+   """Combine surface and upper level variables into a single data array.
+
+   Variables are combined by stacking the surface level 2d array "on top" of the upper
+   level 3d array.
+
+   * t1: 2d array representing surface level
+   * t2: 3d array representing pressure levels above surface
+   """
    t1n=t1.to_numpy()
    t2n=t2.to_numpy()
    t3n=np.empty((4,517,511))
