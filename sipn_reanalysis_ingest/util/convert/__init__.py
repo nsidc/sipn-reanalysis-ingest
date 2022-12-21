@@ -3,6 +3,8 @@ from pathlib import Path
 import click
 
 from sipn_reanalysis_ingest.errors import CfsrInputDataError
+from sipn_reanalysis_ingest.util.convert.read_grib_daily import read_grib_daily
+from sipn_reanalysis_ingest.util.convert.read_grib_monthly import read_grib_monthly
 from sipn_reanalysis_ingest.util.log import logger
 
 
@@ -18,18 +20,7 @@ def convert_6hourly_grib2s_to_nc(
             f' {analysis_inputs=}; {forecast_inputs=}'
         )
 
-    with open(output_path, 'w') as f:
-        f.write('NetCDF data goes in here!\n')
-        f.write('\n')
-
-        f.write('>> Analysis inputs:\n')
-        for analysis_input in analysis_inputs:
-            f.write(f'  * {analysis_input}\n')
-
-        f.write('>> Forecast inputs:\n')
-        for forecast_input in forecast_inputs:
-            f.write(f'  * {forecast_input}\n')
-
+    read_grib_daily(analysis_inputs, forecast_inputs, output_path)
     logger.info(f'Created {output_path}')
     return output_path
 
@@ -40,12 +31,7 @@ def convert_monthly_grib2s_to_nc(
     forecast_input: Path,
     output_path: Path,
 ) -> Path:
-    with open(output_path, 'w') as f:
-        f.write('NetCDF data goes in here!\n')
-        f.write('\n')
-        f.write(f'>> Analysis input: {analysis_input}\n')
-        f.write(f'>> Forecast input: {forecast_input}\n')
-
+    read_grib_monthly(analysis_input, forecast_input, output_path)
     logger.info(f'Created {output_path}')
     return output_path
 
@@ -57,7 +43,6 @@ if __name__ == '__main__':
         """Test conversion funcs from CLI.
 
         e.g.:
-
             PYTHONPATH=. python sipn_reanalysis_ingest/util/convert.py
         """
         pass

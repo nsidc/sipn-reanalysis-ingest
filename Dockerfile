@@ -13,7 +13,7 @@ RUN usermod "--login=${NEW_MAMBA_USER}" "--home=/home/${NEW_MAMBA_USER}" \
     --move-home "-u ${NEW_MAMBA_USER_ID}" "${MAMBA_USER}" \
     || ( \
       echo ""; \
-      echo ">>> ERROR: Are you doing a development build? If so, run \`./scripts/build_dev.sh\`!"; \
+      echo ">>> ERROR: Are you doing a development build? If so, run \`./scripts/dev/build.sh\`!"; \
       echo ""; \
       exit 1; \
     ) \

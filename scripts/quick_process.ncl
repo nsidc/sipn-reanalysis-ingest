@@ -34,13 +34,10 @@ fileattdef(fout,fAtt)
 
 
 ; Attributes for variables 
-dimNames=(/"lat_0","lon_0","level"/)
-dimSizes=(/61,720,5/)
-dimUnlim=(/False,False,False/)
+dimNames=(/"lat_0","lon_0","level3","level4","levell"/)
+dimSizes=(/61,720,3,4,5/)
+dimUnlim=(/False,False,False,False,False/)
 filedimdef(fout,dimNames,dimSizes,dimUnlim)
-
-
-
 
 ; Loop through variables to extract
 do v=0,6
@@ -61,10 +58,12 @@ do v=0,6
          tvar4d(:,:,2,h)=varnl(30,0:60,:)
          tvar4d(:,:,3,h)=varnl(21,0:60,:)
 ; Write out lat/lon/levels to output file
-         if(v.eq.0) then
+         if(v.eq.0.and.h.eq.0) then
 ; Latitude
             lat_0=fnnl->lat_0
             lat_0new=lat_0(0:60)
+            delete_VarAtts(lat_0new,-1)
+            lat_0new!0="lat_0"
             lat_0new@units = "degrees_north"
             lat_0new@long_name = "latitude"
             filevardef(fout,"lat_0",typeof(lat_0new),getvardims(lat_0new))
@@ -78,11 +77,12 @@ do v=0,6
             lon_0@units="degrees_east"
             fout->lon_0 = lon_0
 ; Levels
-            levels=(/925,850,500,2,10/)
-            levels!0="level"
-            filevardef(fout,"levels",typeof(levels),"level")
+            levels=(/925,850,500,10,2/)
+            levels!0="levell"
+            levels@units = (/"mb","mb","mb","m","m"/)
+            filevardef(fout,"levels",typeof(levels),"levell")
             filevarattdef(fout,"levels",levels)
-            fout->levels = levels
+            fout->levels = (/levels/)
          end if
       else if (v.eq.5) then ; Grab one from the pgbhnl and one variable from pgbh06
          if(h.eq.0) then
@@ -122,7 +122,7 @@ do v=0,6
       delete_VarAtts(varout3d,(/"center","production_status","parameter_discipline_and_category","parameter_template_discipline_category_number","level_type","forecast_time","forecast_time_units","initial_time"/))
       varout3d!0="lat_0"
       varout3d!1="lon_0"
-      varout3d!2="level"
+      varout3d!2="level4"
       varout3d@date = "19790102"
       varout3d@levels = "10m,925mb,850mb,500mb"
       filevardef(fout,nlnames(v),typeof(varout3d),getvardims(varout3d))
@@ -140,7 +140,7 @@ do v=0,6
       delete_VarAtts(varout3d,(/"center","production_status","parameter_discipline_and_category","parameter_template_discipline_category_number","level_type","forecast_time","forecast_time_units","initial_time"/))
       varout3d!0="lat_0"
       varout3d!1="lon_0"
-      varout3d!2="level"
+      varout3d!2="level4"
       varout3d@date = "19790102"
       varout3d@levels = "2m,925mb,850mb,500mb"
       filevardef(fout,nlnames(v),typeof(varout3d),getvardims(varout3d))
@@ -158,7 +158,7 @@ do v=0,6
       delete_VarAtts(varout3d,(/"center","production_status","parameter_discipline_and_category","parameter_template_discipline_category_number","level_type","forecast_time","forecast_time_units","initial_time"/))
       varout3d!0="lat_0"
       varout3d!1="lon_0"
-      varout3d!2="level"
+      varout3d!2="level3"
       varout3d@date = "19790102"
       varout3d@levels = "925mb,850mb,500mb"
       filevardef(fout,nlnames(v),typeof(varout3d),getvardims(varout3d))
