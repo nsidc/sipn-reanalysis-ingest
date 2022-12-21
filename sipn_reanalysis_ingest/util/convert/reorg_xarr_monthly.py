@@ -14,7 +14,7 @@ import numpy as np
 import xarray as xr
 
 
-def reorg_xarr_monthly(dsin: xr.Dataset):
+def reorg_xarr_monthly(dsin: xr.Dataset) -> xr.Dataset:
 
     # Temperature
     t1 = dsin.TMP_P8_L103_GLL0
@@ -149,7 +149,7 @@ def reorg_xarr_monthly(dsin: xr.Dataset):
 
 
 # Function to combine surface and upper level variables into a single data array
-def make_new3d(t1, t2):
+def make_new3d(t1: xr.DataArray, t2: xr.DataArray) -> np.ndarray:
     t1n = t1.to_numpy()
     t2n = t2.to_numpy()
     t3n = np.empty((4, 517, 511))

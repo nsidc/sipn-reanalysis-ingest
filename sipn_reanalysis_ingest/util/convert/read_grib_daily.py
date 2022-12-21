@@ -28,7 +28,7 @@ def read_grib_daily(
     afiles: list[Path],
     ffiles: list[Path],
     output_path: Path,
-):
+) -> None:
 
     # Parse through variables to extract variable names
     vs = [v for v in dir(variables) if not v.startswith('__')]

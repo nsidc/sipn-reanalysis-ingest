@@ -16,7 +16,7 @@ import xarray as xr
 
 # TODO: Can we combine the monthly and daily reorg functions into one? The only
 # difference is variable names.
-def reorg_xarr_daily(dsin: xr.Dataset):
+def reorg_xarr_daily(dsin: xr.Dataset) -> xr.Dataset:
 
     # Temperature
     t1 = dsin.TMP_P0_L103_GLL0
@@ -150,7 +150,7 @@ def reorg_xarr_daily(dsin: xr.Dataset):
     return dataout
 
 
-def make_new3d(t1, t2):
+def make_new3d(t1: xr.DataArray, t2: xr.DataArray) -> np.ndarray:
     """Combine surface and upper level variables into a single data array.
 
     Variables are combined by stacking the surface level 2d array "on top" of the upper
