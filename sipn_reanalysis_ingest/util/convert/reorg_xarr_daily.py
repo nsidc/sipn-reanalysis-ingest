@@ -16,7 +16,7 @@ import xarray as xr
 
 # TODO: Can we combine the monthly and daily reorg functions into one? The only
 # difference is variable names.
-def reorg_xarr_daily(dsin):
+def reorg_xarr_daily(dsin: xr.Dataset):
 
     # Temperature
     t1 = dsin.TMP_P0_L103_GLL0

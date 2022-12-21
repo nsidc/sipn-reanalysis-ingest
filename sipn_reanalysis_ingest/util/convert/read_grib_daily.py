@@ -24,7 +24,11 @@ from sipn_reanalysis_ingest.util.convert.reorg_xarr_daily import (
 )
 
 
-def read_grib_daily(afiles, ffiles, output_path: Path):
+def read_grib_daily(
+    afiles: list[Path],
+    ffiles: list[Path],
+    output_path: Path,
+):
 
     # Parse through variables to extract variable names
     vs = [v for v in dir(variables) if not v.startswith('__')]

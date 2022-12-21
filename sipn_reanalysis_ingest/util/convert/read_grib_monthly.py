@@ -23,7 +23,7 @@ from sipn_reanalysis_ingest.util.convert.reorg_xarr_monthly import (
 )
 
 
-def read_grib_monthly(afile, ffile, output_path: Path):
+def read_grib_monthly(afile: Path, ffile: Path, output_path: Path):
 
     # Parse through variables to extract variable names
     vs = [v for v in dir(variables) if not v.startswith('__')]

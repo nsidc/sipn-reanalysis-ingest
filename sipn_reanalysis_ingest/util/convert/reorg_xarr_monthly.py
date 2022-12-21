@@ -14,7 +14,7 @@ import numpy as np
 import xarray as xr
 
 
-def reorg_xarr_monthly(dsin):
+def reorg_xarr_monthly(dsin: xr.Dataset):
 
     # Temperature
     t1 = dsin.TMP_P8_L103_GLL0
