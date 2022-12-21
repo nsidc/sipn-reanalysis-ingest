@@ -3,9 +3,10 @@ from pathlib import Path
 import click
 
 from sipn_reanalysis_ingest.errors import CfsrInputDataError
-from sipn_reanalysis_ingest.util.log import logger
 from sipn_reanalysis_ingest.util.convert.read_grib_daily import read_grib_daily
 from sipn_reanalysis_ingest.util.convert.read_grib_monthly import read_grib_monthly
+from sipn_reanalysis_ingest.util.log import logger
+
 
 def convert_6hourly_grib2s_to_nc(
     *,
@@ -19,7 +20,7 @@ def convert_6hourly_grib2s_to_nc(
             f' {analysis_inputs=}; {forecast_inputs=}'
         )
 
-    read_grib_daily(analysis_inputs,forecast_inputs,output_path)
+    read_grib_daily(analysis_inputs, forecast_inputs, output_path)
     logger.info(f'Created {output_path}')
     return output_path
 
@@ -30,7 +31,7 @@ def convert_monthly_grib2s_to_nc(
     forecast_input: Path,
     output_path: Path,
 ) -> Path:
-    read_grib_monthly(analysis_input,forecast_input,output_path)
+    read_grib_monthly(analysis_input, forecast_input, output_path)
     logger.info(f'Created {output_path}')
     return output_path
 
@@ -40,6 +41,7 @@ if __name__ == '__main__':
     @click.group()
     def cli():
         """Test conversion funcs from CLI.
+
         e.g.:
             PYTHONPATH=. python sipn_reanalysis_ingest/util/convert.py
         """
