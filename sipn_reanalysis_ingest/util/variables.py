@@ -77,7 +77,7 @@ def get_variables_map(periodicity: Literal['daily', 'monthly']) -> Variables:
             '500mb': f'HGT_{infix}_L100_GLL0',
         },
         'pwat': {'atmscol': f'PWAT_{infix}_L200_GLL0'},
-        'mslp': {'sl': f'PRMSL_{infix}_L101_GLL0'},
+        'mslp': {'sealv': f'PRMSL_{infix}_L101_GLL0'},
     }
 
 
