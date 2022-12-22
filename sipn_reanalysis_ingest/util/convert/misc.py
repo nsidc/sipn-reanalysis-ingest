@@ -1,9 +1,9 @@
-from types import ModuleType
-
 import numpy as np
 import xarray as xr
 
+from sipn_reanalysis_ingest._types import CfsrPeriodicity
 from sipn_reanalysis_ingest.constants.crs import PROJ_DEST, PROJ_SRC
+from sipn_reanalysis_ingest.util.variables import get_all_grib_variables
 
 
 def make_new3d(t1: xr.DataArray, t2: xr.DataArray) -> np.ndarray:
@@ -23,28 +23,13 @@ def make_new3d(t1: xr.DataArray, t2: xr.DataArray) -> np.ndarray:
     return t3n
 
 
-def get_variable_names(variables: ModuleType) -> list['str']:
-    """Parse through a variables module to extract variable names."""
-    vs = [v for v in dir(variables) if not v.startswith('__')]
-    si = []
-    for z in vs:
-        si.append(list(getattr(variables, z).values()))
-
-    vari = []
-    for i in si:
-        for x in i:
-            if x not in vari:
-                vari.append(x)
-
-    return vari
-
-
 def select_dataset_variables(
     dataset: xr.Dataset,
     *,
-    variables: list[str],
+    periodicity: CfsrPeriodicity,
 ) -> xr.Dataset:
     """Keep only specified dataset variables."""
+    variables = get_all_grib_variables(periodicity)
     totvar = list(dataset)
     rmvars = [x for x in totvar if x not in variables]
 

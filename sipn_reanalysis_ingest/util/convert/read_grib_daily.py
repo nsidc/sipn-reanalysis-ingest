@@ -11,9 +11,7 @@ from pathlib import Path
 import rioxarray  # noqa: F401; Activate xarray extension
 import xarray as xr
 
-import sipn_reanalysis_ingest.constants.variables_daily as variables
 from sipn_reanalysis_ingest.util.convert.misc import (
-    get_variable_names,
     reproject_dataset_to_polarstereo_north,
     select_dataset_variables,
     subset_latitude_and_levels,
@@ -29,8 +27,6 @@ def read_grib_daily(
     ffiles: list[Path],
     output_path: Path,
 ) -> None:
-    vari = get_variable_names(variables)
-
     # Forecast files
     fnf = xr.open_mfdataset(
         ffiles,
@@ -53,7 +49,7 @@ def read_grib_daily(
     # names)
     fn = fna.merge(fnf, compat='override')
 
-    fnsm = select_dataset_variables(fn, variables=vari)
+    fnsm = select_dataset_variables(fn, periodicity='daily')
     fnsm = subset_latitude_and_levels(fnsm)
     newfn = fnsm.mean(dim='t', keep_attrs=True)
     dataproj = reproject_dataset_to_polarstereo_north(newfn)

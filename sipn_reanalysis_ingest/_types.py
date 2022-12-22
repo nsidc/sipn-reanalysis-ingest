@@ -2,18 +2,10 @@ import datetime as dt
 import enum
 from typing import Literal
 
-from typing_extensions import TypedDict
-
 TemplateUrlByDateRange = dict[tuple[dt.date, dt.date], str]
-# WARNING: Must be kept in Sync with DownloadFileUrlTemplates TypedDict
 CfsrDatasetVersion = Literal[1, 2]
 CfsrDatasetId = Literal['ds093.0', 'ds094.0', 'ds093.2', 'ds094.2']
-CfsrPeriodicity = Literal['five_daily', 'monthly']
-
-
-class DownloadFileUrlTemplates(TypedDict):
-    five_daily: TemplateUrlByDateRange
-    monthly: TemplateUrlByDateRange
+CfsrPeriodicity = Literal['daily', 'monthly']
 
 
 class CfsrGranuleProductType(enum.Enum):

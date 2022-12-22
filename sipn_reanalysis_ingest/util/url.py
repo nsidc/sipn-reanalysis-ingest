@@ -18,7 +18,7 @@ def _cfsr_5day_tar_baseurl(*, window_start: dt.date) -> str:
     * forecast v2: 'https://rda.ucar.edu/data/ds094.0/2011'
     """
     cfsr_version = range_lookup(CFSR_VERSION_BY_DATE, window_start)
-    dataset_id = CFSR_DATASET_IDS[('five_daily', cfsr_version)]
+    dataset_id = CFSR_DATASET_IDS[('daily', cfsr_version)]
     baseurl = f'{DOWNLOAD_FILE_ROOT_URL}/{dataset_id}/{window_start.year}'
 
     return baseurl
