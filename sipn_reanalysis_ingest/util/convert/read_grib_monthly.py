@@ -7,7 +7,7 @@ Will return an array of daily data for eventual output to a single netcdf file
 """
 from pathlib import Path
 
-import rioxarray
+import rioxarray  # noqa: F401; Activate xarray extension
 import xarray as xr
 
 import sipn_reanalysis_ingest.constants.variables_monthly as variables
