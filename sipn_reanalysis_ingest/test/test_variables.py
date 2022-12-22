@@ -16,5 +16,5 @@ from sipn_reanalysis_ingest.util.variables import get_all_grib_variables
 )
 def test_get_all_grib_variables(periodicity):
     actual = get_all_grib_variables(periodicity)
-    assert len(actual) == 25
+    assert len(actual) == 13
     assert all(a.endswith('GLL0') for a in actual)

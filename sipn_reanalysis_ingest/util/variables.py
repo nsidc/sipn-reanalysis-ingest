@@ -91,4 +91,4 @@ def get_all_grib_variables(periodicity: CfsrPeriodicity) -> list[str]:
         for grib_varname in level_mapping.values():
             grib_vars.append(grib_varname)
 
-    return grib_vars
+    return list(set(grib_vars))
