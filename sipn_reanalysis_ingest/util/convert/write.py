@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import xarray as xr
 
 
@@ -7,9 +9,9 @@ def write_dataset(dataset: xr.Dataset, *, output_path: Path) -> None:
         "zlib": True,
         "complevel": 5,
     }
-    encoding = {var: comp for var in dataout.data_vars}
+    encoding = {var: comp for var in dataset.data_vars}
 
-    dataout.to_netcdf(
+    dataset.to_netcdf(
         output_path,
         mode="w",
         format="NETCDF4",
