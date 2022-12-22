@@ -91,4 +91,5 @@ def get_all_grib_variables(periodicity: CfsrPeriodicity) -> list[str]:
         for grib_varname in level_mapping.values():
             grib_vars.append(grib_varname)
 
+    # Remove duplicates (e.g. pressure level variables are the same)
     return list(set(grib_vars))
