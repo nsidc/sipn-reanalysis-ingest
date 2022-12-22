@@ -20,21 +20,11 @@ def normalize_cfsr_varnames(
     # Get coords
     x = t1.coords['x']
     y = t1.coords['y']
-    lev1 = reversed(varmap['t'].keys())
-    lev1b = ['500mb', '850mb', '925mb', '2m']
-    assert lev1 == lev1b
-    lev2 = reversed(varmap['u'].keys())
-    lev2b = ['500mb', '850mb', '925mb', '10m']
-    assert lev2 == lev2b
-    lev3 = reversed(varmap['hgt'].keys())
-    lev3b = ['500mb', '850mb', '925mb']
-    assert lev3 == lev3b
+    lev1 = list(reversed(varmap['t'].keys()))
+    lev2 = list(reversed(varmap['u'].keys()))
+    lev3 = list(reversed(varmap['hgt'].keys()))
     lev4 = list(varmap['mslp'].keys())
-    lev4b = ['sealv']  # sealevel
-    assert lev4 == lev4b
     lev5 = list(varmap['pwat'].keys())
-    lev5b = ['atmscol']  # total atmospheric column
-    assert lev5 == lev5b
 
     # Call function to create an array that combines the surface and upper level data
     # a single array
