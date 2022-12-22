@@ -7,8 +7,6 @@ Will return an array of daily data for eventual output to a single netcdf file
 """
 from pathlib import Path
 
-import Nio
-import numpy as np
 import rioxarray
 import xarray as xr
 
@@ -42,7 +40,7 @@ def read_grib_monthly(afile: Path, ffile: Path, output_path: Path) -> None:
     fn = fna.merge(fnf, compat='override')
 
     # Remove variables that we do not need
-    totvar = [i for i in fn]
+    totvar = list(fn)
     rmvars = [x for x in totvar if x not in vari]
     fnsm = fn.drop_vars(rmvars)
 
