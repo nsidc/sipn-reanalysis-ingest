@@ -48,3 +48,9 @@ def select_dataset_variables(
 
     filtered = dataset.drop_vars(rmvars)
     return filtered
+
+
+def subset_latitude_and_levels(dataset: xr.Dataset) -> xr.Dataset:
+    """Extract data to 40N and only grab levels at 925, 850, and 500mb."""
+    subset = dataset.isel(lat_0=slice(0, 101, 1), lv_ISBL0=[21, 30, 33])
+    return subset
