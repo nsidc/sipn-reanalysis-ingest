@@ -3,6 +3,8 @@ from types import ModuleType
 import numpy as np
 import xarray as xr
 
+from sipn_reanalysis_ingest.constants.crs import PROJ_DEST, PROJ_SRC
+
 
 def make_new3d(t1: xr.DataArray, t2: xr.DataArray) -> np.ndarray:
     """Combine surface and upper level variables into a single data array.
@@ -54,3 +56,12 @@ def subset_latitude_and_levels(dataset: xr.Dataset) -> xr.Dataset:
     """Extract data to 40N and only grab levels at 925, 850, and 500mb."""
     subset = dataset.isel(lat_0=slice(0, 101, 1), lv_ISBL0=[21, 30, 33])
     return subset
+
+
+def reproject_dataset_to_polarstereo_north(dataset: xr.Dataset) -> xr.Dataset:
+    dataset.rio.write_crs(PROJ_SRC, inplace=True)
+    dataset.rio.set_spatial_dims(x_dim="lon_0", y_dim="lat_0", inplace=True)
+    dataset.rio.write_coordinate_system(inplace=True)
+    reprojected = dataset.rio.reproject(PROJ_DEST)
+
+    return reprojected

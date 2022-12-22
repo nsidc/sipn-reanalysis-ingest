@@ -12,9 +12,9 @@ import rioxarray  # noqa: F401; Activate xarray extension
 import xarray as xr
 
 import sipn_reanalysis_ingest.constants.variables_daily as variables
-from sipn_reanalysis_ingest.constants.crs import PROJ_DEST, PROJ_SRC
 from sipn_reanalysis_ingest.util.convert.misc import (
     get_variable_names,
+    reproject_dataset_to_polarstereo_north,
     select_dataset_variables,
     subset_latitude_and_levels,
 )
@@ -54,17 +54,9 @@ def read_grib_daily(
     fn = fna.merge(fnf, compat='override')
 
     fnsm = select_dataset_variables(fn, variables=vari)
-
     fnsm = subset_latitude_and_levels(fnsm)
-
-    # Calculate daily mean
     newfn = fnsm.mean(dim='t', keep_attrs=True)
-
-    # Reproject to northern hemisphere polar stereographic
-    newfn.rio.write_crs(PROJ_SRC, inplace=True)
-    newfn.rio.set_spatial_dims(x_dim="lon_0", y_dim="lat_0", inplace=True)
-    newfn.rio.write_coordinate_system(inplace=True)
-    dataproj = newfn.rio.reproject(PROJ_DEST)
+    dataproj = reproject_dataset_to_polarstereo_north(newfn)
 
     # Call function to restructure dataset with proper variable names, array sizes, etc.
     dataout = reorg_xarr(dataproj)

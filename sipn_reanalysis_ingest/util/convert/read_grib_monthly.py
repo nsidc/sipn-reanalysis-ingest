@@ -11,9 +11,9 @@ import rioxarray  # noqa: F401; Activate xarray extension
 import xarray as xr
 
 import sipn_reanalysis_ingest.constants.variables_monthly as variables
-from sipn_reanalysis_ingest.constants.crs import PROJ_DEST, PROJ_SRC
 from sipn_reanalysis_ingest.util.convert.misc import (
     get_variable_names,
+    reproject_dataset_to_polarstereo_north,
     select_dataset_variables,
     subset_latitude_and_levels,
 )
@@ -34,14 +34,8 @@ def read_grib_monthly(afile: Path, ffile: Path, output_path: Path) -> None:
     fn = fna.merge(fnf, compat='override')
 
     fnsm = select_dataset_variables(fn, variables=vari)
-
     fnsm = subset_latitude_and_levels(fnsm)
-
-    # Reproject to northern hemisphere polar stereographic
-    fnsm.rio.write_crs(PROJ_SRC, inplace=True)
-    fnsm.rio.set_spatial_dims(x_dim="lon_0", y_dim="lat_0", inplace=True)
-    fnsm.rio.write_coordinate_system(inplace=True)
-    dataproj = fnsm.rio.reproject(PROJ_DEST)
+    dataproj = reproject_dataset_to_polarstereo_north(fnsm)
 
     # Call function to restructure dataset with proper variable names, array sizes, etc.
     dataout = reorg_xarr(dataproj)
