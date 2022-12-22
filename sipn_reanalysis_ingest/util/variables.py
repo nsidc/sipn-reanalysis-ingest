@@ -30,10 +30,11 @@ class Variables(TypedDict):
     v: LevelsToGribVariables10m
     hgt: LevelsToGribVariablesPressureOnly
     pwat: AtmosColToGribVariable
-    slp: SeaLevelToGribVariable
+    mslp: SeaLevelToGribVariable
 
 
 def get_variables_map(periodicity: Literal['daily', 'monthly']) -> Variables:
+    """Get mapping of new varnames to old varnames by level."""
     if periodicity == 'daily':
         infix = 'P0'
     elif periodicity == 'monthly':
@@ -76,11 +77,12 @@ def get_variables_map(periodicity: Literal['daily', 'monthly']) -> Variables:
             '500mb': f'HGT_{infix}_L100_GLL0',
         },
         'pwat': {'atmscol': f'PWAT_{infix}_L200_GLL0'},
-        'slp': {'sl': f'PRMSL_{infix}_L101_GLL0'},
+        'mslp': {'sl': f'PRMSL_{infix}_L101_GLL0'},
     }
 
 
 def get_all_grib_variables(periodicity: CfsrPeriodicity) -> list[str]:
+    """Get a list of GRIB2 variables we want for given periodicity."""
     # NOTE: Conversions to dict are to satisfy type checker:
     #       https://github.com/python/mypy/issues/6082
     varmap = cast(dict, get_variables_map(periodicity))
@@ -93,3 +95,20 @@ def get_all_grib_variables(periodicity: CfsrPeriodicity) -> list[str]:
 
     # Remove duplicates (e.g. pressure level variables are the same)
     return list(set(grib_vars))
+
+
+def var_rename_mapping(periodicity: CfsrPeriodicity) -> dict[str, str]:
+    """Generate mapping of some GRIB2 varnames to new varnames.
+
+    Does not map variable names with level-dependent GRIB2 varnames.
+    """
+    varmap = get_variables_map(periodicity)
+    # Work around mypy limitation (TypedDict expects a Literal, not str, as key)
+    remap_keys: list[Literal['hgt', 'pwat', 'mslp']] = ['hgt', 'pwat', 'mslp']
+
+    # Naively grab the first value from the list, as we know for these variables there
+    # is only one corresponding GRIB2 variable.
+    # Workaround a mypy limitation"
+    #     https://github.com/python/mypy/issues/7339
+    mapping = {cast(str, list(varmap[k].values())[0]): k.upper() for k in remap_keys}
+    return mapping

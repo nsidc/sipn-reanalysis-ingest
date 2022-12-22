@@ -6,6 +6,7 @@ author: @ecassano
 Will return an array of daily data for eventual output to a single netcdf file
 """
 from pathlib import Path
+from typing import Final
 
 import rioxarray  # noqa: F401; Activate xarray extension
 import xarray as xr
@@ -15,9 +16,7 @@ from sipn_reanalysis_ingest.util.convert.misc import (
     select_dataset_variables,
     subset_latitude_and_levels,
 )
-from sipn_reanalysis_ingest.util.convert.reorg_xarr_monthly import (
-    reorg_xarr_monthly as reorg_xarr,
-)
+from sipn_reanalysis_ingest.util.convert.normalize import normalize_cfsr_varnames
 from sipn_reanalysis_ingest.util.convert.write import write_dataset
 
 
@@ -29,12 +28,11 @@ def read_grib_monthly(afile: Path, ffile: Path, output_path: Path) -> None:
     # Merge these into a single dataset
     fn = fna.merge(fnf, compat='override')
 
-    fnsm = select_dataset_variables(fn, periodicity='monthly')
+    periodicity: Final = 'monthly'
+    fnsm = select_dataset_variables(fn, periodicity=periodicity)
     fnsm = subset_latitude_and_levels(fnsm)
     dataproj = reproject_dataset_to_polarstereo_north(fnsm)
-
-    # Call function to restructure dataset with proper variable names, array sizes, etc.
-    dataout = reorg_xarr(dataproj)
+    dataout = normalize_cfsr_varnames(dataproj, periodicity=periodicity)
 
     write_dataset(dataout, output_path=output_path)
     return
