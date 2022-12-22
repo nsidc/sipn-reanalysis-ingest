@@ -35,7 +35,9 @@ def read_grib_daily(
 
     vari = []
     for i in si:
-        [vari.append(x) for x in i if x not in vari]
+        for x in i:
+            if x not in vari:
+                vari.append(x)
 
     # Forecast files
     fnf = xr.open_mfdataset(

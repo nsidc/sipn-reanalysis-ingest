@@ -30,7 +30,9 @@ def read_grib_monthly(afile: Path, ffile: Path, output_path: Path) -> None:
 
     vari = []
     for i in si:
-        [vari.append(x) for x in i if x not in vari]
+        for x in i:
+            if x not in vari:
+                vari.append(x)
 
     # Open analysis and forecast monthly file
     fnf = xr.open_dataset(ffile, engine='pynio')
