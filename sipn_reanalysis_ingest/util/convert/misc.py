@@ -35,3 +35,16 @@ def get_variable_names(variables: ModuleType) -> list['str']:
                 vari.append(x)
 
     return vari
+
+
+def select_dataset_variables(
+    dataset: xr.Dataset,
+    *,
+    variables: list[str],
+) -> xr.Dataset:
+    """Keep only specified dataset variables."""
+    totvar = list(dataset)
+    rmvars = [x for x in totvar if x not in variables]
+
+    filtered = dataset.drop_vars(rmvars)
+    return filtered

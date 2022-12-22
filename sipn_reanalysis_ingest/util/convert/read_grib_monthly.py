@@ -12,7 +12,10 @@ import xarray as xr
 
 import sipn_reanalysis_ingest.constants.variables_monthly as variables
 from sipn_reanalysis_ingest.constants.crs import PROJ_DEST, PROJ_SRC
-from sipn_reanalysis_ingest.util.convert.misc import get_variable_names
+from sipn_reanalysis_ingest.util.convert.misc import (
+    get_variable_names,
+    select_dataset_variables,
+)
 from sipn_reanalysis_ingest.util.convert.reorg_xarr_monthly import (
     reorg_xarr_monthly as reorg_xarr,
 )
@@ -29,10 +32,7 @@ def read_grib_monthly(afile: Path, ffile: Path, output_path: Path) -> None:
     # Merge these into a single dataset
     fn = fna.merge(fnf, compat='override')
 
-    # Remove variables that we do not need
-    totvar = list(fn)
-    rmvars = [x for x in totvar if x not in vari]
-    fnsm = fn.drop_vars(rmvars)
+    fnsm = select_dataset_variables(fn, variables=vari)
 
     # Extract data to 40N and only grab levels at 925, 850, and 500mb.
     fnsm = fnsm.isel(lat_0=slice(0, 101, 1), lv_ISBL0=[21, 30, 33])
