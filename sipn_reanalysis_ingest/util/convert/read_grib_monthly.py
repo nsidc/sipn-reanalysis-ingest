@@ -1,7 +1,3 @@
-# DELETEME: down to and including "noqa" line.
-# Skip static analysis on this file, it's a WIP.
-# mypy: ignore-errors
-# flake8: noqa
 """Functions to read in the grib data.
 
 Begin: 11/7/22
@@ -21,6 +17,7 @@ from sipn_reanalysis_ingest.constants.crs import PROJ_DEST, PROJ_SRC
 from sipn_reanalysis_ingest.util.convert.reorg_xarr_monthly import (
     reorg_xarr_monthly as reorg_xarr,
 )
+from sipn_reanalysis_ingest.util.convert.write import write_dataset
 
 
 def read_grib_monthly(afile: Path, ffile: Path, output_path: Path) -> None:
@@ -59,14 +56,5 @@ def read_grib_monthly(afile: Path, ffile: Path, output_path: Path) -> None:
     # Call function to restructure dataset with proper variable names, array sizes, etc.
     dataout = reorg_xarr(dataproj)
 
-    # Write newly restructured dataset to a netcdf file
-    comp = {"zlib": True, "complevel": 5}
-    encoding = {var: comp for var in dataout.data_vars}
-    dataout.to_netcdf(
-        output_path,
-        mode="w",
-        format="NETCDF4",
-        encoding=encoding,
-    )
-
+    write_dataset(dataout, output_path=output_path)
     return
