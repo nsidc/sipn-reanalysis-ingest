@@ -83,7 +83,7 @@ def read_grib_daily(
     dataout = reorg_xarr(dataproj)
 
     # Write newly restructured dataset to a netcdf file
-    comp = {"zlib": True, "complevel": 9}
+    comp = {"zlib": True, "complevel": 5}
     encoding = {var: comp for var in dataout.data_vars}
     dataout.to_netcdf(
         output_path,

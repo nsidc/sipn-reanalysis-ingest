@@ -60,7 +60,7 @@ def read_grib_monthly(afile: Path, ffile: Path, output_path: Path) -> None:
     dataout = reorg_xarr(dataproj)
 
     # Write newly restructured dataset to a netcdf file
-    comp = {"zlib": True, "complevel": 9}
+    comp = {"zlib": True, "complevel": 5}
     encoding = {var: comp for var in dataout.data_vars}
     dataout.to_netcdf(
         output_path,
