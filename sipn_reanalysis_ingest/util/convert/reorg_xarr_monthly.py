@@ -65,8 +65,8 @@ def reorg_xarr_monthly(dsin: xr.Dataset) -> xr.Dataset:
     del t1, t2, t3n
 
     # Winds
-    # Notice that we are using u1,u2,v1,v2 instead of t1 as above for wind speed calculation
-    # purposes
+    # Notice that we are using u1,u2,v1,v2 instead of t1 as above for wind speed
+    # calculation purposes
     u1 = dsin.UGRD_P8_L103_GLL0
     u2 = dsin.UGRD_P8_L100_GLL0
     u3n = make_new3d(u1, u2)
