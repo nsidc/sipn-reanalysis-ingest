@@ -1,7 +1,3 @@
-# DELETEME: down to and including "noqa" line.
-# Skip static analysis on this file, it's a WIP.
-# mypy: ignore-errors
-# flake8: noqa
 """Functions to read in the grib data.
 
 Begin: 12/17/22
@@ -12,6 +8,8 @@ Will return the final xarray dataset to write out to netcdf
 
 import numpy as np
 import xarray as xr
+
+from sipn_reanalysis_ingest.util.convert.misc import make_new3d
 
 
 def reorg_xarr_monthly(dsin: xr.Dataset) -> xr.Dataset:
@@ -92,7 +90,7 @@ def reorg_xarr_monthly(dsin: xr.Dataset) -> xr.Dataset:
     # Calculate wind speed
     wspd1 = np.sqrt(v1.values * v1.values + u1.values * u1.values)
     wspd2 = np.sqrt(v2.values * v2.values + u2.values * u2.values)
-    t3n = np.empty((4, 517, 511))
+    t3n = np.empty((4, 517, 511), dtype='float32')
     t3n[3, :, :] = wspd1[:, :]
     t3n[0:3, :, :] = wspd2[:, :]
     WSPD = xr.DataArray(
@@ -146,13 +144,3 @@ def reorg_xarr_monthly(dsin: xr.Dataset) -> xr.Dataset:
         },
     )
     return dataout
-
-
-# Function to combine surface and upper level variables into a single data array
-def make_new3d(t1: xr.DataArray, t2: xr.DataArray) -> np.ndarray:
-    t1n = t1.to_numpy()
-    t2n = t2.to_numpy()
-    t3n = np.empty((4, 517, 511))
-    t3n[3, :, :] = t1n[:, :]
-    t3n[0:3, :, :] = t2n[:, :]
-    return t3n
