@@ -1,3 +1,5 @@
+from types import ModuleType
+
 import numpy as np
 import xarray as xr
 
@@ -17,3 +19,19 @@ def make_new3d(t1: xr.DataArray, t2: xr.DataArray) -> np.ndarray:
     t3n[3, :, :] = t1n[:, :]
     t3n[0:3, :, :] = t2n[:, :]
     return t3n
+
+
+def get_variable_names(variables: ModuleType) -> list['str']:
+    """Parse through a variables module to extract variable names."""
+    vs = [v for v in dir(variables) if not v.startswith('__')]
+    si = []
+    for z in vs:
+        si.append(list(getattr(variables, z).values()))
+
+    vari = []
+    for i in si:
+        for x in i:
+            if x not in vari:
+                vari.append(x)
+
+    return vari

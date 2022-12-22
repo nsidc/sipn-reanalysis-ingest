@@ -13,6 +13,7 @@ import xarray as xr
 
 import sipn_reanalysis_ingest.constants.variables_daily as variables
 from sipn_reanalysis_ingest.constants.crs import PROJ_DEST, PROJ_SRC
+from sipn_reanalysis_ingest.util.convert.misc import get_variable_names
 from sipn_reanalysis_ingest.util.convert.reorg_xarr_daily import (
     reorg_xarr_daily as reorg_xarr,
 )
@@ -24,18 +25,7 @@ def read_grib_daily(
     ffiles: list[Path],
     output_path: Path,
 ) -> None:
-
-    # Parse through variables to extract variable names
-    vs = [v for v in dir(variables) if not v.startswith('__')]
-    si = []
-    for z in vs:
-        si.append(list(getattr(variables, z).values()))
-
-    vari = []
-    for i in si:
-        for x in i:
-            if x not in vari:
-                vari.append(x)
+    vari = get_variable_names(variables)
 
     # Forecast files
     fnf = xr.open_mfdataset(
