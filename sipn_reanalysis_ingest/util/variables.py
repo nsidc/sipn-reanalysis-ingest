@@ -19,7 +19,7 @@ class AtmosColToGribVariable(TypedDict):
 
 
 class SeaLevelToGribVariable(TypedDict):
-    sl: str
+    sealv: str
 
 
 class Variables(TypedDict):
