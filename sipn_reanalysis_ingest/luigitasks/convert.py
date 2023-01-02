@@ -68,7 +68,8 @@ class Grib2ToNcDaily(luigi.Task):
         return req
 
     def output(self):
-        return luigi.LocalTarget(DATA_FINISHED_DIR / f'{self.date:%Y%m%d}.nc')
+        fn = f'cfsr.{self.date:%Y%m%d}.nc'
+        return luigi.LocalTarget(DATA_FINISHED_DIR / fn)
 
     def run(self):
         analysis_dir = Path(self.input()[CfsrGranuleProductType.ANALYSIS].path)
@@ -132,7 +133,7 @@ class Grib2ToNcMonthly(luigi.Task):
             return UntarCfsrV2MonthlyFile(month=self.month)
 
     def output(self):
-        fn = f'{self.yearmonth}.nc'
+        fn = f'cfsr.{self.yearmonth}.nc'
         return luigi.LocalTarget(DATA_FINISHED_DIR / fn)
 
     def run(self):

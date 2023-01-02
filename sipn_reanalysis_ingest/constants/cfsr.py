@@ -11,8 +11,8 @@ CFSR_VERSION_BY_DATE: dict[tuple[dt.date, dt.date], CfsrDatasetVersion] = {
     (dt.date(2011, 1, 1), dt.date.today()): 2,
 }
 CFSR_DATASET_IDS: dict[tuple[CfsrPeriodicity, CfsrDatasetVersion], CfsrDatasetId] = {
-    ('five_daily', 1): 'ds093.0',
-    ('five_daily', 2): 'ds094.0',
+    ('daily', 1): 'ds093.0',
+    ('daily', 2): 'ds094.0',
     ('monthly', 1): 'ds093.2',
     ('monthly', 2): 'ds094.2',
 }
