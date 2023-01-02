@@ -9,7 +9,7 @@ input_dir = test_data_dir / '_climatology_separate_files'
 input_file_mask = '??.1981-2010_climate.nc'
 
 output_dir = test_data_dir / 'climatology'
-output_fp = output_dir / 'monthly_1981-2010_climatology.nc'
+output_fp = output_dir / 'cfsr.monthly_1981-2010_climatology.nc'
 
 
 def set_month_from_fn(dataset: xra.Dataset) -> xra.Dataset:
