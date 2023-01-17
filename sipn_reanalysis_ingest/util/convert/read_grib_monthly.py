@@ -18,32 +18,30 @@ from sipn_reanalysis_ingest.util.convert.misc import (
 )
 from sipn_reanalysis_ingest.util.convert.normalize import normalize_cfsr_varnames
 from sipn_reanalysis_ingest.util.convert.write import write_dataset
+from sipn_reanalysis_ingest.util.variables import get_duplicate_grib_variables
 
 
 def read_grib_monthly(afile: Path, ffile: Path, output_path: Path) -> None:
-    # Open analysis and forecast monthly file
+    periodicity: Final = 'monthly'
 
-    vars_to_drop=["TMP_P8_L100_GLL0",
-         "SPFH_P8_L100_GLL0",
-         "RH_P8_L100_GLL0",
-         "UGRD_P8_L100_GLL0",
-         "VGRD_P8_L100_GLL0",
-         "HGT_P8_L100_GLL0",
-         "PRMSL_P8_L101_GLL0"]
-
+    # Open forecast monthly file
     fnft = xr.open_dataset(ffile, engine='pynio')
+    fnf = fnft.drop_vars(get_duplicate_grib_variables(periodicity))
+
+    # Open analysis monthly file
     fna = xr.open_dataset(afile, engine='pynio')
 
-    fnf=fnft.drop_vars(vars_to_drop)
-
-    # Merge these into a single dataset
+    # Merge everything into a single dataset (forecast and analysis have some
+    # conflicting variable names, but they've been dropped by this point)
     fn = fna.merge(fnf, compat='override')
 
-    periodicity: Final = 'monthly'
     fnsm = select_dataset_variables(fn, periodicity=periodicity)
     fnsm = subset_latitude_and_levels(fnsm)
     dataproj = reproject_dataset_to_polarstereo_north(fnsm)
     dataout = normalize_cfsr_varnames(dataproj, periodicity=periodicity)
 
     write_dataset(dataout, output_path=output_path)
+
+    fnft.close()
+    fna.close()
     return

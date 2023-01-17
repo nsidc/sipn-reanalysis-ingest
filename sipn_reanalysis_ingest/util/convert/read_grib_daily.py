@@ -19,6 +19,7 @@ from sipn_reanalysis_ingest.util.convert.misc import (
 )
 from sipn_reanalysis_ingest.util.convert.normalize import normalize_cfsr_varnames
 from sipn_reanalysis_ingest.util.convert.write import write_dataset
+from sipn_reanalysis_ingest.util.variables import get_duplicate_grib_variables
 
 
 def read_grib_daily(
@@ -26,14 +27,7 @@ def read_grib_daily(
     ffiles: list[Path],
     output_path: Path,
 ) -> None:
-
-    vars_to_drop=["TMP_P8_L100_GLL0",
-         "SPFH_P8_L100_GLL0",
-         "RH_P8_L100_GLL0",
-         "UGRD_P8_L100_GLL0",
-         "VGRD_P8_L100_GLL0",
-         "HGT_P8_L100_GLL0",
-         "PRMSL_P8_L101_GLL0"]
+    periodicity: Final = 'daily'
 
     # Forecast files
     fnft = xr.open_mfdataset(
@@ -43,8 +37,7 @@ def read_grib_daily(
         parallel=True,
         engine='pynio',
     )
-
-    fnf=fnft.drop_vars(vars_to_drop)
+    fnf = fnft.drop_vars(get_duplicate_grib_variables(periodicity))
 
     # Analysis files
     fna = xr.open_mfdataset(
@@ -55,11 +48,10 @@ def read_grib_daily(
         engine='pynio',
     )
 
-    # Merge everything into a single dataset (forecast and analysis have unique variable
-    # names)
+    # Merge everything into a single dataset (forecast and analysis have some
+    # conflicting variable names, but they've been dropped by this point)
     fn = fna.merge(fnf, compat='override')
 
-    periodicity: Final = 'daily'
     fnsm = select_dataset_variables(fn, periodicity=periodicity)
     fnsm = subset_latitude_and_levels(fnsm)
     newfn = fnsm.mean(dim='t', keep_attrs=True)
@@ -67,4 +59,7 @@ def read_grib_daily(
     dataout = normalize_cfsr_varnames(dataproj, periodicity=periodicity)
 
     write_dataset(dataout, output_path=output_path)
+
+    fnft.close()
+    fna.close()
     return
