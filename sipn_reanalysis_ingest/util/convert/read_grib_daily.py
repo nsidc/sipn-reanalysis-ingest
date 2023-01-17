@@ -6,6 +6,7 @@ author: @ecassano
 Will return an array of daily data for eventual output to a single netcdf file
 """
 
+import functools
 from pathlib import Path
 from typing import Final
 
@@ -19,6 +20,7 @@ from sipn_reanalysis_ingest.util.convert.misc import (
 )
 from sipn_reanalysis_ingest.util.convert.normalize import normalize_cfsr_varnames
 from sipn_reanalysis_ingest.util.convert.write import write_dataset
+from sipn_reanalysis_ingest.util.variables import get_duplicate_grib_variables
 
 
 def read_grib_daily(
@@ -26,34 +28,33 @@ def read_grib_daily(
     ffiles: list[Path],
     output_path: Path,
 ) -> None:
-    # Forecast files
-    fnf = xr.open_mfdataset(
-        ffiles,
-        concat_dim='t',
-        combine='nested',
-        parallel=True,
-        engine='pynio',
-    )
-
-    # Analysis files
-    fna = xr.open_mfdataset(
-        afiles,
-        concat_dim='t',
-        combine='nested',
-        parallel=True,
-        engine='pynio',
-    )
-
-    # Merge everything into a single dataset (forecast and analysis have unique variable
-    # names)
-    fn = fna.merge(fnf, compat='override')
-
     periodicity: Final = 'daily'
-    fnsm = select_dataset_variables(fn, periodicity=periodicity)
-    fnsm = subset_latitude_and_levels(fnsm)
-    newfn = fnsm.mean(dim='t', keep_attrs=True)
-    dataproj = reproject_dataset_to_polarstereo_north(newfn)
-    dataout = normalize_cfsr_varnames(dataproj, periodicity=periodicity)
+    opener = functools.partial(
+        xr.open_mfdataset,
+        concat_dim='t',
+        combine='nested',
+        parallel=True,
+        engine='pynio',
+    )
 
-    write_dataset(dataout, output_path=output_path)
+    # Open forecast and analysis files
+    with (
+        opener(ffiles) as fnft,
+        opener(afiles) as fna,
+    ):
+        # Drop duplicate variables
+        fnf = fnft.drop_vars(get_duplicate_grib_variables(periodicity))
+
+        # Merge everything into a single dataset (forecast and analysis have some
+        # conflicting variable names, but they've been dropped by this point)
+        fn = fna.merge(fnf, compat='override')
+
+        fnsm = select_dataset_variables(fn, periodicity=periodicity)
+        fnsm = subset_latitude_and_levels(fnsm)
+        newfn = fnsm.mean(dim='t', keep_attrs=True)
+        dataproj = reproject_dataset_to_polarstereo_north(newfn)
+        dataout = normalize_cfsr_varnames(dataproj, periodicity=periodicity)
+
+        write_dataset(dataout, output_path=output_path)
+
     return

@@ -33,12 +33,16 @@ class Variables(TypedDict):
     mslp: SeaLevelToGribVariable
 
 
-def get_variables_map(periodicity: Literal['daily', 'monthly']) -> Variables:
-    """Get mapping of new varnames to old varnames by level."""
+def _variable_infix(periodicity: CfsrPeriodicity) -> str:
     if periodicity == 'daily':
-        infix = 'P0'
+        return 'P0'
     elif periodicity == 'monthly':
-        infix = 'P8'
+        return 'P8'
+
+
+def get_variables_map(periodicity: CfsrPeriodicity) -> Variables:
+    """Get mapping of new varnames to old varnames by level."""
+    infix = _variable_infix(periodicity)
 
     return {
         't': {
@@ -79,6 +83,25 @@ def get_variables_map(periodicity: Literal['daily', 'monthly']) -> Variables:
         'pwat': {'atmscol': f'PWAT_{infix}_L200_GLL0'},
         'mslp': {'sealv': f'PRMSL_{infix}_L101_GLL0'},
     }
+
+
+def get_duplicate_grib_variables(periodicity: CfsrPeriodicity) -> list[str]:
+    """Return variables that appear in both the forecast and analysis data.
+
+    They should be dropped from the forecast data before merging forecast and analysis
+    into one dataset.
+    """
+    infix = _variable_infix(periodicity)
+
+    return [
+        f'TMP_{infix}_L100_GLL0',
+        f'SPFH_{infix}_L100_GLL0',
+        f'RH_{infix}_L100_GLL0',
+        f'UGRD_{infix}_L100_GLL0',
+        f'VGRD_{infix}_L100_GLL0',
+        f'HGT_{infix}_L100_GLL0',
+        f'PRMSL_{infix}_L101_GLL0',
+    ]
 
 
 def get_all_grib_variables(periodicity: CfsrPeriodicity) -> list[str]:

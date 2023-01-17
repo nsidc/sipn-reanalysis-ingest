@@ -3,7 +3,6 @@ from pathlib import Path
 
 import xarray as xra
 
-
 test_data_dir = Path('/share/apps/sipn-reanalysis-all/_test_data')
 input_dir = test_data_dir / '_climatology_separate_files'
 input_file_mask = '??.1981-2010_climate.nc'
