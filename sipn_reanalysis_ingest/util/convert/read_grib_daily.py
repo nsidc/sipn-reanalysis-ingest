@@ -26,14 +26,25 @@ def read_grib_daily(
     ffiles: list[Path],
     output_path: Path,
 ) -> None:
+
+    vars_to_drop=["TMP_P8_L100_GLL0",
+         "SPFH_P8_L100_GLL0",
+         "RH_P8_L100_GLL0",
+         "UGRD_P8_L100_GLL0",
+         "VGRD_P8_L100_GLL0",
+         "HGT_P8_L100_GLL0",
+         "PRMSL_P8_L101_GLL0"]
+
     # Forecast files
-    fnf = xr.open_mfdataset(
+    fnft = xr.open_mfdataset(
         ffiles,
         concat_dim='t',
         combine='nested',
         parallel=True,
         engine='pynio',
     )
+
+    fnf=fnft.drop_vars(vars_to_drop)
 
     # Analysis files
     fna = xr.open_mfdataset(
