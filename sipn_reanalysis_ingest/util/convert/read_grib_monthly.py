@@ -22,8 +22,19 @@ from sipn_reanalysis_ingest.util.convert.write import write_dataset
 
 def read_grib_monthly(afile: Path, ffile: Path, output_path: Path) -> None:
     # Open analysis and forecast monthly file
-    fnf = xr.open_dataset(ffile, engine='pynio')
+
+    vars_to_drop=["TMP_P8_L100_GLL0",
+         "SPFH_P8_L100_GLL0",
+         "RH_P8_L100_GLL0",
+         "UGRD_P8_L100_GLL0",
+         "VGRD_P8_L100_GLL0",
+         "HGT_P8_L100_GLL0",
+         "PRMSL_P8_L101_GLL0"]
+
+    fnft = xr.open_dataset(ffile, engine='pynio')
     fna = xr.open_dataset(afile, engine='pynio')
+
+    fnf=fnft.drop_vars(vars_to_drop)
 
     # Merge these into a single dataset
     fn = fna.merge(fnf, compat='override')
