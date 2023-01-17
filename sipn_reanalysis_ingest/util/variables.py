@@ -86,7 +86,7 @@ def get_variables_map(periodicity: CfsrPeriodicity) -> Variables:
 
 
 def get_duplicate_grib_variables(periodicity: CfsrPeriodicity) -> list[str]:
-    """These variables appear in both the forecast and analysis data.
+    """Return variables that appear in both the forecast and analysis data.
 
     They should be dropped from the forecast data before merging forecast and analysis
     into one dataset.

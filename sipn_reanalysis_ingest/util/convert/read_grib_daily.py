@@ -6,6 +6,7 @@ author: @ecassano
 Will return an array of daily data for eventual output to a single netcdf file
 """
 
+import functools
 from pathlib import Path
 from typing import Final
 
@@ -28,38 +29,32 @@ def read_grib_daily(
     output_path: Path,
 ) -> None:
     periodicity: Final = 'daily'
-
-    # Forecast files
-    fnft = xr.open_mfdataset(
-        ffiles,
-        concat_dim='t',
-        combine='nested',
-        parallel=True,
-        engine='pynio',
-    )
-    fnf = fnft.drop_vars(get_duplicate_grib_variables(periodicity))
-
-    # Analysis files
-    fna = xr.open_mfdataset(
-        afiles,
+    opener = functools.partial(
+        xr.open_mfdataset,
         concat_dim='t',
         combine='nested',
         parallel=True,
         engine='pynio',
     )
 
-    # Merge everything into a single dataset (forecast and analysis have some
-    # conflicting variable names, but they've been dropped by this point)
-    fn = fna.merge(fnf, compat='override')
+    # Open forecast and analysis files
+    with (
+        opener(ffiles) as fnft,
+        opener(afiles) as fna,
+    ):
+        # Drop duplicate variables
+        fnf = fnft.drop_vars(get_duplicate_grib_variables(periodicity))
 
-    fnsm = select_dataset_variables(fn, periodicity=periodicity)
-    fnsm = subset_latitude_and_levels(fnsm)
-    newfn = fnsm.mean(dim='t', keep_attrs=True)
-    dataproj = reproject_dataset_to_polarstereo_north(newfn)
-    dataout = normalize_cfsr_varnames(dataproj, periodicity=periodicity)
+        # Merge everything into a single dataset (forecast and analysis have some
+        # conflicting variable names, but they've been dropped by this point)
+        fn = fna.merge(fnf, compat='override')
 
-    write_dataset(dataout, output_path=output_path)
+        fnsm = select_dataset_variables(fn, periodicity=periodicity)
+        fnsm = subset_latitude_and_levels(fnsm)
+        newfn = fnsm.mean(dim='t', keep_attrs=True)
+        dataproj = reproject_dataset_to_polarstereo_north(newfn)
+        dataout = normalize_cfsr_varnames(dataproj, periodicity=periodicity)
 
-    fnft.close()
-    fna.close()
+        write_dataset(dataout, output_path=output_path)
+
     return
