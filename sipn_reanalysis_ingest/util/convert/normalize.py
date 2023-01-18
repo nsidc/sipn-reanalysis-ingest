@@ -48,7 +48,7 @@ def normalize_cfsr_varnames(
         coords={'lev1': lev1, 'y': y, 'x': x},
         dims=['lev1', 'y', 'x'],
     )
-    SH = SH.assign_attrs({'long_name': 'Specific humidity', 'units': 'kg kg-1'})
+    SH = SH.assign_attrs({'long_name': 'Specific humidity', 'units': 'kg/kg'})
     del t1, t2, t3n
 
     # Relative humidity
@@ -60,7 +60,7 @@ def normalize_cfsr_varnames(
         coords={'lev1': lev1, 'y': y, 'x': x},
         dims=['lev1', 'y', 'x'],
     )
-    RH = RH.assign_attrs({'long_name': 'Relative humidity', 'units': 'kg kg-1'})
+    RH = RH.assign_attrs({'long_name': 'Relative humidity', 'units': 'kg/kg'})
     del t1, t2, t3n
 
     # Winds
@@ -74,7 +74,7 @@ def normalize_cfsr_varnames(
         coords={'lev2': lev2, 'y': y, 'x': x},
         dims=['lev2', 'y', 'x'],
     )
-    U = U.assign_attrs({'long_name': 'U-component of wind', 'units': 'm s-1'})
+    U = U.assign_attrs({'long_name': 'U-component of wind', 'units': 'm/s'})
 
     v1 = dataset[varmap['v']['10m']]
     v2 = dataset[varmap['v']['500mb']]
@@ -84,7 +84,7 @@ def normalize_cfsr_varnames(
         coords={'lev2': lev2, 'y': y, 'x': x},
         dims=['lev2', 'y', 'x'],
     )
-    V = V.assign_attrs({'long_name': 'V-component of wind', 'units': 'm s-1'})
+    V = V.assign_attrs({'long_name': 'V-component of wind', 'units': 'm/s'})
 
     # Calculate wind speed
     wspd1 = np.sqrt(v1.values * v1.values + u1.values * u1.values)
@@ -97,7 +97,7 @@ def normalize_cfsr_varnames(
         coords={'lev2': lev2, 'y': y, 'x': x},
         dims=['lev2', 'y', 'x'],
     )
-    WSPD = WSPD.assign_attrs({'long_name': 'Wind speed', 'units': 'm s-1'})
+    WSPD = WSPD.assign_attrs({'long_name': 'Wind speed', 'units': 'm/s'})
     del u1, u2, v1, v2, u3n, v3n, t3n, wspd1, wspd2
 
     # Rename variables for remaining variables
