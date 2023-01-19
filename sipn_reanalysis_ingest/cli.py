@@ -1,12 +1,24 @@
 import datetime as dt
 
 import click
+from loguru import logger
 
+from sipn_reanalysis_ingest.constants.paths import (
+    DATA_DAILY_DIR,
+    DATA_DAILY_FILENAME_GLOBSTR,
+    DATA_FINISHED_DIR,
+    DATA_MONTHLY_DIR,
+    DATA_MONTHLY_FILENAME_GLOBSTR,
+)
 from sipn_reanalysis_ingest.util.cli import DateParameter, MonthParameter
-from sipn_reanalysis_ingest.util.log import logger
 
 
 @click.group()
+def cli():
+    pass
+
+
+@cli.group()
 @click.option(
     '-w',
     '--workers',
@@ -16,14 +28,15 @@ from sipn_reanalysis_ingest.util.log import logger
     show_default=True,
 )
 @click.pass_context
-def cli(ctx, workers: int):
+def run(ctx, workers: int):
     ctx.ensure_object(dict)
     ctx.obj['workers'] = workers
 
     logger.info(f'Running with {workers=}')
 
 
-@cli.command(
+@run.command(
+    name='daily',
     short_help='Run daily file ingest pipeline',
 )
 @click.option(
@@ -41,7 +54,7 @@ def cli(ctx, workers: int):
     required=True,
 )
 @click.pass_context
-def daily(ctx, start_date: dt.date, end_date: dt.date):
+def run_daily(ctx, start_date: dt.date, end_date: dt.date):
     """Create daily NetCDFs with only data we care about from CFSR source data.
 
     The source data (GRIB2) will be filtered for only the variables of interest,
@@ -59,7 +72,8 @@ def daily(ctx, start_date: dt.date, end_date: dt.date):
     )
 
 
-@cli.command(
+@run.command(
+    name='monthly',
     short_help='Run monthly file ingest pipeline',
 )
 @click.option(
@@ -77,7 +91,7 @@ def daily(ctx, start_date: dt.date, end_date: dt.date):
     required=True,
 )
 @click.pass_context
-def monthly(ctx, start_month, end_month):
+def run_monthly(ctx, start_month, end_month):
     """Create daily NetCDFs with only data we care about from CFSR source data.
 
     The source data (GRIB2) will be filtered for only the variables of interest,
@@ -93,6 +107,33 @@ def monthly(ctx, start_month, end_month):
         [ProcessMonthRange(start_month=start_month, end_month=end_month)],
         workers=ctx.obj['workers'],
     )
+
+
+@cli.group()
+def promote():
+    pass
+
+
+@promote.command(name='daily')
+def promote_daily():
+    DATA_DAILY_DIR.mkdir(exist_ok=True)
+    filepaths = DATA_FINISHED_DIR.glob(DATA_DAILY_FILENAME_GLOBSTR)
+
+    for fp in filepaths:
+        new_fp = DATA_DAILY_DIR / fp.name
+        fp.rename(new_fp)
+        logger.info(f'{fp} -> {new_fp}')
+
+
+@promote.command(name='monthly')
+def promote_monthly():
+    DATA_MONTHLY_DIR.mkdir(exist_ok=True)
+    filepaths = DATA_FINISHED_DIR.glob(DATA_MONTHLY_FILENAME_GLOBSTR)
+
+    for fp in filepaths:
+        new_fp = DATA_MONTHLY_DIR / fp.name
+        fp.rename(new_fp)
+        logger.info(f'{fp} -> {new_fp}')
 
 
 if __name__ == '__main__':

@@ -5,7 +5,11 @@ import luigi
 
 from sipn_reanalysis_ingest._types import CfsrGranuleProductType
 from sipn_reanalysis_ingest.constants.cfsr import CFSR_VERSION_BY_DATE
-from sipn_reanalysis_ingest.constants.paths import DATA_FINISHED_DIR
+from sipn_reanalysis_ingest.constants.paths import (
+    DATA_DAILY_FILENAME_TEMPLATE,
+    DATA_FINISHED_DIR,
+    DATA_MONTHLY_FILENAME_TEMPLATE,
+)
 from sipn_reanalysis_ingest.luigitasks.untar import (
     UntarCfsr5DayFile,
     UntarCfsrV1MonthlyFile,
@@ -68,7 +72,7 @@ class Grib2ToNcDaily(luigi.Task):
         return req
 
     def output(self):
-        fn = f'cfsr.{self.date:%Y%m%d}.nc'
+        fn = DATA_DAILY_FILENAME_TEMPLATE.format(date=self.date)
         return luigi.LocalTarget(DATA_FINISHED_DIR / fn)
 
     def run(self):
@@ -133,7 +137,7 @@ class Grib2ToNcMonthly(luigi.Task):
             return UntarCfsrV2MonthlyFile(month=self.month)
 
     def output(self):
-        fn = f'cfsr.{self.yearmonth}.nc'
+        fn = DATA_MONTHLY_FILENAME_TEMPLATE.format(yearmonth=self.yearmonth)
         return luigi.LocalTarget(DATA_FINISHED_DIR / fn)
 
     def run(self):
