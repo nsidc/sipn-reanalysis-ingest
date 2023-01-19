@@ -3,7 +3,7 @@
 # Start the docker service(s).
 #
 # NOTE: If you want to test using a specific docker container version, it's
-# expected that you've already set `NSIDC0102_VERSION` as desired.
+# expected that you've already set `SIPN_REANALYSIS_INGEST_VERSION` as desired.
 #
 # HACK: Shellcheck complains about ancillary file
 #     https://github.com/koalaman/shellcheck/issues/769

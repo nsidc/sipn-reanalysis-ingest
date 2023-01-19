@@ -12,7 +12,7 @@ services:
   luigi:
     <<: *base
     # TODO: Use a real version!
-    image: "nsidc/sipn-reanalysis-ingest:FIXME"
+    image: "nsidc/sipn-reanalysis-ingest:${SIPN_REANALYSIS_INGEST_VERSION:-version_not_set}"
     # TODO: Remove build config; this should not be built in a non-dev environment
     build: "."
 
