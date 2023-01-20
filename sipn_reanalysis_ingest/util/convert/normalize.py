@@ -112,8 +112,8 @@ def normalize_cfsr_varnames(
     wspd2 = np.sqrt(v2.values * v2.values + u2.values * u2.values)
     del u1, u2, v1, v2
     wspd3n = combine_surface_and_pls_with_nanfill(
-        surface2d=wspd1.to_numpy(),
-        pl3d=wspd2.to_numpy(),
+        surface2d=wspd1,
+        pl3d=wspd2,
     )
     WSPD = xr.DataArray(
         wspd3n,
