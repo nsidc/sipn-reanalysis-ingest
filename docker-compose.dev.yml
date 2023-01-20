@@ -5,6 +5,7 @@ services:
   luigi:
     image: "nsidc/sipn-reanalysis-ingest:dev"
     build:
+      context: "."
       args:
         NEW_MAMBA_USER_ID: "${MAMBA_USER_ID}"
         NEW_MAMBA_USER_GID: "${MAMBA_USER_GID}"
