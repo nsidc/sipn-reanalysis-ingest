@@ -6,21 +6,53 @@ from sipn_reanalysis_ingest.constants.crs import PROJ_DEST, PROJ_SRC
 from sipn_reanalysis_ingest.util.variables import get_all_grib_variables
 
 
-def make_new3d(t1: xr.DataArray, t2: xr.DataArray) -> np.ndarray:
+def combine_surface_and_pls_with_nanfill(
+    *,
+    surface2d: np.ndarray,
+    pl3d: np.ndarray,
+) -> np.ndarray:
     """Combine surface and upper level variables into a single data array.
 
     Variables are combined by stacking the surface level 2d array "on top" of the upper
     level 3d array.
 
-    * t1: 2d array representing surface level
-    * t2: 3d array representing pressure levels above surface
+    * surface2d: 2d array representing surface level
+    * pl3d: 3d array representing pressure levels above surface. Expected to contain
+      exactly 3 pressure levels.
     """
-    t1n = t1.to_numpy()
-    t2n = t2.to_numpy()
-    t3n = np.empty((4, 517, 511), dtype='float32')
-    t3n[3, :, :] = t1n[:, :]
-    t3n[0:3, :, :] = t2n[:, :]
-    return t3n
+    combined = np.empty((4, 517, 511), dtype='float32')
+    combined[3, :, :] = surface2d[:, :]
+    combined[0:3, :, :] = pl3d[:, :]
+    return _max_to_nan(combined)
+
+
+def extract_var_from_dataset_with_nanfill(
+    dataset: xr.Dataset,
+    *,
+    variable: str,
+) -> xr.DataArray:
+    data_array = dataset[variable]
+    # Get rid of any fill value already set
+    del data_array.attrs['_FillValue']
+
+    data_array.data = _max_to_nan(data_array.to_numpy())
+    return data_array
+
+
+def _max_to_nan(array: np.ndarray) -> np.ndarray:
+    """Replace the maximum value for the array's dtype with NaN.
+
+    Expects only float32 datatypes.
+    """
+    dtype = array.dtype
+    if dtype != np.float32:
+        raise RuntimeError(f'Expected float32 dtype, got {dtype}')
+
+    max_val = np.finfo(dtype).max
+
+    array[array == max_val] = np.nan
+    array[array == np.inf] = np.nan
+    return array
 
 
 def select_dataset_variables(
