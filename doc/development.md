@@ -91,3 +91,4 @@ inv test
 * Settle on a consistent logging mechanism.
 * Handle months with 31 days; for some reason the last file of a CFSR 5-day window can
   contain 6 days???
+* Create constant for grid dimensions (517, 511) and replace all magic numbers.
