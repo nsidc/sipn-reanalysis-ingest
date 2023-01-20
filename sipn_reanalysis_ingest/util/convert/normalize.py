@@ -10,6 +10,8 @@ from sipn_reanalysis_ingest.util.variables import get_variables_map, var_rename_
 
 
 # TODO: Do we need these `del` statements? Can we let the garbage collector handle it?
+# TODO: Improve function name; does more than normalize varnames. Normalizes
+# analysis-level dimension, normalizes fill values, calculates a new variable, etc.
 def normalize_cfsr_varnames(
     dataset: xr.Dataset,
     *,
