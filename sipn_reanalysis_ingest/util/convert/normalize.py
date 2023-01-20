@@ -2,10 +2,14 @@ import numpy as np
 import xarray as xr
 
 from sipn_reanalysis_ingest._types import CfsrPeriodicity
-from sipn_reanalysis_ingest.util.convert.misc import make_new3d
+from sipn_reanalysis_ingest.util.convert.misc import (
+    combine_surface_and_pls_with_nanfill,
+    extract_var_from_dataset_with_nanfill,
+)
 from sipn_reanalysis_ingest.util.variables import get_variables_map, var_rename_mapping
 
 
+# TODO: Do we need these `del` statements? Can we let the garbage collector handle it?
 def normalize_cfsr_varnames(
     dataset: xr.Dataset,
     *,
@@ -26,9 +30,12 @@ def normalize_cfsr_varnames(
     lev4 = list(varmap['mslp'].keys())
     lev5 = list(varmap['pwat'].keys())
 
-    # Call function to create an array that combines the surface and upper level data
-    # a single array
-    t3n = make_new3d(t1, t2)
+    # Create an array that combines the surface and upper level data into a single 3d
+    # array
+    t3n = combine_surface_and_pls_with_nanfill(
+        surface2d=t1.to_numpy(),
+        pl3d=t2.to_numpy(),
+    )
 
     # Create a xarray dataarray with new array, reassign attributes
     T = xr.DataArray(
@@ -36,82 +43,98 @@ def normalize_cfsr_varnames(
         coords={'lev1': lev1, 'y': y, 'x': x},
         dims=['lev1', 'y', 'x'],
     )
-    T = T.assign_attrs({'long_name': 'Temperature', 'units': 'K'})
     del t1, t2, t3n
+    T = T.assign_attrs({'long_name': 'Temperature', 'units': 'K'})
 
     # Specific humidity
-    t1 = dataset[varmap['sh']['2m']]
-    t2 = dataset[varmap['sh']['500mb']]
-    t3n = make_new3d(t1, t2)
+    sh1 = dataset[varmap['sh']['2m']]
+    sh2 = dataset[varmap['sh']['500mb']]
+    sh3n = combine_surface_and_pls_with_nanfill(
+        surface2d=sh1.to_numpy(),
+        pl3d=sh2.to_numpy(),
+    )
     SH = xr.DataArray(
-        t3n,
+        sh3n,
         coords={'lev1': lev1, 'y': y, 'x': x},
         dims=['lev1', 'y', 'x'],
     )
+    del sh1, sh2, sh3n
     SH = SH.assign_attrs({'long_name': 'Specific humidity', 'units': 'kg/kg'})
-    del t1, t2, t3n
 
     # Relative humidity
-    t1 = dataset[varmap['rh']['2m']]
-    t2 = dataset[varmap['rh']['500mb']]
-    t3n = make_new3d(t1, t2)
+    rh1 = dataset[varmap['rh']['2m']]
+    rh2 = dataset[varmap['rh']['500mb']]
+    rh3n = combine_surface_and_pls_with_nanfill(
+        surface2d=rh1.to_numpy(),
+        pl3d=rh2.to_numpy(),
+    )
     RH = xr.DataArray(
-        t3n,
+        rh3n,
         coords={'lev1': lev1, 'y': y, 'x': x},
         dims=['lev1', 'y', 'x'],
     )
+    del rh1, rh2, rh3n
     RH = RH.assign_attrs({'long_name': 'Relative humidity', 'units': 'kg/kg'})
-    del t1, t2, t3n
 
     # Winds
     # Notice that we are using u1,u2,v1,v2 instead of t1 as above for wind speed
     # calculation purposes
     u1 = dataset[varmap['u']['10m']]
     u2 = dataset[varmap['u']['500mb']]
-    u3n = make_new3d(u1, u2)
+    u3n = combine_surface_and_pls_with_nanfill(
+        surface2d=u1.to_numpy(),
+        pl3d=u2.to_numpy(),
+    )
     U = xr.DataArray(
         u3n,
         coords={'lev2': lev2, 'y': y, 'x': x},
         dims=['lev2', 'y', 'x'],
     )
+    del u3n
     U = U.assign_attrs({'long_name': 'U-component of wind', 'units': 'm/s'})
 
     v1 = dataset[varmap['v']['10m']]
     v2 = dataset[varmap['v']['500mb']]
-    v3n = make_new3d(v1, v2)
+    v3n = combine_surface_and_pls_with_nanfill(
+        surface2d=v1.to_numpy(),
+        pl3d=v2.to_numpy(),
+    )
     V = xr.DataArray(
         v3n,
         coords={'lev2': lev2, 'y': y, 'x': x},
         dims=['lev2', 'y', 'x'],
     )
+    del v3n
     V = V.assign_attrs({'long_name': 'V-component of wind', 'units': 'm/s'})
 
     # Calculate wind speed
     wspd1 = np.sqrt(v1.values * v1.values + u1.values * u1.values)
     wspd2 = np.sqrt(v2.values * v2.values + u2.values * u2.values)
-    t3n = np.empty((4, 517, 511), dtype='float32')
-    t3n[3, :, :] = wspd1[:, :]
-    t3n[0:3, :, :] = wspd2[:, :]
+    del u1, u2, v1, v2
+    wspd3n = combine_surface_and_pls_with_nanfill(
+        surface2d=wspd1.to_numpy(),
+        pl3d=wspd2.to_numpy(),
+    )
     WSPD = xr.DataArray(
-        t3n,
+        wspd3n,
         coords={'lev2': lev2, 'y': y, 'x': x},
         dims=['lev2', 'y', 'x'],
     )
     WSPD = WSPD.assign_attrs({'long_name': 'Wind speed', 'units': 'm/s'})
-    del u1, u2, v1, v2, u3n, v3n, t3n, wspd1, wspd2
+    del wspd1, wspd2, wspd3n
 
     # Rename variables for remaining variables
     dataset = dataset.rename_vars(var_rename_mapping(periodicity))
-    hgt = dataset.HGT
-    pwat = dataset.PWAT
-    slp = dataset.MSLP
+    hgt = extract_var_from_dataset_with_nanfill(dataset, variable='HGT')
+    pwat = extract_var_from_dataset_with_nanfill(dataset, variable='PWAT')
+    slp = extract_var_from_dataset_with_nanfill(dataset, variable='MSLP')
 
     # Add dimension to 2d arrays so all arrays are 3d
     slp = slp.expand_dims(dim='lev4', axis=0)
     pwat = pwat.expand_dims(dim='lev5', axis=0)
 
     # Change dimension name for the height variable
-    hgt = hgt.swap_dims({'lv_ISBL0': 'lev3'})
+    hgt = hgt.rename({'lv_ISBL0': 'lev3'})
 
     # Create the dataset that will finally be written out to the netcdf file!
     dataout = xr.Dataset(
