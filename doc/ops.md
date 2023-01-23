@@ -9,9 +9,9 @@ submit jobs to the running container.
 First, the `run` command will ingest data into the `wip` folder, then the `promote`
 command will promote that data to the final storage location.
 
-_NOTE_: Intermittent failures may occur, seemingly at random. All the ones we've
-encountered can be resolved by re-running the `run` step, which will pick up where it
-left off.
+_NOTE_: Intermittent failures may occur, seemingly at random (see issue #29). All the
+ones we've encountered can be resolved by re-running the `run` step, which will pick up
+where it left off.
 
 
 ## Daily
