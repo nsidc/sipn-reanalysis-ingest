@@ -38,44 +38,61 @@ class Grib2ToNcDaily(luigi.Task):
 
     date = luigi.DateParameter()
 
+    @property
+    def uses_5day_tars(self):
+        if self.date < CFSR_DAILY_TAR_BEFORE:
+            return True
+        return False
+
     def requires(self):
-        five_day_window = Cfsr5ishDayWindow.from_date_in_window(self.date)
+        if self.uses_5day_tars:
+            five_day_window = Cfsr5ishDayWindow.from_date_in_window(self.date)
 
-        req = {
-            CfsrGranuleProductType.ANALYSIS: UntarCfsr5DayFile(
-                window_start=five_day_window.start,
-                window_end=five_day_window.end,
-                product_type=CfsrGranuleProductType.ANALYSIS,
-            ),
-            CfsrGranuleProductType.FORECAST: UntarCfsr5DayFile(
-                window_start=five_day_window.start,
-                window_end=five_day_window.end,
-                product_type=CfsrGranuleProductType.FORECAST,
-            ),
-        }
-
-        # If the first day of analysis window, we also need the forecast files for the
-        # previous window!
-        if self.date == five_day_window.start:
-            forecast_5day_window = Cfsr5ishDayWindow.from_date_in_window(
-                self.date - dt.timedelta(days=1)
-            )
-            req[CfsrGranuleProductType.FORECAST] = [
-                req[CfsrGranuleProductType.FORECAST],
-                UntarCfsr5DayFile(
-                    window_start=forecast_5day_window.start,
-                    window_end=forecast_5day_window.end,
+            req = {
+                CfsrGranuleProductType.ANALYSIS: UntarCfsr5DayFile(
+                    window_start=five_day_window.start,
+                    window_end=five_day_window.end,
+                    product_type=CfsrGranuleProductType.ANALYSIS,
+                ),
+                CfsrGranuleProductType.FORECAST: UntarCfsr5DayFile(
+                    window_start=five_day_window.start,
+                    window_end=five_day_window.end,
                     product_type=CfsrGranuleProductType.FORECAST,
                 ),
-            ]
+            }
 
-        return req
+            # If the first day of analysis window, we also need the forecast files for the
+            # previous window!
+            if self.date == five_day_window.start:
+                forecast_5day_window = Cfsr5ishDayWindow.from_date_in_window(
+                    self.date - dt.timedelta(days=1)
+                )
+                req[CfsrGranuleProductType.FORECAST] = [
+                    req[CfsrGranuleProductType.FORECAST],
+                    UntarCfsr5DayFile(
+                        window_start=forecast_5day_window.start,
+                        window_end=forecast_5day_window.end,
+                        product_type=CfsrGranuleProductType.FORECAST,
+                    ),
+                ]
+
+            return req
+        else:
+            # FIXME: Handle the case of the 1st day of daily data. We need to grab a
+            # 5-day and 1-day file.
+            # Don't need to worry about the 5-day window after arbritrary cutoff date
+            return {
+                'today': UntarCfsrDailyFile(date=today_date),
+                # We need the 18h forecast files, so grab yesterday's file too
+                'yesterday': UntarCfsrDailyFile(date=yesterday_date),
+            }
 
     def output(self):
         fn = DATA_DAILY_FILENAME_TEMPLATE.format(date=self.date)
         return luigi.LocalTarget(DATA_FINISHED_DIR / fn)
 
     def run(self):
+        if self.uses_5day_tars:
         analysis_dir = Path(self.input()[CfsrGranuleProductType.ANALYSIS].path)
         analysis_inputs = select_6hourly_analysis_grib2s(analysis_dir, date=self.date)
 

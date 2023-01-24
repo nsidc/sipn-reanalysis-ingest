@@ -57,6 +57,18 @@ class UntarCfsr5DayFile(UntarFileTask):
         )
 
 
+class UntarCfsrDailyFile(UntarFileTask):
+    """Untar a daily CFSR tar file."""
+
+    date = luigi.DateParameter()
+
+    def requires(self):
+        ...
+
+    def output(self):
+        ...
+
+
 class UntarCfsrV1MonthlyFile(UntarFileTask):
     """Untar monthly CFSRv1 data, which is packaged in a yearly tar file."""
 
