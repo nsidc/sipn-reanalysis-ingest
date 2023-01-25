@@ -1,3 +1,8 @@
+# v1.0.2 (2023-01-25)
+
+* Bugfix: Check if `_FillValue` attr exists on dataset before attempting to delete it
+
+
 # v1.0.1 (2023-01-20)
 
 * Ensure all output variables use NaN as fill value
