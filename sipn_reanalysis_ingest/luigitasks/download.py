@@ -44,6 +44,34 @@ class DownloadCfsr5DayTar(luigi.Task):
             )
 
 
+class DownloadCfsr1DayTar(luigi.Task):
+    """Download V2 after March 31, 2011 (as of 1/25/23) 
+       6-hourly CFSR data which are daily tar files."""
+
+    window_start = luigi.DateParameter()
+    window_end = luigi.DateParameter()
+    product_type = luigi.EnumParameter(enum=CfsrGranuleProductType)
+
+    def output(self):
+        return luigi.LocalTarget(
+            download_1day_tar_path(
+                window_start=self.window_start,
+                window_end=self.window_end,
+                product_type=self.product_type,
+            ),
+        )
+
+    def run(self):
+        # TODO: Validate window
+        with self.output().temporary_path() as tmpf:
+            tmp_fp = Path(tmpf)
+            tmp_fp.parent.mkdir(parents=True, exist_ok=True)
+            download_cfsr_1day_tar(
+                window_start=self.window_start,
+                product_type=self.product_type,
+                output_fp=tmp_fp,
+                )
+
 class DownloadCfsrV1MonthlyTar(luigi.Task):
     """Download monthly CFSRv1 data, which are delivered in yearly tar files."""
 

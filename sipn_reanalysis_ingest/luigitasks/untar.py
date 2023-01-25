@@ -3,13 +3,15 @@ from pathlib import Path
 import luigi
 
 from sipn_reanalysis_ingest._types import CfsrGranuleProductType
-from sipn_reanalysis_ingest.luigitasks.download import (  # DownloadCfsrV1MonthlyTar,
+from sipn_reanalysis_ingest.luigitasks.download import (  
+    DownloadCfsr1DayTar,
     DownloadCfsr5DayTar,
     DownloadCfsrV1MonthlyTar,
     DownloadCfsrV2MonthlyTar,
 )
 from sipn_reanalysis_ingest.util.date import YearMonth
 from sipn_reanalysis_ingest.util.paths import (
+    untar_1day_tar_dir,
     untar_5day_tar_dir,
     untar_monthly_tar_dir,
     untar_yearly_tar_dir,
@@ -57,17 +59,28 @@ class UntarCfsr5DayFile(UntarFileTask):
         )
 
 
-class UntarCfsrDailyFile(UntarFileTask):
+class UntarCfsr1DayFile(UntarFileTask):
     """Untar a daily CFSR tar file."""
 
-    date = luigi.DateParameter()
+    window_start = luigi.DateParameter()
+    window_end = luigi.DateParameter()
+    product_type = luigi.EnumParameter(enum=CfsrGranuleProductType)
 
     def requires(self):
-        ...
+        return DownloadCfsr1DayTar(
+            window_start=self.window_start,
+            window_end=self.window_end,
+            product_type=self.product_type,
+        )
 
     def output(self):
-        ...
-
+        return luigi.LocalTarget(
+            untar_1day_tar_dir(
+                window_start=self.window_start,
+                window_end=self.window_end,
+                product_type=self.product_type,
+            )
+        )
 
 class UntarCfsrV1MonthlyFile(UntarFileTask):
     """Untar monthly CFSRv1 data, which is packaged in a yearly tar file."""

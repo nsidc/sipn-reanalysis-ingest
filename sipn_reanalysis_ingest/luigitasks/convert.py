@@ -11,6 +11,7 @@ from sipn_reanalysis_ingest.constants.paths import (
     DATA_MONTHLY_FILENAME_TEMPLATE,
 )
 from sipn_reanalysis_ingest.luigitasks.untar import (
+    UntarCfsr1DayFile,
     UntarCfsr5DayFile,
     UntarCfsrV1MonthlyFile,
     UntarCfsrV2MonthlyFile,
@@ -81,10 +82,20 @@ class Grib2ToNcDaily(luigi.Task):
             # FIXME: Handle the case of the 1st day of daily data. We need to grab a
             # 5-day and 1-day file.
             # Don't need to worry about the 5-day window after arbritrary cutoff date
+            req = {
+                CfsrGranuleProductType.ANALYSIS: UntarCfsr1DayFile(
+                    window_start=self.date,
+                    window_end=self.date
+                    product_type=CfsrGranuleProductType.ANALYSIS,
+                ),
+                CfsrGranuleProductType.FORECAST: UntarCfsr1DayFile(
+                    window_start=self.date - dt.timedelta(days=1)
+                    window_end=self.date
+                    product_type=CfsrGranuleProductType.FORECAST,
             return {
-                'today': UntarCfsrDailyFile(date=today_date),
+                'today': UntarCfsr1DayFile(date=today_date),
                 # We need the 18h forecast files, so grab yesterday's file too
-                'yesterday': UntarCfsrDailyFile(date=yesterday_date),
+                'yesterday': UntarCfsr1DayFile(date=yesterday_date),
             }
 
     def output(self):
