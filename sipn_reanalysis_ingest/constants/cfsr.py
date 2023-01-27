@@ -17,4 +17,4 @@ CFSR_DATASET_IDS: dict[tuple[CfsrPeriodicity, CfsrDatasetVersion], CfsrDatasetId
     ('monthly', 2): 'ds094.2',
 }
 
-CFSR_DAILY_TAR_BEFORE = dt.date(2011, 4, 1)  # TODO: What is the actual date?
+CFSR_DAILY_TAR_BEFORE = dt.date(2011, 4, 1) 

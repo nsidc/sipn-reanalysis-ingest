@@ -17,6 +17,14 @@ def cfsr_5day_input_identifier(
     return f'{window_start:%Y%m%d}-{window_end:%Y%m%d}_{product_type.value}'
 
 
+def cfsr_1day_input_identifier(
+    *,
+    window_start: dt.date,
+    window_end: dt.date,
+    product_type: CfsrGranuleProductType,
+) -> str:
+    return f'{window_start:%Y%m%d}-{window_end:%Y%m%d}_{product_type.value}'
+
 def cfsr_monthly_input_identifier(*, month: YearMonth) -> str:
     return f'{month}'
 

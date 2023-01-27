@@ -8,7 +8,7 @@ from sipn_reanalysis_ingest.util.misc import range_lookup
 from sipn_reanalysis_ingest.util.product_type import cfsr_product_type_prefix
 
 
-def _cfsr_5day_tar_baseurl(*, window_start: dt.date) -> str:
+def _cfsr_day_tar_baseurl(*, window_start: dt.date) -> str:
     """Calculate a 5-day tar base URL (i.e. URL excluding filename).
 
     E.g.:
@@ -16,6 +16,10 @@ def _cfsr_5day_tar_baseurl(*, window_start: dt.date) -> str:
     * forecast v1: 'https://rda.ucar.edu/data/ds093.0/1980'
     * analysis v2: 'https://rda.ucar.edu/data/ds094.0/2011'
     * forecast v2: 'https://rda.ucar.edu/data/ds094.0/2011'
+
+    ENC - This base url is the same for daily v1/v2 so I changed the name so it 
+          can be used for both
+
     """
     cfsr_version = range_lookup(CFSR_VERSION_BY_DATE, window_start)
     dataset_id = CFSR_DATASET_IDS[('daily', cfsr_version)]
@@ -23,6 +27,19 @@ def _cfsr_5day_tar_baseurl(*, window_start: dt.date) -> str:
 
     return baseurl
 
+def _cfsr_1day_tar_filename(
+    *,
+    window_start: dt.date,
+    window_end: dt.date,
+    product_type: CfsrGranuleProductType,
+) -> str:
+    """Calculate a CFSR 1-day tar filename.
+       
+    Both analysis and forecast files are in a single tar e.g.
+     'cdas1.20110401.pgrbh.tar'
+    """
+    filename = f'cdas1.{window_start:%Y%m%d}.pgrbh.tar'
+    return filename
 
 def _cfsr_5day_tar_filename(
     *,
@@ -40,6 +57,25 @@ def _cfsr_5day_tar_filename(
     filename = f'{prefix}.{window_start:%Y%m%d}-{window_end:%Y%m%d}.tar'
     return filename
 
+
+def cfsr_1day_tar_url(
+    *,
+    window_start: dt.date,
+    product_type: CfsrGranuleProductType,
+) -> str:
+    """Generate a 1-day tar URL for daily v2
+
+    E.g.:
+        'https://rda.ucar.edu/data/ds094.0/2011/cdas1.20110402.pgrbh.tar'
+    """
+    fn = _cfsr_1day_tar_filename(
+        window_start=window_start,
+        window_end=window_end,
+        product_type=product_type,
+    )
+
+    baseurl = _cfsr_day_tar_baseurl(window_start=window_start)
+    return f'{baseurl}/{fn}'
 
 def cfsr_5day_tar_url(
     *,
@@ -65,7 +101,7 @@ def cfsr_5day_tar_url(
         product_type=product_type,
     )
 
-    baseurl = _cfsr_5day_tar_baseurl(window_start=window_start)
+    baseurl = _cfsr_day_tar_baseurl(window_start=window_start)
     return f'{baseurl}/{fn}'
 
 

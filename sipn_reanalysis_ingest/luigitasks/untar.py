@@ -3,7 +3,7 @@ from pathlib import Path
 import luigi
 
 from sipn_reanalysis_ingest._types import CfsrGranuleProductType
-from sipn_reanalysis_ingest.luigitasks.download import (  
+from sipn_reanalysis_ingest.luigitasks.download import (
     DownloadCfsr1DayTar,
     DownloadCfsr5DayTar,
     DownloadCfsrV1MonthlyTar,
@@ -81,6 +81,7 @@ class UntarCfsr1DayFile(UntarFileTask):
                 product_type=self.product_type,
             )
         )
+
 
 class UntarCfsrV1MonthlyFile(UntarFileTask):
     """Untar monthly CFSRv1 data, which is packaged in a yearly tar file."""
