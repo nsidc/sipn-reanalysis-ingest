@@ -61,6 +61,7 @@ def _cfsr_5day_tar_filename(
 def cfsr_1day_tar_url(
     *,
     window_start: dt.date,
+    window_end: dt.date,
     product_type: CfsrGranuleProductType,
 ) -> str:
     """Generate a 1-day tar URL for daily v2

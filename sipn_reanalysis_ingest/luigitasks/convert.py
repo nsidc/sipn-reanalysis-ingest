@@ -17,8 +17,10 @@ from sipn_reanalysis_ingest.luigitasks.untar import (
     UntarCfsrV2MonthlyFile,
 )
 from sipn_reanalysis_ingest.util.cfsr import (
-    select_6hourly_analysis_grib2s,
-    select_6hourly_forecast_grib2s,
+    select_v1_6hourly_analysis_grib2s,
+    select_v1_6hourly_forecast_grib2s,
+    select_v2_6hourly_analysis_grib2s,
+    select_v2_6hourly_forecast_grib2s,
     select_monthly_grib2,
 )
 from sipn_reanalysis_ingest.util.convert import (
@@ -85,13 +87,16 @@ class Grib2ToNcDaily(luigi.Task):
             req = {
                 CfsrGranuleProductType.ANALYSIS: UntarCfsr1DayFile(
                     window_start=self.date,
-                    window_end=self.date
+                    window_end=self.date,
                     product_type=CfsrGranuleProductType.ANALYSIS,
                 ),
                 CfsrGranuleProductType.FORECAST: UntarCfsr1DayFile(
-                    window_start=self.date - dt.timedelta(days=1)
-                    window_end=self.date
+                    window_start=self.date - dt.timedelta(days=1),
+                    window_end=self.date,
                     product_type=CfsrGranuleProductType.FORECAST,
+                )
+            }
+
             return {
                 'today': UntarCfsr1DayFile(date=today_date),
                 # We need the 18h forecast files, so grab yesterday's file too
@@ -104,29 +109,61 @@ class Grib2ToNcDaily(luigi.Task):
 
     def run(self):
         if self.uses_5day_tars:
-        analysis_dir = Path(self.input()[CfsrGranuleProductType.ANALYSIS].path)
-        analysis_inputs = select_6hourly_analysis_grib2s(analysis_dir, date=self.date)
+           analysis_dir = Path(self.input()[CfsrGranuleProductType.ANALYSIS].path)
+           analysis_inputs = select_v1_6hourly_analysis_grib2s(analysis_dir, date=self.date)
 
-        forecast_dirs = [
+           forecast_dirs = [
             Path(d.path)
             for d in luigi.task.flatten(self.input()[CfsrGranuleProductType.FORECAST])
-        ]
-        forecast_inputs = select_6hourly_forecast_grib2s(forecast_dirs, date=self.date)
+           ]
+           forecast_inputs = select_v1_6hourly_forecast_grib2s(forecast_dirs, date=self.date)
 
-        logger.info(f'Producing daily NetCDF for date {self.date}...')
-        logger.debug(f'>> Analysis inputs: {analysis_inputs}')
-        logger.debug(f'>> Forecast inputs: {forecast_inputs}')
+           logger.info(f'Producing daily NetCDF for date {self.date}...')
+           logger.debug(f'>> Analysis inputs: {analysis_inputs}')
+           logger.debug(f'>> Forecast inputs: {forecast_inputs}')
 
-        with self.output().temporary_path() as tempf:
-            convert_6hourly_grib2s_to_nc(
-                analysis_inputs=analysis_inputs,
-                forecast_inputs=forecast_inputs,
-                output_path=Path(tempf),
-            )
+           with self.output().temporary_path() as tempf:
+               convert_6hourly_grib2s_to_nc(
+                   analysis_inputs=analysis_inputs,
+                   forecast_inputs=forecast_inputs,
+                   output_path=Path(tempf),
+               )
 
-            for ifile in [*analysis_inputs, *forecast_inputs]:
-                ifile.unlink()
+               for ifile in [*analysis_inputs, *forecast_inputs]:
+                   ifile.unlink()
+        else:
+           analysis_dir = Path(self.input()[CfsrGranuleProductType.ANALYSIS].path)
+           analysis_inputs = select_v2_6hourly_analysis_grib2s(analysis_dir, date=self.date)
 
+           forecast_dirs = [
+            Path(d.path)
+            for d in luigi.task.flatten(self.input()[CfsrGranuleProductType.FORECAST])
+           ]
+           forecast_inputs = select_v2_6hourly_forecast_grib2s(forecast_dirs, date=self.date)
+
+           logger.info(f'Producing daily NetCDF for date {self.date}...')
+           logger.debug(f'>> Analysis inputs: {analysis_inputs}')
+           logger.debug(f'>> Forecast inputs: {forecast_inputs}')
+
+           with self.output().temporary_path() as tempf:
+               convert_6hourly_grib2s_to_nc(
+                   analysis_inputs=analysis_inputs,
+                   forecast_inputs=forecast_inputs,
+                   output_path=Path(tempf),
+               )
+
+               for ifile in [*analysis_inputs, *forecast_inputs]:
+                   ifile.unlink()
+        else:
+
+class Grib2ToNcMonthly(luigi.Task):
+    """Converts GRIB2 monthly input data to NetCDF.
+
+    The source data will be filtered for only the variables of interest, subset and
+    reprojected for our area of interest.
+    """
+
+    month = luigi.MonthParameter()
 
 class Grib2ToNcMonthly(luigi.Task):
     """Converts GRIB2 monthly input data to NetCDF.
