@@ -154,16 +154,6 @@ class Grib2ToNcDaily(luigi.Task):
 
                for ifile in [*analysis_inputs, *forecast_inputs]:
                    ifile.unlink()
-        else:
-
-class Grib2ToNcMonthly(luigi.Task):
-    """Converts GRIB2 monthly input data to NetCDF.
-
-    The source data will be filtered for only the variables of interest, subset and
-    reprojected for our area of interest.
-    """
-
-    month = luigi.MonthParameter()
 
 class Grib2ToNcMonthly(luigi.Task):
     """Converts GRIB2 monthly input data to NetCDF.
