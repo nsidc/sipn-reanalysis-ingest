@@ -82,7 +82,7 @@ class Grib2ToNcDaily(luigi.Task):
             return req
         else:
             # FIXME: Handle the case of the 1st day of daily data. We need to grab a
-            # 5-day and 1-day file.
+            # 5-day and 1-day file....
             # Don't need to worry about the 5-day window after arbritrary cutoff date
             req = {
                 CfsrGranuleProductType.ANALYSIS: UntarCfsr1DayFile(
