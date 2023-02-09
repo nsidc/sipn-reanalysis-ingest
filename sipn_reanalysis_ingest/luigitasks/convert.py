@@ -4,7 +4,10 @@ from pathlib import Path
 import luigi
 
 from sipn_reanalysis_ingest._types import CfsrGranuleProductType
-from sipn_reanalysis_ingest.constants.cfsr import CFSR_VERSION_BY_DATE
+from sipn_reanalysis_ingest.constants.cfsr import (
+    CFSR_VERSION_BY_DATE,
+    CFSR_DAILY_TAR_BEFORE
+)
 from sipn_reanalysis_ingest.constants.paths import (
     DATA_DAILY_FILENAME_TEMPLATE,
     DATA_FINISHED_DIR,
