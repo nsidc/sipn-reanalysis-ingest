@@ -100,11 +100,7 @@ class Grib2ToNcDaily(luigi.Task):
                 )
             }
 
-            return {
-                'today': UntarCfsr1DayFile(date=today_date),
-                # We need the 18h forecast files, so grab yesterday's file too
-                'yesterday': UntarCfsr1DayFile(date=yesterday_date),
-            }
+            return req 
 
     def output(self):
         fn = DATA_DAILY_FILENAME_TEMPLATE.format(date=self.date)
