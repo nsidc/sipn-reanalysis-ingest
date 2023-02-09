@@ -70,6 +70,7 @@ class DownloadCfsr1DayTar(luigi.Task):
             tmp_fp.parent.mkdir(parents=True, exist_ok=True)
             download_cfsr_1day_tar(
                 window_start=self.window_start,
+                window_end=self.window_end,
                 product_type=self.product_type,
                 output_fp=tmp_fp,
             )
