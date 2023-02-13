@@ -55,9 +55,9 @@ def select_v1_6hourly_analysis_grib2s(grib2_dir: Path, *, date: dt.date) -> list
 def select_v2_6hourly_analysis_grib2s(grib2_dir: Path, *, date: dt.date) -> list[Path]:
     """Filter analysis grib2s in `grib2_dir`, selecting those relevant to `date`.
 
-    Grab all files that match *pgrbanl*
+    Grab all files that match *pgrbhanl*
     """
-    analysis_grib2s = list(grib2_dir.glob(f'*.pgrbanl*.grib2'))
+    analysis_grib2s = list(grib2_dir.glob(f'*.pgrbhanl*.grib2'))
 
     if len(analysis_grib2s) != 4:
         raise CfsrInputDataError(
