@@ -96,7 +96,7 @@ def select_v2_6hourly_forecast_grib2s(
     the date in the filename.
     """
     all_grib2s = list(
-        itertools.chain.from_iterable(list(d.glob('*.pgrbf06.grib2')) for d in grib2_dirs)
+        itertools.chain.from_iterable(list(d.glob('*.pgrbh06.grib2')) for d in grib2_dirs)
     )
     forecast_grib2s = _select_6hourly_forecast_gribs(all_grib2s, date=date)
     return forecast_grib2s
