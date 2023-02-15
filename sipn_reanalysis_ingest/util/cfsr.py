@@ -85,7 +85,7 @@ def select_v1_6hourly_forecast_grib2s(
     return forecast_grib2s
 
 def select_v2_6hourly_forecast_grib2s(
-    grib2_dirs: list[Path], *, date: dt.date
+    grib2_dir: Path, *, date: dt.date
 ) -> list[Path]:
     """Filter forecast grib2s in `grib2_dirs`, selecting those relevant to `date`.
 
