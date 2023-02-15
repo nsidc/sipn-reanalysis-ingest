@@ -89,16 +89,11 @@ def select_v2_6hourly_forecast_grib2s(
 ) -> list[Path]:
     """Filter forecast grib2s in `grib2_dirs`, selecting those relevant to `date`.
 
-    `grib2_dirs` may contain up to 2 paths.
+    For v2 daily, just need to grab all the pgrbh06 files
 
-    This is non-trivial for forecast files; we need to offset the selection back by 6
-    hours, because each file contains expected measurements 6 hours in the future from
-    the date in the filename.
     """
-    all_grib2s = list(
-        itertools.chain.from_iterable(list(d.glob('*.pgrbh06.grib2')) for d in grib2_dirs)
-    )
-    forecast_grib2s = _select_6hourly_forecast_gribs(all_grib2s, date=date)
+    forecast_grib2s = list(grib2_dir.glob(f'*.pgrbh06*.grib2'))
+
     return forecast_grib2s
 
 
@@ -118,6 +113,17 @@ def _select_6hourly_forecast_gribs(
 
 
 def _expected_6hourly_forecast_suffixes_for_date(date: dt.date) -> list[str]:
+    date_minus_1 = date - dt.timedelta(days=1)
+    valid_datetimes = [
+        f'{date_minus_1:%Y%m%d}18',
+        *[f'{date:%Y%m%d}{hour}' for hour in ['00', '06', '12']],
+    ]
+
+    valid_suffixes = [f'{datetime}.gr*b2' for datetime in valid_datetimes]
+
+    return valid_suffixes
+
+def _expected_v2_6hourly_forecast_suffixes_for_date(date: dt.date) -> list[str]:
     date_minus_1 = date - dt.timedelta(days=1)
     valid_datetimes = [
         f'{date_minus_1:%Y%m%d}18',
