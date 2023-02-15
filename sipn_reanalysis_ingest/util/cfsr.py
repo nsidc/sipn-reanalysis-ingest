@@ -92,8 +92,7 @@ def select_v2_6hourly_forecast_grib2s(
     For v2 daily, just need to grab all the pgrbh06 files
 
     """
-    print(grib2_dir)
-    forecast_grib2s = list(grib2_dir.glob(f'*.pgrbh06*.grib2'))
+    forecast_grib2s = list(grib2_dir.glob(f'*.pgrbh06.grib2'))
 
     return forecast_grib2s
 
