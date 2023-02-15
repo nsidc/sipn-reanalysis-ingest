@@ -134,11 +134,8 @@ class Grib2ToNcDaily(luigi.Task):
            analysis_dir = Path(self.input()[CfsrGranuleProductType.ANALYSIS].path)
            analysis_inputs = select_v2_6hourly_analysis_grib2s(analysis_dir, date=self.date)
 
-           forecast_dirs = [
-            Path(d.path)
-            for d in luigi.task.flatten(self.input()[CfsrGranuleProductType.FORECAST])
-           ]
-           forecast_inputs = select_v2_6hourly_forecast_grib2s(forecast_dirs, date=self.date)
+           forecast_dir=Path(self.input()[CfsrGranuleProductType.FORECAST].path)
+           forecast_inputs = select_v2_6hourly_forecast_grib2s(forecast_dir, date=self.date)
 
            logger.info(f'Producing daily NetCDF for date {self.date}...')
            logger.debug(f'>> Analysis inputs: {analysis_inputs}')
