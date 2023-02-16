@@ -21,9 +21,9 @@ def _cfsr_day_tar_baseurl(*, window_start: dt.date) -> str:
           can be used for both
 
     """
-    cfsr_version = range_lookup(CFSR_VERSION_BY_DATE, window_start)
+    cfsr_version = range_lookup(CFSR_VERSION_BY_DATE, date)
     dataset_id = CFSR_DATASET_IDS[('daily', cfsr_version)]
-    baseurl = f'{DOWNLOAD_FILE_ROOT_URL}/{dataset_id}/{window_start.year}'
+    baseurl = f'{DOWNLOAD_FILE_ROOT_URL}/{dataset_id}/{date.year}'
 
     return baseurl
 
