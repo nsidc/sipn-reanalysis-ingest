@@ -65,11 +65,7 @@ class UntarCfsr1DayFile(UntarFileTask):
     date = luigi.DateParameter()
 
     def requires(self):
-        return DownloadCfsr1DayTar(
-            window_start=self.window_start,
-            window_end=self.window_end,
-            product_type=self.product_type,
-        )
+        return DownloadCfsr1DayTar(date=self.date)
 
     def output(self):
         return luigi.LocalTarget(
