@@ -59,11 +59,7 @@ def cfsr_1day_tar_url(*, date: dt.date) -> str:
     E.g.:
         'https://rda.ucar.edu/data/ds094.0/2011/cdas1.20110402.pgrbh.tar'
     """
-    fn = _cfsr_1day_tar_filename(
-        window_start=window_start,
-        window_end=window_end,
-        product_type=product_type,
-    )
+    fn = _cfsr_1day_tar_filename(date=date)
 
     baseurl = _cfsr_day_tar_baseurl(window_start=window_start)
     return f'{baseurl}/{fn}'
