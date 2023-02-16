@@ -8,7 +8,7 @@ from sipn_reanalysis_ingest.util.misc import range_lookup
 from sipn_reanalysis_ingest.util.product_type import cfsr_product_type_prefix
 
 
-def _cfsr_day_tar_baseurl(*, window_start: dt.date) -> str:
+def _cfsr_daily_tar_baseurl(*, date: dt.date) -> str:
     """Calculate a 5-day tar base URL (i.e. URL excluding filename).
 
     E.g.:
