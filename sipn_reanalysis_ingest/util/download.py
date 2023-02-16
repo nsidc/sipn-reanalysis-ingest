@@ -80,11 +80,7 @@ def download_cfsr_1day_tar(
     The end date is calculated from `window_start`; the last day of the month is used if
     `window_start + 5` is in the next month.
     """
-    url = cfsr_1day_tar_url(
-        window_start=window_start,
-        window_end=window_end,
-        product_type=product_type,
-    )
+    url = cfsr_1day_tar_url(date=date)
     output_fp = download_tar(url, output_fp)
 
     return output_fp
