@@ -87,18 +87,10 @@ class Grib2ToNcDaily(luigi.Task):
             # FIXME: Handle the case of the 1st day of daily data. We need to grab a
             # 5-day and 1-day file....
             # Don't need to worry about the 5-day window after arbritrary cutoff date
-            req = {
-                CfsrGranuleProductType.ANALYSIS: UntarCfsr1DayFile(
-                    window_start=self.date,
-                    window_end=self.date,
-                    product_type=CfsrGranuleProductType.ANALYSIS,
-                ),
-                CfsrGranuleProductType.FORECAST: UntarCfsr1DayFile(
-                    window_start=self.date - dt.timedelta(days=1),
-                    window_end=self.date,
-                    product_type=CfsrGranuleProductType.FORECAST,
-                )
-            }
+            req = [
+                UntarCfsr1DayFile(date=self.date),
+                UntarCfsr1DayFile(date=self.date - dt.timedelta(days=1)),
+            ]
 
             return req 
 
