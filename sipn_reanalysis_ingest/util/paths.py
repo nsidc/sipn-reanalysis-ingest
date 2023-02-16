@@ -70,9 +70,7 @@ def download_5day_tar_path(
 
 def download_1day_tar_path(
     *,
-    window_start: dt.date,
-    window_end: dt.date,
-    product_type: CfsrGranuleProductType,
+    date: dt.date,
 ) -> Path:
     ident = cfsr_1day_input_identifier(
         window_start=window_start,
