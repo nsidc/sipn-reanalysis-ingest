@@ -88,7 +88,7 @@ def cfsr_5day_tar_url(
         product_type=product_type,
     )
 
-    baseurl = _cfsr_day_tar_baseurl(window_start=window_start)
+    baseurl = _cfsr_daily_tar_baseurl(window_start=window_start)
     return f'{baseurl}/{fn}'
 
 
