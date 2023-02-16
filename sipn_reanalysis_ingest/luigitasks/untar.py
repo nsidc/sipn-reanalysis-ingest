@@ -62,9 +62,7 @@ class UntarCfsr5DayFile(UntarFileTask):
 class UntarCfsr1DayFile(UntarFileTask):
     """Untar a daily CFSR tar file."""
 
-    window_start = luigi.DateParameter()
-    window_end = luigi.DateParameter()
-    product_type = luigi.EnumParameter(enum=CfsrGranuleProductType)
+    date = luigi.DateParameter()
 
     def requires(self):
         return DownloadCfsr1DayTar(
