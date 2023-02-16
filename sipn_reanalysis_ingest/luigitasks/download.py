@@ -54,11 +54,7 @@ class DownloadCfsr1DayTar(luigi.Task):
 
     def output(self):
         return luigi.LocalTarget(
-            download_1day_tar_path(
-                window_start=self.window_start,
-                window_end=self.window_end,
-                product_type=self.product_type,
-            ),
+            download_1day_tar_path(date=self.date),
         )
 
     def run(self):
