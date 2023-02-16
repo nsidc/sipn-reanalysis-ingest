@@ -72,11 +72,7 @@ def download_1day_tar_path(
     *,
     date: dt.date,
 ) -> Path:
-    ident = cfsr_1day_input_identifier(
-        window_start=window_start,
-        window_end=window_end,
-        product_type=product_type,
-    )
+    ident = cfsr_1day_input_identifier(date=date)
     return DATA_DOWNLOAD_DIR / f'{ident}.tar'
 
 
