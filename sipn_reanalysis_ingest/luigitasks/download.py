@@ -50,9 +50,7 @@ class DownloadCfsr1DayTar(luigi.Task):
     """Download V2 after March 31, 2011 (as of 1/25/23)
     6-hourly CFSR data which are daily tar files."""
 
-    window_start = luigi.DateParameter()
-    window_end = luigi.DateParameter()
-    product_type = luigi.EnumParameter(enum=CfsrGranuleProductType)
+    date = luigi.DateParameter()
 
     def output(self):
         return luigi.LocalTarget(
