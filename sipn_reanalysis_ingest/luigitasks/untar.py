@@ -69,11 +69,7 @@ class UntarCfsr1DayFile(UntarFileTask):
 
     def output(self):
         return luigi.LocalTarget(
-            untar_1day_tar_dir(
-                window_start=self.window_start,
-                window_end=self.window_end,
-                product_type=self.product_type,
-            )
+            untar_1day_tar_dir(date=self.date)
         )
 
 
