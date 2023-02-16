@@ -70,9 +70,7 @@ def download_tar(url: str, output_fp: Path) -> Path:
 
 def download_cfsr_1day_tar(
     *,
-    window_start: dt.date,
-    window_end: dt.date,
-    product_type: CfsrGranuleProductType,
+    date: dt.date,
     output_fp: Path,
 ) -> Path:
     """Download a 1-day .tar file from RDA.
