@@ -27,18 +27,13 @@ def _cfsr_day_tar_baseurl(*, window_start: dt.date) -> str:
 
     return baseurl
 
-def _cfsr_1day_tar_filename(
-    *,
-    window_start: dt.date,
-    window_end: dt.date,
-    product_type: CfsrGranuleProductType,
-) -> str:
+def _cfsr_1day_tar_filename(*, date: dt.date) -> str:
     """Calculate a CFSR 1-day tar filename.
        
     Both analysis and forecast files are in a single tar e.g.
      'cdas1.20110401.pgrbh.tar'
     """
-    filename = f'cdas1.{window_start:%Y%m%d}.pgrbh.tar'
+    filename = f'cdas1.{date:%Y%m%d}.pgrbh.tar'
     return filename
 
 def _cfsr_5day_tar_filename(
