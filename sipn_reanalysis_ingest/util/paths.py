@@ -31,9 +31,7 @@ def untar_1day_tar_dir(
     date: dt.date,
 ) -> Path:
     subdir_name = cfsr_1day_input_identifier(
-        window_start=window_start,
-        window_end=window_end,
-        product_type=product_type,
+        date=date,
     )
     return DATA_UNTAR_DIR / subdir_name
 
