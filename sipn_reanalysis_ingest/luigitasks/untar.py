@@ -16,7 +16,7 @@ from sipn_reanalysis_ingest.util.paths import (
     untar_monthly_tar_dir,
     untar_yearly_tar_dir,
 )
-from sipn_reanalysis_ingest.util.untar import untar
+from sipn_reanalysis_ingest.util.untar import untar, untar_daily_tar
 
 # TODO: GranuleTask mixin or luigi.Task subclass that modifies __init__ to calculate
 # `granule` instance attribute? Child class has to populate a `GranuleType` attibute to
@@ -71,6 +71,14 @@ class UntarCfsr1DayFile(UntarFileTask):
         return luigi.LocalTarget(
             untar_1day_tar_dir(date=self.date)
         )
+
+    def run(self):
+        with self.output().temporary_path() as tmpd:
+            tmp_dir = Path(tmpd)
+            tmp_dir.mkdir()
+            untar_daily_tar(Path(self.input().path), output_dir=tmp_dir)
+
+            Path(self.input().path).unlink()
 
 
 class UntarCfsrV1MonthlyFile(UntarFileTask):

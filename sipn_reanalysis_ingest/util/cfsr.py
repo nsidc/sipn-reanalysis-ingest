@@ -49,16 +49,17 @@ def select_5daily_6hourly_analysis_grib2s(grib2_dir: Path, *, date: dt.date) -> 
 
     return sorted(analysis_grib2s)
 
-def select_daily_6hourly_analysis_grib2s(grib2_dir: Path, *, date: dt.date) -> list[Path]:
-    """Filter analysis grib2s in `grib2_dir`, selecting those relevant to `date`.
 
-    Grab all files that match *pgrbhanl*
+def select_daily_6hourly_analysis_grib2s(grib2_dir: Path) -> list[Path]:
+    """Filter for analysis grib2s in daily `grib2_dir`.
+
+    Grab all files that match *pgrbhanl*.
     """
     analysis_grib2s = list(grib2_dir.glob(f'*.pgrbhanl*.grib2'))
 
     if len(analysis_grib2s) != 4:
         raise CfsrInputDataError(
-            f'Expected four forecast files. Found: {analysis_grib2s}'
+            f'Expected four analysis files. Found: {analysis_grib2s}'
         )
 
     return sorted(analysis_grib2s)
@@ -78,18 +79,31 @@ def select_5daily_6hourly_forecast_grib2s(
     all_grib2s = list(
         itertools.chain.from_iterable(list(d.glob('*.grb2')) for d in grib2_dirs)
     )
+
     forecast_grib2s = _select_6hourly_forecast_gribs(all_grib2s, date=date)
     return forecast_grib2s
 
+
 def select_daily_6hourly_forecast_grib2s(
-    grib2_dir: Path, *, date: dt.date
+    *,
+    current_date_grib2_dir: Path,
+    previous_date_grib2_dir: Path,
 ) -> list[Path]:
-    """Filter forecast grib2s in `grib2_dirs`, selecting those relevant to `date`.
+    """Filter forecast grib2s in provided dirs.
 
-    For daily, just need to grab all the pgrbh06 files
-
+    Grab files that match *pgrbh06*: from previous day grab 18z, from current day, grab
+    00z, 06z, 12z.
     """
-    forecast_grib2s = list(grib2_dir.glob(f'*.pgrbh06.grib2'))
+    previous_date_grib2s = list(previous_date_grib2_dir.glob(f'*.t18z.pgrbh06.grib2'))
+    current_date_grib2s = list(current_date_grib2_dir.glob(
+        f'*.t[01][026]z.pgrbh06.grib2',
+    ))
+
+    forecast_grib2s = previous_date_grib2s + current_date_grib2s
+    if len(forecast_grib2s) != 4:
+        raise CfsrInputDataError(
+            f'Expected four forecast files. Found: {forecast_grib2s}'
+        )
 
     return forecast_grib2s
 
