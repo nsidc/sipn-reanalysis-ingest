@@ -32,8 +32,10 @@ def extract_var_from_dataset_with_nanfill(
     variable: str,
 ) -> xr.DataArray:
     data_array = dataset[variable]
+
     # Get rid of any fill value already set
-    del data_array.attrs['_FillValue']
+    if '_FillValue' in data_array.attrs:
+        del data_array.attrs['_FillValue']
 
     data_array.data = _max_to_nan(data_array.to_numpy())
     return data_array
