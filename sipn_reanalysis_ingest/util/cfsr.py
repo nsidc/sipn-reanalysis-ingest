@@ -58,7 +58,7 @@ def select_daily_6hourly_analysis_grib2s(grib2_dir: Path) -> list[Path]:
 
     Grab all files that match *pgrbhanl*.
     """
-    analysis_grib2s = list(grib2_dir.glob(f'*.pgrbhanl*.grib2'))
+    analysis_grib2s = list(grib2_dir.glob('*.pgrbhanl*.grib2'))
 
     if len(analysis_grib2s) != 4:
         raise CfsrInputDataError(
@@ -123,12 +123,7 @@ def select_edgecase_6hourly_forecast_grib2s(
         f'*{previous_date:%Y%m%d}18.grb2',
     ))
 
-    # TODO: DRY with the daily forecast function
-    current_date_grib2s = list(
-        current_date_grib2_dir.glob(
-            f'*.t[01][026]z.pgrbh06.grib2',
-        )
-    )
+    current_date_grib2s = list(current_date_grib2_dir.glob('*.t[01][026]z.pgrbh06.grib2'))
 
     forecast_grib2s = previous_date_grib2s + sorted(current_date_grib2s)
     if len(forecast_grib2s) != 4:

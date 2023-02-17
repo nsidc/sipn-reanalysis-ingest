@@ -56,7 +56,7 @@ def _cfsr_5day_tar_filename(
 
 
 def cfsr_1day_tar_url(*, date: dt.date) -> str:
-    """Generate a 1-day tar URL for daily v2
+    """Generate a 1-day tar URL for daily tar files.
 
     E.g.:
         'https://rda.ucar.edu/data/ds094.0/2011/cdas1.20110402.pgrbh.tar'
