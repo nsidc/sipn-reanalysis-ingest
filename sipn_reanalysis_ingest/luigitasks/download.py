@@ -5,14 +5,14 @@ import luigi
 from sipn_reanalysis_ingest._types import CfsrGranuleProductType
 from sipn_reanalysis_ingest.util.date import YearMonth
 from sipn_reanalysis_ingest.util.download import (
-    download_cfsr_5day_tar,
     download_cfsr_1day_tar,
+    download_cfsr_5day_tar,
     download_cfsr_monthly_tar,
     download_cfsr_yearly_tar,
 )
 from sipn_reanalysis_ingest.util.paths import (
-    download_5day_tar_path,
     download_1day_tar_path,
+    download_5day_tar_path,
     download_monthly_tar_path,
     download_yearly_tar_path,
 )

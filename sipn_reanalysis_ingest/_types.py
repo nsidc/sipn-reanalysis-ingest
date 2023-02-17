@@ -22,6 +22,7 @@ class CfsrGranuleProductType(enum.Enum):
     ANALYSIS = 'analysis'
     FORECAST = 'forecast'
 
+
 class DailyTarsRequiredf(enum.Enum):
     """Define which temporal resolution of daily tars to download
 

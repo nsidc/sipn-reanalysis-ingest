@@ -68,9 +68,7 @@ class UntarCfsr1DayFile(UntarFileTask):
         return DownloadCfsr1DayTar(date=self.date)
 
     def output(self):
-        return luigi.LocalTarget(
-            untar_1day_tar_dir(date=self.date)
-        )
+        return luigi.LocalTarget(untar_1day_tar_dir(date=self.date))
 
     def run(self):
         with self.output().temporary_path() as tmpd:

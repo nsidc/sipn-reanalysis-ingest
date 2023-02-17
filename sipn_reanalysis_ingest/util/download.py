@@ -68,6 +68,7 @@ def download_tar(url: str, output_fp: Path) -> Path:
     logger.info(f'Downloaded {url} to {output_fp}')
     return output_fp
 
+
 def download_cfsr_1day_tar(
     *,
     date: dt.date,
@@ -82,6 +83,7 @@ def download_cfsr_1day_tar(
     output_fp = download_tar(url, output_fp)
 
     return output_fp
+
 
 # TODO: The functions below this line are awfully repetetive. DRY
 def download_cfsr_5day_tar(

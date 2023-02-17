@@ -17,7 +17,7 @@ def _cfsr_daily_tar_baseurl(*, date: dt.date) -> str:
     * analysis v2: 'https://rda.ucar.edu/data/ds094.0/2011'
     * forecast v2: 'https://rda.ucar.edu/data/ds094.0/2011'
 
-    ENC - This base url is the same for daily v1/v2 so I changed the name so it 
+    ENC - This base url is the same for daily v1/v2 so I changed the name so it
           can be used for both
 
     """
@@ -27,14 +27,16 @@ def _cfsr_daily_tar_baseurl(*, date: dt.date) -> str:
 
     return baseurl
 
+
 def _cfsr_1day_tar_filename(*, date: dt.date) -> str:
     """Calculate a CFSR 1-day tar filename.
-       
+
     Both analysis and forecast files are in a single tar e.g.
      'cdas1.20110401.pgrbh.tar'
     """
     filename = f'cdas1.{date:%Y%m%d}.pgrbh.tar'
     return filename
+
 
 def _cfsr_5day_tar_filename(
     *,
@@ -63,6 +65,7 @@ def cfsr_1day_tar_url(*, date: dt.date) -> str:
 
     baseurl = _cfsr_daily_tar_baseurl(date=date)
     return f'{baseurl}/{fn}'
+
 
 def cfsr_5day_tar_url(
     *,

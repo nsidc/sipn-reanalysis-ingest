@@ -14,7 +14,8 @@ def untar_daily_tar(tar_path: Path, *, output_dir: Path) -> None:
     """
     with tarfile.open(tar_path) as tar:
         fns = [
-            fn.name for fn in tar.getmembers()
+            fn.name
+            for fn in tar.getmembers()
             if any(substr in fn.name for substr in ('pgrbhanl', 'pgrbh06'))
         ]
         for fn in fns:

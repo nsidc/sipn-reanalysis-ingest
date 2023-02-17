@@ -26,13 +26,15 @@ def untar_5day_tar_dir(
     )
     return DATA_UNTAR_DIR / subdir_name
 
+
 def untar_1day_tar_dir(
     *,
     date: dt.date,
 ) -> Path:
     subdir_name = cfsr_1day_input_identifier(date=date)
-       
+
     return DATA_UNTAR_DIR / subdir_name
+
 
 def untar_monthly_tar_dir(
     *,
@@ -67,13 +69,13 @@ def download_5day_tar_path(
     )
     return DATA_DOWNLOAD_DIR / f'{ident}.tar'
 
+
 def download_1day_tar_path(
     *,
     date: dt.date,
 ) -> Path:
     ident = cfsr_1day_input_identifier(date=date)
     return DATA_DOWNLOAD_DIR / f'{ident}.tar'
-
 
 
 def download_monthly_tar_path(*, month: YearMonth) -> Path:
