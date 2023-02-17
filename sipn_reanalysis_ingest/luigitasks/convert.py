@@ -6,7 +6,7 @@ import luigi
 from sipn_reanalysis_ingest._types import CfsrGranuleProductType
 from sipn_reanalysis_ingest.constants.cfsr import (
     CFSR_VERSION_BY_DATE,
-    CFSR_DAILY_TAR_BEFORE
+    CFSR_DAILY_TAR_AFTER
 )
 from sipn_reanalysis_ingest.constants.paths import (
     DATA_DAILY_FILENAME_TEMPLATE,
@@ -20,10 +20,10 @@ from sipn_reanalysis_ingest.luigitasks.untar import (
     UntarCfsrV2MonthlyFile,
 )
 from sipn_reanalysis_ingest.util.cfsr import (
-    select_v1_6hourly_analysis_grib2s,
-    select_v1_6hourly_forecast_grib2s,
-    select_v2_6hourly_analysis_grib2s,
-    select_v2_6hourly_forecast_grib2s,
+    select_5daily_6hourly_analysis_grib2s,
+    select_5daily_6hourly_forecast_grib2s,
+    select_daily_6hourly_analysis_grib2s,
+    select_daily_6hourly_forecast_grib2s,
     select_monthly_grib2,
 )
 from sipn_reanalysis_ingest.util.convert import (
@@ -46,7 +46,7 @@ class Grib2ToNcDaily(luigi.Task):
 
     @property
     def uses_5day_tars(self):
-        if self.date < CFSR_DAILY_TAR_BEFORE:
+        if self.date < CFSR_DAILY_TAR_AFTER:
             return True
         return False
 
@@ -101,13 +101,13 @@ class Grib2ToNcDaily(luigi.Task):
     def run(self):
         if self.uses_5day_tars:
            analysis_dir = Path(self.input()[CfsrGranuleProductType.ANALYSIS].path)
-           analysis_inputs = select_v1_6hourly_analysis_grib2s(analysis_dir, date=self.date)
+           analysis_inputs = select_5daily_6hourly_analysis_grib2s(analysis_dir, date=self.date)
 
            forecast_dirs = [
             Path(d.path)
             for d in luigi.task.flatten(self.input()[CfsrGranuleProductType.FORECAST])
            ]
-           forecast_inputs = select_v1_6hourly_forecast_grib2s(forecast_dirs, date=self.date)
+           forecast_inputs = select_5daily_6hourly_forecast_grib2s(forecast_dirs, date=self.date)
 
            logger.info(f'Producing daily NetCDF for date {self.date}...')
            logger.debug(f'>> Analysis inputs: {analysis_inputs}')
@@ -120,14 +120,12 @@ class Grib2ToNcDaily(luigi.Task):
                    output_path=Path(tempf),
                )
 
-               for ifile in [*analysis_inputs, *forecast_inputs]:
-                   ifile.unlink()
         else:
            analysis_dir = Path(self.input()[CfsrGranuleProductType.ANALYSIS].path)
-           analysis_inputs = select_v2_6hourly_analysis_grib2s(analysis_dir, date=self.date)
+           analysis_inputs = select_daily_6hourly_analysis_grib2s(analysis_dir, date=self.date)
 
            forecast_dir=Path(self.input()[CfsrGranuleProductType.FORECAST].path)
-           forecast_inputs = select_v2_6hourly_forecast_grib2s(forecast_dir, date=self.date)
+           forecast_inputs = select_daily_6hourly_forecast_grib2s(forecast_dir, date=self.date)
 
            logger.info(f'Producing daily NetCDF for date {self.date}...')
            logger.debug(f'>> Analysis inputs: {analysis_inputs}')
@@ -140,8 +138,8 @@ class Grib2ToNcDaily(luigi.Task):
                    output_path=Path(tempf),
                )
 
-               for ifile in [*analysis_inputs, *forecast_inputs]:
-                   ifile.unlink()
+        for ifile in [*analysis_inputs, *forecast_inputs]:
+             ifile.unlink()
 
 class Grib2ToNcMonthly(luigi.Task):
     """Converts GRIB2 monthly input data to NetCDF.

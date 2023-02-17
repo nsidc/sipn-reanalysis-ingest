@@ -30,9 +30,8 @@ def untar_1day_tar_dir(
     *,
     date: dt.date,
 ) -> Path:
-    subdir_name = cfsr_1day_input_identifier(
-        date=date,
-    )
+    subdir_name = cfsr_1day_input_identifier(date=date)
+       
     return DATA_UNTAR_DIR / subdir_name
 
 def untar_monthly_tar_dir(

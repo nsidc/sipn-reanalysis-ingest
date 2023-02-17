@@ -21,3 +21,14 @@ class CfsrGranuleProductType(enum.Enum):
 
     ANALYSIS = 'analysis'
     FORECAST = 'forecast'
+
+class DailyTarsRequiredf(enum.Enum):
+    """Define which temporal resolution of daily tars to download
+
+    Before 4/1/2011, 5-day tars are required, daily after
+
+    """
+
+    FIVE_DAY = 'five_day'
+    DAILY = 'daily'
+    BOTH = 'both'

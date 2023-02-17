@@ -61,7 +61,7 @@ def cfsr_1day_tar_url(*, date: dt.date) -> str:
     """
     fn = _cfsr_1day_tar_filename(date=date)
 
-    baseurl = _cfsr_day_tar_baseurl(window_start=window_start)
+    baseurl = _cfsr_daily_tar_baseurl(date=date)
     return f'{baseurl}/{fn}'
 
 def cfsr_5day_tar_url(
@@ -88,7 +88,7 @@ def cfsr_5day_tar_url(
         product_type=product_type,
     )
 
-    baseurl = _cfsr_daily_tar_baseurl(window_start=window_start)
+    baseurl = _cfsr_daily_tar_baseurl(date=window_start)
     return f'{baseurl}/{fn}'
 
 

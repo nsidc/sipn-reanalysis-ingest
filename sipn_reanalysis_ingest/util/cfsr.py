@@ -16,14 +16,11 @@ def cfsr_5day_input_identifier(
 ) -> str:
     return f'{window_start:%Y%m%d}-{window_end:%Y%m%d}_{product_type.value}'
 
-
 def cfsr_1day_input_identifier(
     *,
-    window_start: dt.date,
-    window_end: dt.date,
-    product_type: CfsrGranuleProductType,
+    date: dt.date,
 ) -> str:
-    return f'{window_start:%Y%m%d}-{window_end:%Y%m%d}_{product_type.value}'
+    return f'{date:%Y%m%d}-{date:%Y%m%d}'
 
 def cfsr_monthly_input_identifier(*, month: YearMonth) -> str:
     return f'{month}'
@@ -38,7 +35,7 @@ def cfsr_yearly_input_identifier(
 
 
 # TODO: UNIT TEST!
-def select_v1_6hourly_analysis_grib2s(grib2_dir: Path, *, date: dt.date) -> list[Path]:
+def select_5daily_6hourly_analysis_grib2s(grib2_dir: Path, *, date: dt.date) -> list[Path]:
     """Filter analysis grib2s in `grib2_dir`, selecting those relevant to `date`.
 
     This is trivial with analysis files; simply select those files matching date.
@@ -52,7 +49,7 @@ def select_v1_6hourly_analysis_grib2s(grib2_dir: Path, *, date: dt.date) -> list
 
     return sorted(analysis_grib2s)
 
-def select_v2_6hourly_analysis_grib2s(grib2_dir: Path, *, date: dt.date) -> list[Path]:
+def select_daily_6hourly_analysis_grib2s(grib2_dir: Path, *, date: dt.date) -> list[Path]:
     """Filter analysis grib2s in `grib2_dir`, selecting those relevant to `date`.
 
     Grab all files that match *pgrbhanl*
@@ -67,7 +64,7 @@ def select_v2_6hourly_analysis_grib2s(grib2_dir: Path, *, date: dt.date) -> list
     return sorted(analysis_grib2s)
 
 
-def select_v1_6hourly_forecast_grib2s(
+def select_5daily_6hourly_forecast_grib2s(
     grib2_dirs: list[Path], *, date: dt.date
 ) -> list[Path]:
     """Filter forecast grib2s in `grib2_dirs`, selecting those relevant to `date`.
@@ -84,12 +81,12 @@ def select_v1_6hourly_forecast_grib2s(
     forecast_grib2s = _select_6hourly_forecast_gribs(all_grib2s, date=date)
     return forecast_grib2s
 
-def select_v2_6hourly_forecast_grib2s(
+def select_daily_6hourly_forecast_grib2s(
     grib2_dir: Path, *, date: dt.date
 ) -> list[Path]:
     """Filter forecast grib2s in `grib2_dirs`, selecting those relevant to `date`.
 
-    For v2 daily, just need to grab all the pgrbh06 files
+    For daily, just need to grab all the pgrbh06 files
 
     """
     forecast_grib2s = list(grib2_dir.glob(f'*.pgrbh06.grib2'))
@@ -123,7 +120,7 @@ def _expected_6hourly_forecast_suffixes_for_date(date: dt.date) -> list[str]:
 
     return valid_suffixes
 
-def _expected_v2_6hourly_forecast_suffixes_for_date(date: dt.date) -> list[str]:
+def _expected_daily_6hourly_forecast_suffixes_for_date(date: dt.date) -> list[str]:
     date_minus_1 = date - dt.timedelta(days=1)
     valid_datetimes = [
         f'{date_minus_1:%Y%m%d}18',
