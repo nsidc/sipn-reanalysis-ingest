@@ -3,6 +3,7 @@ import itertools
 from pathlib import Path
 
 from sipn_reanalysis_ingest._types import CfsrGranuleProductType
+from sipn_reanalysis_ingest.constants.cfsr import CFSR_DAILY_TAR_ON_OR_AFTER
 from sipn_reanalysis_ingest.errors import CfsrInputDataError
 from sipn_reanalysis_ingest.util.date import YearMonth
 from sipn_reanalysis_ingest.util.product_type import cfsr_product_type_prefix
@@ -82,7 +83,7 @@ def select_5daily_6hourly_forecast_grib2s(
         itertools.chain.from_iterable(list(d.glob('*.grb2')) for d in grib2_dirs)
     )
 
-    forecast_grib2s = _select_6hourly_forecast_gribs(all_grib2s, date=date)
+    forecast_grib2s = _select_5daily_6hourly_forecast_gribs(all_grib2s, date=date)
     return forecast_grib2s
 
 
@@ -111,6 +112,7 @@ def select_daily_6hourly_forecast_grib2s(
 
     return forecast_grib2s
 
+
 def select_edgecase_6hourly_forecast_grib2s(
     *,
     previous_5day_window_forecast_grib2_dir: Path,
@@ -137,10 +139,10 @@ def select_edgecase_6hourly_forecast_grib2s(
     return forecast_grib2s
 
 
-def _select_6hourly_forecast_gribs(
+def _select_5daily_6hourly_forecast_gribs(
     grib2_files: list[Path], *, date: dt.date
 ) -> list[Path]:
-    valid_suffixes = _expected_6hourly_forecast_suffixes_for_date(date)
+    valid_suffixes = _expected_5daily_6hourly_forecast_suffixes_for_date(date)
     valid_grib2s = [
         p for p in grib2_files if any(str(p).endswith(v) for v in valid_suffixes)
     ]
@@ -151,7 +153,10 @@ def _select_6hourly_forecast_gribs(
     return sorted(valid_grib2s)
 
 
-def _expected_6hourly_forecast_suffixes_for_date(date: dt.date) -> list[str]:
+def _expected_5daily_6hourly_forecast_suffixes_for_date(date: dt.date) -> list[str]:
+    if date >= CFSR_DAILY_TAR_ON_OR_AFTER:
+        raise RuntimeError(f'Expected date before {date} for 5-daily data.')
+
     date_minus_1 = date - dt.timedelta(days=1)
     valid_datetimes = [
         f'{date_minus_1:%Y%m%d}18',
@@ -159,18 +164,6 @@ def _expected_6hourly_forecast_suffixes_for_date(date: dt.date) -> list[str]:
     ]
 
     valid_suffixes = [f'{datetime}.grb2' for datetime in valid_datetimes]
-
-    return valid_suffixes
-
-
-def _expected_daily_6hourly_forecast_suffixes_for_date(date: dt.date) -> list[str]:
-    date_minus_1 = date - dt.timedelta(days=1)
-    valid_datetimes = [
-        f'{date_minus_1:%Y%m%d}18',
-        *[f'{date:%Y%m%d}{hour}' for hour in ['00', '06', '12']],
-    ]
-
-    valid_suffixes = [f'{datetime}.gr*b2' for datetime in valid_datetimes]
 
     return valid_suffixes
 
