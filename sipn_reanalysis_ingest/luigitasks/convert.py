@@ -3,9 +3,12 @@ from pathlib import Path
 
 import luigi
 
-from sipn_reanalysis_ingest._types import CfsrGranuleProductType
+from sipn_reanalysis_ingest._types import (
+    CfsrGranuleProductType,
+    TarsRequiredForDailyData,
+)
 from sipn_reanalysis_ingest.constants.cfsr import (
-    CFSR_DAILY_TAR_AFTER,
+    CFSR_DAILY_TAR_ON_OR_AFTER,
     CFSR_VERSION_BY_DATE,
 )
 from sipn_reanalysis_ingest.constants.paths import (
@@ -24,6 +27,7 @@ from sipn_reanalysis_ingest.util.cfsr import (
     select_5daily_6hourly_forecast_grib2s,
     select_daily_6hourly_analysis_grib2s,
     select_daily_6hourly_forecast_grib2s,
+    select_edgecase_6hourly_forecast_grib2s,
     select_monthly_grib2,
 )
 from sipn_reanalysis_ingest.util.convert import (
@@ -46,12 +50,25 @@ class Grib2ToNcDaily(luigi.Task):
 
     @property
     def uses_5day_tars(self):
-        if self.date < CFSR_DAILY_TAR_AFTER:
+        if self.date < CFSR_DAILY_TAR_ON_OR_AFTER:
             return True
         return False
 
+    @property
+    def tars_required(self) -> TarsRequiredForDailyData:
+        if self.date == CFSR_DAILY_TAR_ON_OR_AFTER:
+            return TarsRequiredForDailyData.BOTH
+        elif self.date < CFSR_DAILY_TAR_ON_OR_AFTER:
+            return TarsRequiredForDailyData.FIVE_DAILY
+        elif self.date > CFSR_DAILY_TAR_ON_OR_AFTER:
+            return TarsRequiredForDailyData.DAILY
+
+        # TODO: How to convince Mypy that the code will never reach this line?
+        raise RuntimeError('This should not be possible')
+
+
     def requires(self):
-        if self.uses_5day_tars:
+        if self.tars_required == TarsRequiredForDailyData.FIVE_DAILY:
             five_day_window = Cfsr5ishDayWindow.from_date_in_window(self.date)
 
             req = {
@@ -81,27 +98,36 @@ class Grib2ToNcDaily(luigi.Task):
                         product_type=CfsrGranuleProductType.FORECAST,
                     ),
                 ]
-
             return req
-        # TODO:
-        # elif <self.date is the same day that the data transitions from 5-day to 1-day
-        # tars>:
-        else:
-            # FIXME: Handle the case of the 1st day of daily data. We need to grab a
-            # 5-day and 1-day file....
+
+        elif self.tars_required == TarsRequiredForDailyData.BOTH:
+            forecast_5day_window = Cfsr5ishDayWindow.from_date_in_window(
+                self.date - dt.timedelta(days=1)
+            )
+            req = [
+                UntarCfsr5DayFile(
+                    window_start=forecast_5day_window.start,
+                    window_end=forecast_5day_window.end,
+                    product_type=CfsrGranuleProductType.FORECAST,
+                ),
+                UntarCfsr1DayFile(date=self.date),
+            ]
+            return req
+
+        elif self.tars_required == TarsRequiredForDailyData.DAILY:
             req = [
                 UntarCfsr1DayFile(date=self.date - dt.timedelta(days=1)),
                 UntarCfsr1DayFile(date=self.date),
             ]
-
             return req
+        
 
     def output(self):
         fn = DATA_DAILY_FILENAME_TEMPLATE.format(date=self.date)
         return luigi.LocalTarget(DATA_FINISHED_DIR / fn)
 
     def run(self):
-        if self.uses_5day_tars:
+        if self.tars_required == TarsRequiredForDailyData.FIVE_DAILY:
             analysis_dir = Path(self.input()[CfsrGranuleProductType.ANALYSIS].path)
             analysis_inputs = select_5daily_6hourly_analysis_grib2s(
                 analysis_dir, date=self.date
@@ -114,43 +140,45 @@ class Grib2ToNcDaily(luigi.Task):
                 )
             ]
             forecast_inputs = select_5daily_6hourly_forecast_grib2s(
-                forecast_dirs, date=self.date
+                forecast_dirs,
+                date=self.date,
             )
 
-            logger.info(f'Producing daily NetCDF for date {self.date}...')
-            logger.debug(f'>> Analysis inputs: {analysis_inputs}')
-            logger.debug(f'>> Forecast inputs: {forecast_inputs}')
 
-            with self.output().temporary_path() as tempf:
-                convert_6hourly_grib2s_to_nc(
-                    analysis_inputs=analysis_inputs,
-                    forecast_inputs=forecast_inputs,
-                    output_path=Path(tempf),
-                )
-
-        else:
-            previous_date_dir = Path(self.input()[0].path)
+        elif self.tars_required == TarsRequiredForDailyData.BOTH:
             current_date_dir = Path(self.input()[1].path)
-
             analysis_inputs = select_daily_6hourly_analysis_grib2s(current_date_dir)
+
+            previous_5day_window_forecast_dir = Path(self.input()[0].path)
+            forecast_inputs = select_edgecase_6hourly_forecast_grib2s(
+                previous_5day_window_forecast_grib2_dir=previous_5day_window_forecast_dir,
+                current_date_grib2_dir=current_date_dir,
+                previous_date=self.date - dt.timedelta(days=1)
+            )
+
+        elif self.tars_required == TarsRequiredForDailyData.DAILY:
+            current_date_dir = Path(self.input()[1].path)
+            analysis_inputs = select_daily_6hourly_analysis_grib2s(current_date_dir)
+
+            previous_date_dir = Path(self.input()[0].path)
             forecast_inputs = select_daily_6hourly_forecast_grib2s(
                 current_date_grib2_dir=current_date_dir,
                 previous_date_grib2_dir=previous_date_dir,
             )
 
-            logger.info(f'Producing daily NetCDF for date {self.date}...')
-            logger.debug(f'>> Analysis inputs: {analysis_inputs}')
-            logger.debug(f'>> Forecast inputs: {forecast_inputs}')
 
-            with self.output().temporary_path() as tempf:
-                convert_6hourly_grib2s_to_nc(
-                    analysis_inputs=analysis_inputs,
-                    forecast_inputs=forecast_inputs,
-                    output_path=Path(tempf),
-                )
+        logger.info(f'Producing daily NetCDF for date {self.date}...')
+        logger.debug(f'>> Analysis inputs: {analysis_inputs}')
+        logger.debug(f'>> Forecast inputs: {forecast_inputs}')
+        with self.output().temporary_path() as tempf:
+            convert_6hourly_grib2s_to_nc(
+                analysis_inputs=analysis_inputs,
+                forecast_inputs=forecast_inputs,
+                output_path=Path(tempf),
+            )
 
-        for ifile in [*analysis_inputs, *forecast_inputs]:
-            ifile.unlink()
+            for ifile in [*analysis_inputs, *forecast_inputs]:
+                ifile.unlink()
 
 
 class Grib2ToNcMonthly(luigi.Task):

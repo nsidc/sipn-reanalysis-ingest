@@ -23,13 +23,13 @@ class CfsrGranuleProductType(enum.Enum):
     FORECAST = 'forecast'
 
 
-class DailyTarsRequiredf(enum.Enum):
-    """Define which temporal resolution of daily tars to download
+class TarsRequiredForDailyData(enum.Enum):
+    """Define which temporal resolution of daily tars to download.
 
-    Before 4/1/2011, 5-day tars are required, daily after
-
+    Before 2011-04-01, 5-day tars are required, daily after. On exactly 2011-04-01, we
+    need both; there is one forecast file dated 2011-03-31 in a 5-day tar that we need.
     """
 
-    FIVE_DAY = 'five_day'
+    FIVE_DAILY = 'five_daily'
     DAILY = 'daily'
     BOTH = 'both'

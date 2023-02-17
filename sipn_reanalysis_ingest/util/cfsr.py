@@ -17,11 +17,8 @@ def cfsr_5day_input_identifier(
     return f'{window_start:%Y%m%d}-{window_end:%Y%m%d}_{product_type.value}'
 
 
-def cfsr_1day_input_identifier(
-    *,
-    date: dt.date,
-) -> str:
-    return f'{date:%Y%m%d}-{date:%Y%m%d}'
+def cfsr_1day_input_identifier(*, date: dt.date) -> str:
+    return f'{date:%Y%m%d}'
 
 
 def cfsr_monthly_input_identifier(*, month: YearMonth) -> str:
@@ -37,6 +34,7 @@ def cfsr_yearly_input_identifier(
 
 
 # TODO: UNIT TEST!
+# TODO: DRY out the check for 4 grib2s. Extract a function!
 def select_5daily_6hourly_analysis_grib2s(
     grib2_dir: Path, *, date: dt.date
 ) -> list[Path]:
@@ -98,14 +96,39 @@ def select_daily_6hourly_forecast_grib2s(
     Grab files that match *pgrbh06*: from previous day grab 18z, from current day, grab
     00z, 06z, 12z.
     """
-    previous_date_grib2s = list(previous_date_grib2_dir.glob(f'*.t18z.pgrbh06.grib2'))
+    previous_date_grib2s = list(previous_date_grib2_dir.glob('*.t18z.pgrbh06.grib2'))
+    current_date_grib2s = list(
+        current_date_grib2_dir.glob(
+            '*.t[01][026]z.pgrbh06.grib2',
+        )
+    )
+
+    forecast_grib2s = previous_date_grib2s + current_date_grib2s
+    if len(forecast_grib2s) != 4:
+        raise CfsrInputDataError(
+            f'Expected four forecast files. Found: {forecast_grib2s}'
+        )
+
+    return forecast_grib2s
+
+def select_edgecase_6hourly_forecast_grib2s(
+    *,
+    previous_5day_window_forecast_grib2_dir: Path,
+    current_date_grib2_dir: Path,
+    previous_date: dt.date,
+) -> list[Path]:
+    previous_date_grib2s = list(previous_5day_window_forecast_grib2_dir.glob(
+        f'*{previous_date:%Y%m%d}18.grb2',
+    ))
+
+    # TODO: DRY with the daily forecast function
     current_date_grib2s = list(
         current_date_grib2_dir.glob(
             f'*.t[01][026]z.pgrbh06.grib2',
         )
     )
 
-    forecast_grib2s = previous_date_grib2s + current_date_grib2s
+    forecast_grib2s = previous_date_grib2s + sorted(current_date_grib2s)
     if len(forecast_grib2s) != 4:
         raise CfsrInputDataError(
             f'Expected four forecast files. Found: {forecast_grib2s}'
