@@ -19,7 +19,10 @@ from sipn_reanalysis_ingest.util.paths import (
 
 
 class DownloadCfsr5DayTar(luigi.Task):
-    """Download 6-hourly CFSR data, which are delivered in 5-daily tar files."""
+    """Download 6-hourly CFSR data, which are delivered in 5-daily tar files.
+
+    This is the case for 6-hourly data before April 4, 2011.
+    """
 
     window_start = luigi.DateParameter()
     window_end = luigi.DateParameter()
@@ -47,8 +50,10 @@ class DownloadCfsr5DayTar(luigi.Task):
 
 
 class DownloadCfsr1DayTar(luigi.Task):
-    """Download V2 after March 31, 2011 (as of 1/25/23)
-    6-hourly CFSR data which are daily tar files."""
+    """Download 6-hourly CFSR data which are delivered in daily tar files.
+
+    This is the case for 6-hourly data on or after April 4, 2011.
+    """
 
     date = luigi.DateParameter()
 
