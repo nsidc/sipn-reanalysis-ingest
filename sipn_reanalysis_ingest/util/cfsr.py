@@ -119,11 +119,15 @@ def select_edgecase_6hourly_forecast_grib2s(
     current_date_grib2_dir: Path,
     previous_date: dt.date,
 ) -> list[Path]:
-    previous_date_grib2s = list(previous_5day_window_forecast_grib2_dir.glob(
-        f'*{previous_date:%Y%m%d}18.grb2',
-    ))
+    previous_date_grib2s = list(
+        previous_5day_window_forecast_grib2_dir.glob(
+            f'*{previous_date:%Y%m%d}18.grb2',
+        )
+    )
 
-    current_date_grib2s = list(current_date_grib2_dir.glob('*.t[01][026]z.pgrbh06.grib2'))
+    current_date_grib2s = list(
+        current_date_grib2_dir.glob('*.t[01][026]z.pgrbh06.grib2')
+    )
 
     forecast_grib2s = previous_date_grib2s + sorted(current_date_grib2s)
     if len(forecast_grib2s) != 4:

@@ -66,7 +66,6 @@ class Grib2ToNcDaily(luigi.Task):
         # TODO: How to convince Mypy that the code will never reach this line?
         raise RuntimeError('This should not be possible')
 
-
     def requires(self):
         if self.tars_required == TarsRequiredForDailyData.FIVE_DAILY:
             five_day_window = Cfsr5ishDayWindow.from_date_in_window(self.date)
@@ -120,7 +119,6 @@ class Grib2ToNcDaily(luigi.Task):
                 UntarCfsr1DayFile(date=self.date),
             ]
             return req
-        
 
     def output(self):
         fn = DATA_DAILY_FILENAME_TEMPLATE.format(date=self.date)
@@ -144,7 +142,6 @@ class Grib2ToNcDaily(luigi.Task):
                 date=self.date,
             )
 
-
         elif self.tars_required == TarsRequiredForDailyData.BOTH:
             current_date_dir = Path(self.input()[1].path)
             analysis_inputs = select_daily_6hourly_analysis_grib2s(current_date_dir)
@@ -153,7 +150,7 @@ class Grib2ToNcDaily(luigi.Task):
             forecast_inputs = select_edgecase_6hourly_forecast_grib2s(
                 previous_5day_window_forecast_grib2_dir=previous_5day_window_forecast_dir,
                 current_date_grib2_dir=current_date_dir,
-                previous_date=self.date - dt.timedelta(days=1)
+                previous_date=self.date - dt.timedelta(days=1),
             )
 
         elif self.tars_required == TarsRequiredForDailyData.DAILY:
@@ -165,7 +162,6 @@ class Grib2ToNcDaily(luigi.Task):
                 current_date_grib2_dir=current_date_dir,
                 previous_date_grib2_dir=previous_date_dir,
             )
-
 
         logger.info(f'Producing daily NetCDF for date {self.date}...')
         logger.debug(f'>> Analysis inputs: {analysis_inputs}')
