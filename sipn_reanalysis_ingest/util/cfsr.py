@@ -116,7 +116,7 @@ def _expected_6hourly_forecast_suffixes_for_date(date: dt.date) -> list[str]:
         *[f'{date:%Y%m%d}{hour}' for hour in ['00', '06', '12']],
     ]
 
-    valid_suffixes = [f'{datetime}.gr*b2' for datetime in valid_datetimes]
+    valid_suffixes = [f'{datetime}.grb2' for datetime in valid_datetimes]
 
     return valid_suffixes
 
