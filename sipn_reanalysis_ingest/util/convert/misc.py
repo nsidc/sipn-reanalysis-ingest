@@ -52,7 +52,6 @@ def _max_to_nan(array: np.ndarray) -> np.ndarray:
 
     max_val = np.finfo(dtype).max
 
-    print(np.isnan(array).all())
     array[array == max_val] = np.nan
     array[array == np.inf] = np.nan
     return array
