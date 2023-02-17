@@ -49,8 +49,8 @@ def _max_to_nan(array: np.ndarray) -> np.ndarray:
         raise RuntimeError(f'Expected float32 dtype, got {dtype}')
 
     max_val = np.finfo(dtype).max
-    print("MAXIMUM VALUE: "+str(max_val))
 
+    print(np.isnan(array).all())
     array[array == max_val] = np.nan
     array[array == np.inf] = np.nan
     return array
