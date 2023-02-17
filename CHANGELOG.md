@@ -1,3 +1,8 @@
+# NEXT_VERSION
+
+* Bugfix: Populate the HGT variable correctly
+
+
 # v1.0.3 (2023-02-15)
 
 * Update restart policy to tolerate host reboots

@@ -135,8 +135,9 @@ def normalize_cfsr_varnames(
     slp = slp.expand_dims(dim='lev4', axis=0)
     pwat = pwat.expand_dims(dim='lev5', axis=0)
 
-    # Change dimension name for the height variable
+    # Change dimension name for the height variable and apply the correct coord values
     hgt = hgt.rename({'lv_ISBL0': 'lev3'})
+    hgt.coords['lev3'] = lev3
 
     # Create the dataset that will finally be written out to the netcdf file!
     dataout = xr.Dataset(
