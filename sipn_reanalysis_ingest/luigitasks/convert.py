@@ -49,12 +49,6 @@ class Grib2ToNcDaily(luigi.Task):
     date = luigi.DateParameter()
 
     @property
-    def uses_5day_tars(self):
-        if self.date < CFSR_DAILY_TAR_ON_OR_AFTER:
-            return True
-        return False
-
-    @property
     def tars_required(self) -> TarsRequiredForDailyData:
         if self.date == CFSR_DAILY_TAR_ON_OR_AFTER:
             return TarsRequiredForDailyData.BOTH
