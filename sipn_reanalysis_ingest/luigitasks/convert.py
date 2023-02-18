@@ -58,7 +58,7 @@ class Grib2ToNcDaily(luigi.Task):
             return TarsRequiredForDailyData.DAILY
 
         # TODO: How to convince Mypy that the code will never reach this line?
-        raise RuntimeError('This should not be possible')
+        raise RuntimeError('This should not be reachable')
 
     def requires(self):
         if self.tars_required == TarsRequiredForDailyData.FIVE_DAILY:
