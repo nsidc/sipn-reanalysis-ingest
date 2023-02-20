@@ -4,6 +4,7 @@ from pathlib import Path
 from sipn_reanalysis_ingest._types import CfsrGranuleProductType
 from sipn_reanalysis_ingest.constants.paths import DATA_DOWNLOAD_DIR, DATA_UNTAR_DIR
 from sipn_reanalysis_ingest.util.cfsr import (
+    cfsr_1day_input_identifier,
     cfsr_5day_input_identifier,
     cfsr_monthly_input_identifier,
     cfsr_yearly_input_identifier,
@@ -11,7 +12,7 @@ from sipn_reanalysis_ingest.util.cfsr import (
 from sipn_reanalysis_ingest.util.date import YearMonth
 
 
-# TODO: The code in this module is awful repetetive
+# TODO: The code in this module is awful repetetive *And I just added to it! -ENC
 def untar_5day_tar_dir(
     *,
     window_start: dt.date,
@@ -23,6 +24,15 @@ def untar_5day_tar_dir(
         window_end=window_end,
         product_type=product_type,
     )
+    return DATA_UNTAR_DIR / subdir_name
+
+
+def untar_1day_tar_dir(
+    *,
+    date: dt.date,
+) -> Path:
+    subdir_name = cfsr_1day_input_identifier(date=date)
+
     return DATA_UNTAR_DIR / subdir_name
 
 
@@ -57,6 +67,14 @@ def download_5day_tar_path(
         window_end=window_end,
         product_type=product_type,
     )
+    return DATA_DOWNLOAD_DIR / f'{ident}.tar'
+
+
+def download_1day_tar_path(
+    *,
+    date: dt.date,
+) -> Path:
+    ident = cfsr_1day_input_identifier(date=date)
     return DATA_DOWNLOAD_DIR / f'{ident}.tar'
 
 

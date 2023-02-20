@@ -7,8 +7,7 @@ Deploying means installing / updating the code to our infrastructure.
 
 ## Releasing
 
-Follow these directions to release a new version of the code. *NOTE: All release tags
-should be on the `main` branch!*
+Follow these directions to release a new version of the code.
 
 
 ### CHANGELOG
@@ -39,7 +38,10 @@ bumpversion major       # bump from 3.1.0 to 4.0.0
 Commit and push the change.
 
 
-### Tag
+### Tag 
+
+*NOTE: All release tags should be on the `main` branch! Merge your code to `main` at
+this point if you haven't already.*
 
 Add a git tag to the latest commit. Tags must be version numbers prefixed with `v`.
 Example:
@@ -57,8 +59,10 @@ git push origin v3.2.0
 
 ### Wait for automated processes
 
-Monitor CircleCI for job completion. Monitor DockerHub for image presence. *NOTE: There is a
-minor delay between completion of CircleCI and Docker image presence on DockerHub!*
+Monitor CircleCI for job completion. Monitor DockerHub for image presence.
+
+*NOTE: There is a minor delay between completion of CircleCI and Docker image presence
+on DockerHub!*
 
 
 ## Deploy

@@ -11,6 +11,7 @@ from sipn_reanalysis_ingest.constants.download import DOWNLOAD_AUTH_URL
 from sipn_reanalysis_ingest.errors import CredentialsError, DownloadError
 from sipn_reanalysis_ingest.util.date import YearMonth
 from sipn_reanalysis_ingest.util.url import (
+    cfsr_1day_tar_url,
     cfsr_5day_tar_url,
     cfsr_monthly_tar_url,
     cfsr_yearly_tar_url,
@@ -65,6 +66,22 @@ def download_tar(url: str, output_fp: Path) -> Path:
                 f.write(chunk)
 
     logger.info(f'Downloaded {url} to {output_fp}')
+    return output_fp
+
+
+def download_cfsr_1day_tar(
+    *,
+    date: dt.date,
+    output_fp: Path,
+) -> Path:
+    """Download a 1-day .tar file from RDA.
+
+    The end date is calculated from `window_start`; the last day of the month is used if
+    `window_start + 5` is in the next month.
+    """
+    url = cfsr_1day_tar_url(date=date)
+    output_fp = download_tar(url, output_fp)
+
     return output_fp
 
 

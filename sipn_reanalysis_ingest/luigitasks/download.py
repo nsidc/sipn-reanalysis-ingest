@@ -5,11 +5,13 @@ import luigi
 from sipn_reanalysis_ingest._types import CfsrGranuleProductType
 from sipn_reanalysis_ingest.util.date import YearMonth
 from sipn_reanalysis_ingest.util.download import (
+    download_cfsr_1day_tar,
     download_cfsr_5day_tar,
     download_cfsr_monthly_tar,
     download_cfsr_yearly_tar,
 )
 from sipn_reanalysis_ingest.util.paths import (
+    download_1day_tar_path,
     download_5day_tar_path,
     download_monthly_tar_path,
     download_yearly_tar_path,
@@ -17,7 +19,10 @@ from sipn_reanalysis_ingest.util.paths import (
 
 
 class DownloadCfsr5DayTar(luigi.Task):
-    """Download 6-hourly CFSR data, which are delivered in 5-daily tar files."""
+    """Download 6-hourly CFSR data, which are delivered in 5-daily tar files.
+
+    This is the case for 6-hourly data before April 4, 2011.
+    """
 
     window_start = luigi.DateParameter()
     window_end = luigi.DateParameter()
@@ -40,6 +45,30 @@ class DownloadCfsr5DayTar(luigi.Task):
             download_cfsr_5day_tar(
                 window_start=self.window_start,
                 product_type=self.product_type,
+                output_fp=tmp_fp,
+            )
+
+
+class DownloadCfsr1DayTar(luigi.Task):
+    """Download 6-hourly CFSR data which are delivered in daily tar files.
+
+    This is the case for 6-hourly data on or after April 4, 2011.
+    """
+
+    date = luigi.DateParameter()
+
+    def output(self):
+        return luigi.LocalTarget(
+            download_1day_tar_path(date=self.date),
+        )
+
+    def run(self):
+        # TODO: Validate window
+        with self.output().temporary_path() as tmpf:
+            tmp_fp = Path(tmpf)
+            tmp_fp.parent.mkdir(parents=True, exist_ok=True)
+            download_cfsr_1day_tar(
+                date=self.date,
                 output_fp=tmp_fp,
             )
 

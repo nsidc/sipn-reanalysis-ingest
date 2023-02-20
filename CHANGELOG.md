@@ -1,6 +1,10 @@
-# NEXT_VERSION
+# v1.0.4 (2023-02-17)
 
 * Bugfix: Populate the HGT variable correctly
+* Handle transition from 5-daily to daily data on April 1, 2011
+    * For exactly April 1, download a daily AND 5-daily file (because we need one
+      6-hourly forecast file from the previous day)
+    * For dates after April 1, download daily data files instead of 5-daily data files.
 
 
 # v1.0.3 (2023-02-15)
