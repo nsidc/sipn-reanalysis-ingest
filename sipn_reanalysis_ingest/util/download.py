@@ -17,36 +17,8 @@ from sipn_reanalysis_ingest.util.url import (
     cfsr_yearly_tar_url,
 )
 
-
-@cache
-def rda_auth_session() -> requests.Session:
-    """Return a pre-authenticated session with RDA.
-
-    WARNING: This function MUST be cached to avoid being banned from RDA for authing too
-    much.
-    """
-    session = requests.Session()
-
-    if not RDA_USERNAME:
-        raise CredentialsError('$RDA_USERNAME must be set.')
-    if not RDA_PASSWORD:
-        raise CredentialsError('$RDA_PASSWORD must be set.')
-
-    session.post(
-        DOWNLOAD_AUTH_URL,
-        data={
-            'action': 'login',
-            'email': RDA_USERNAME,
-            'passwd': RDA_PASSWORD,
-        },
-    )
-
-    return session
-
-
 def download_tar(url: str, output_fp: Path) -> Path:
-    session = rda_auth_session()
-    response = session.get(url, stream=True)
+    response = requests.get(url, stream=True)
 
     if not response.ok:
         msg = f'There was an error downloading {url}. Status: {response.status_code}.'
