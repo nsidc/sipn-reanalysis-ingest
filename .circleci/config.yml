@@ -10,12 +10,13 @@ jobs:
     <<: *setup
     steps:
       - checkout
+
       - restore_cache:
           key: 'conda-{{ checksum "environment-lock.yml" }}'
       - run:
-          name: 'Create conda environment'
+          name: "Create conda environment"
           command: |
-            if [ -d '/opt/conda/envs/sipn-reanalysis-ingest' ]; then
+            if [ -d "/opt/conda/envs/sipn-reanalysis-ingest" ]; then
               echo "Environment exists in cache. Skipping build!"
               exit 0
             fi
@@ -24,8 +25,14 @@ jobs:
       - save_cache:
           key: 'conda-{{ checksum "environment-lock.yml" }}'
           paths: "/opt/conda"
+
       - run:
-          name: 'Run all tests (lint, config validation, etc.)'
+          name: "Run pre-commit checks (lint, format)"
+          command: |
+            /bin/bash --login -c "conda activate sipn-reanalysis-ingest && pre-commit run --all-files --show-diff-on-failure --color always"
+
+      - run:
+          name: "Run all tests (unit test, typecheck)"
           command: |
             /bin/bash --login -c "conda activate sipn-reanalysis-ingest && inv test"
 

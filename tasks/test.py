@@ -12,27 +12,6 @@ sys.path.append(PROJECT_DIR)
 # commands because unneeded envvars are not populated.
 
 
-@task(aliases=['flake8'])
-def lint(ctx):
-    """Run flake8 linting."""
-    from sipn_reanalysis_ingest.constants.paths import PACKAGE_DIR
-
-    print_and_run(
-        f'cd {PROJECT_DIR} && flake8 {PACKAGE_DIR}',
-    )
-
-    print('🎉🙈 Linting passed.')
-
-
-@task
-def formatcheck(ctx):
-    """Check that the code conforms to formatting standards."""
-    print_and_run(f"isort --check-only {PROJECT_DIR}")
-    print_and_run(f"black --check {PROJECT_DIR}")
-
-    print("🎉🙈 Format check passed.")
-
-
 @task(aliases=['mypy'])
 def typecheck(ctx):
     """Run mypy static type analysis."""
@@ -58,7 +37,7 @@ def unittest(ctx):
 
 
 @task(
-    pre=[typecheck, unittest, lint, formatcheck],
+    pre=[typecheck, unittest],
     default=True,
 )
 def all(ctx):
