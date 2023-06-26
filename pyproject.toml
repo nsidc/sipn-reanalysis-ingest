@@ -1,3 +1,9 @@
+# This config currently has no effect.
+# See: https://github.com/conda/conda-lock/issues/442
+# [tool.conda-lock]
+# platforms = ['linux-64', 'osx-64']
+
+
 [tool.black]
 target-version = ['py310']
 skip-string-normalization = true
@@ -45,6 +51,7 @@ ignore = [
 
 [tool.ruff.isort]
 known-first-party = ["sipn-reanalysis-ingest"]
+known-third-party = ["luigi"]
 
 [tool.ruff.mccabe]
 max-complexity = 8
