@@ -18,22 +18,22 @@ from sipn_reanalysis_ingest.util.url import (
         pytest.param(
             dt.date(1990, 1, 1),
             CfsrGranuleProductType.ANALYSIS,
-            'https://rda.ucar.edu/data/ds093.0/1990/pgbhnl.gdas.19900101-19900105.tar',
+            'https://data.rda.ucar.edu/ds093.0/1990/pgbhnl.gdas.19900101-19900105.tar',
         ),
         pytest.param(
             dt.date(2010, 12, 26),
             CfsrGranuleProductType.ANALYSIS,
-            'https://rda.ucar.edu/data/ds093.0/2010/pgbhnl.gdas.20101226-20101231.tar',
+            'https://data.rda.ucar.edu/ds093.0/2010/pgbhnl.gdas.20101226-20101231.tar',
         ),
         pytest.param(
             dt.date(2011, 1, 1),
             CfsrGranuleProductType.FORECAST,
-            'https://rda.ucar.edu/data/ds094.0/2011/pgbh06.gdas.20110101-20110105.tar',
+            'https://data.rda.ucar.edu/ds094.0/2011/pgbh06.gdas.20110101-20110105.tar',
         ),
         pytest.param(
             dt.date(2020, 1, 1),
             CfsrGranuleProductType.FORECAST,
-            'https://rda.ucar.edu/data/ds094.0/2020/pgbh06.gdas.20200101-20200105.tar',
+            'https://data.rda.ucar.edu/ds094.0/2020/pgbh06.gdas.20200101-20200105.tar',
         ),
     ],
 )
@@ -51,15 +51,15 @@ def test_cfsr_5day_tar_url(window_start, product_type, expected):
         ),
         pytest.param(
             YearMonth(year=2011, month=1),
-            'https://rda.ucar.edu/data/ds094.2/regular/pgbh.gdas.201101.tar',
+            'https://data.rda.ucar.edu/ds094.2/regular/pgbh.gdas.201101.tar',
         ),
         pytest.param(
             YearMonth(year=2011, month=12),
-            'https://rda.ucar.edu/data/ds094.2/regular/pgbh.gdas.201112.tar',
+            'https://data.rda.ucar.edu/ds094.2/regular/pgbh.gdas.201112.tar',
         ),
         pytest.param(
             YearMonth(year=2020, month=1),
-            'https://rda.ucar.edu/data/ds094.2/regular/pgbh.gdas.202001.tar',
+            'https://data.rda.ucar.edu/ds094.2/regular/pgbh.gdas.202001.tar',
         ),
     ],
 )
@@ -84,17 +84,17 @@ def test_cfsr_monthly_tar_url(month, expected):
         pytest.param(
             1979,
             CfsrGranuleProductType.ANALYSIS,
-            'https://rda.ucar.edu/data/ds093.2/regular/pgbhnl.gdas.1979.tar',
+            'https://data.rda.ucar.edu/ds093.2/regular/pgbhnl.gdas.1979.tar',
         ),
         pytest.param(
             1990,
             CfsrGranuleProductType.ANALYSIS,
-            'https://rda.ucar.edu/data/ds093.2/regular/pgbhnl.gdas.1990.tar',
+            'https://data.rda.ucar.edu/ds093.2/regular/pgbhnl.gdas.1990.tar',
         ),
         pytest.param(
             2010,
             CfsrGranuleProductType.FORECAST,
-            'https://rda.ucar.edu/data/ds093.2/regular/pgbh06.gdas.2010.tar',
+            'https://data.rda.ucar.edu/ds093.2/regular/pgbh06.gdas.2010.tar',
         ),
         pytest.param(
             2011,
