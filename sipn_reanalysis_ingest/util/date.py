@@ -1,7 +1,8 @@
 import calendar
 import datetime as dt
+from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import Iterator
+from typing import ClassVar
 
 from sipn_reanalysis_ingest.errors import CfsrDateError, ProgrammerError
 
@@ -25,7 +26,7 @@ class Cfsr5ishDayWindow:
     2000-02-28).
     """
 
-    VALID_WINDOW_START_DAYS = [1, 6, 11, 16, 21, 26]
+    VALID_WINDOW_START_DAYS: ClassVar[list[int]] = [1, 6, 11, 16, 21, 26]
 
     start: dt.date
     end: dt.date

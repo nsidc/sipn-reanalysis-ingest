@@ -8,8 +8,8 @@ from .util import print_and_run
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(PROJECT_DIR)
 
-# WARNING: Do not import from sipn_reanalysis_ingest at this level to avoid failure of basic
-# commands because unneeded envvars are not populated.
+# WARNING: Do not import from sipn_reanalysis_ingest at this level to avoid failure of
+# basic commands because unneeded envvars are not populated.
 
 
 @task(aliases=['mypy'])
@@ -40,6 +40,6 @@ def unittest(ctx):
     pre=[typecheck, unittest],
     default=True,
 )
-def all(ctx):
+def default(ctx):
     """Run all tasks."""
     print('🎉❤️  All tests passed!')

@@ -7,10 +7,10 @@ ENV_LOCKFILE = PROJECT_DIR / "environment-lock.yml"
 
 @task(default=True)
 def lock(ctx):
-    """Update the environment-lock.yml file from the current `sipn-reanalysis-ingest` environment."""
+    """Update the environment-lock.yml file from the current project environment."""
     print_and_run(f"conda env export -n sipn-reanalysis-ingest > {ENV_LOCKFILE}")
 
-    with open(ENV_LOCKFILE, "r") as f:
+    with open(ENV_LOCKFILE) as f:
         lines = f.readlines()
 
     with open(ENV_LOCKFILE, "w") as f:
