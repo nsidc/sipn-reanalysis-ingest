@@ -1,6 +1,5 @@
 import datetime as dt
 import shutil
-from typing import Union
 
 import luigi
 
@@ -23,11 +22,11 @@ from sipn_reanalysis_ingest.util.log import logger
 def make_daily_processing_requirement(
     *,
     date: dt.date,
-) -> Union[
-    Grib2InDailyAnd5DailyTarsToDailyNc,
-    Grib2In5DailyTarToDailyNc,
-    Grib2InDailyTarToDailyNc,
-]:
+) -> (
+    Grib2InDailyAnd5DailyTarsToDailyNc
+    | Grib2In5DailyTarToDailyNc
+    | Grib2InDailyTarToDailyNc
+):
     if date == CFSR_DAILY_TAR_ON_OR_AFTER:
         return Grib2InDailyAnd5DailyTarsToDailyNc(date=date)
     elif date < CFSR_DAILY_TAR_ON_OR_AFTER:

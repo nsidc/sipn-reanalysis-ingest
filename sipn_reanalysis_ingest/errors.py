@@ -15,7 +15,7 @@ class CfsrInputDataError(Exception):
 
 
 class ProgrammerError(Exception):
-    """This should not have happened."""
+    """Encountered an error that should not have happened."""
 
 
 class RangeLookupError(LookupError):

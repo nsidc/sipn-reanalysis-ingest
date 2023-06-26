@@ -45,7 +45,7 @@ conda env create
 conda activate sipn-reanalysis-ingest
 ```
 
-To list available tooling:
+To list available tooling shortcuts:
 
 ```
 invoke --list
@@ -58,37 +58,44 @@ inv --list
 ```
 
 
-### Changing dependencies
+### Typechecking and tests
 
-It's critical to update the lockfile every time dependencies are changed. Whenever you
-update the `environment.yml`, please update the lockfile with:
-
-```
-inv env.lock
-```
-
-
-### Formatting
-
-Format the code with:
-
-```
-inv format
-```
-
-
-### Static analysis and tests
-
-Run all tests, including static anlysis with flake8 and mypy, with:
+Run all tests, including typechecking with mypy, with:
 
 ```
 inv test
 ```
 
 
+### Changing dependencies
+
+It's critical to update the lockfile every time dependencies are changed. Whenever you
+update the `environment.yml`, please update the lockfile with:
+
+```
+conda-lock -p linux-64 -p osx-64
+```
+
+
+### Formatting and linting
+
+Linting and formatting are done automatically with `pre-commit`. To configure it:
+
+```
+pre-commit install
+```
+
+After running this command, linting and formatting will occur automatically at
+commit-time.
+
+To manually trigger linting and formatting:
+
+```
+pre-commit run --all-files
+```
+
+
 ## TODO
 
 * Settle on a consistent logging mechanism.
-* Handle months with 31 days; for some reason the last file of a CFSR 5-day window can
-  contain 6 days???
 * Create constant for grid dimensions (517, 511) and replace all magic numbers.

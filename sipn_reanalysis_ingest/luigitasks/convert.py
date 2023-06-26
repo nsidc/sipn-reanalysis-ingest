@@ -90,7 +90,7 @@ class Grib2InDailyTarToDailyNc(Grib2ToDailyNc):
 
 
 class Grib2InDailyAnd5DailyTarsToDailyNc(Grib2ToDailyNc):
-    """Converts GRIB2 6-hourly input data spread across 1&5-daily tars to a daily NetCDF.
+    """Converts GRIB2 6-hourly input data across 1&5-daily tars to a daily NetCDF.
 
     The source data will be filtered for only the variables of interest, subset and
     reprojected for our area of interest.
