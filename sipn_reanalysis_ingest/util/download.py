@@ -1,14 +1,11 @@
 import datetime as dt
-from functools import cache
 from pathlib import Path
 
 import requests
 from loguru import logger
 
 from sipn_reanalysis_ingest._types import CfsrGranuleProductType
-from sipn_reanalysis_ingest.constants.creds import RDA_PASSWORD, RDA_USERNAME
-from sipn_reanalysis_ingest.constants.download import DOWNLOAD_AUTH_URL
-from sipn_reanalysis_ingest.errors import CredentialsError, DownloadError
+from sipn_reanalysis_ingest.errors import DownloadError
 from sipn_reanalysis_ingest.util.date import YearMonth
 from sipn_reanalysis_ingest.util.url import (
     cfsr_1day_tar_url,
@@ -16,6 +13,7 @@ from sipn_reanalysis_ingest.util.url import (
     cfsr_monthly_tar_url,
     cfsr_yearly_tar_url,
 )
+
 
 def download_tar(url: str, output_fp: Path) -> Path:
     response = requests.get(url, stream=True)
