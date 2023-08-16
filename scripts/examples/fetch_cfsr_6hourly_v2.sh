@@ -1,4 +1,6 @@
 #! /bin/csh -f
+# WARNING: This script is obsolete. RDA changed their data download URLs and
+# removed auth requirement in June 2023.
 #
 # c-shell script to download selected files from rda.ucar.edu using Wget
 # NOTE: if you want to run under a different shell, make sure you change

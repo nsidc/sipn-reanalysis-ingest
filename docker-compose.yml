@@ -17,8 +17,6 @@ services:
 
     environment:
       LUIGI_CONFIG_PARSER: "toml"
-      RDA_USERNAME: "${RDA_USERNAME}"
-      RDA_PASSWORD: "${RDA_PASSWORD}"
 
     volumes:
       - "${DATA_DIR}:/data:rw"

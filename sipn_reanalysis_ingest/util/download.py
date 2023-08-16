@@ -1,14 +1,11 @@
 import datetime as dt
-from functools import cache
 from pathlib import Path
 
 import requests
 from loguru import logger
 
 from sipn_reanalysis_ingest._types import CfsrGranuleProductType
-from sipn_reanalysis_ingest.constants.creds import RDA_PASSWORD, RDA_USERNAME
-from sipn_reanalysis_ingest.constants.download import DOWNLOAD_AUTH_URL
-from sipn_reanalysis_ingest.errors import CredentialsError, DownloadError
+from sipn_reanalysis_ingest.errors import DownloadError
 from sipn_reanalysis_ingest.util.date import YearMonth
 from sipn_reanalysis_ingest.util.url import (
     cfsr_1day_tar_url,
@@ -18,35 +15,8 @@ from sipn_reanalysis_ingest.util.url import (
 )
 
 
-@cache
-def rda_auth_session() -> requests.Session:
-    """Return a pre-authenticated session with RDA.
-
-    WARNING: This function MUST be cached to avoid being banned from RDA for authing too
-    much.
-    """
-    session = requests.Session()
-
-    if not RDA_USERNAME:
-        raise CredentialsError('$RDA_USERNAME must be set.')
-    if not RDA_PASSWORD:
-        raise CredentialsError('$RDA_PASSWORD must be set.')
-
-    session.post(
-        DOWNLOAD_AUTH_URL,
-        data={
-            'action': 'login',
-            'email': RDA_USERNAME,
-            'passwd': RDA_PASSWORD,
-        },
-    )
-
-    return session
-
-
 def download_tar(url: str, output_fp: Path) -> Path:
-    session = rda_auth_session()
-    response = session.get(url, stream=True)
+    response = requests.get(url, stream=True)
 
     if not response.ok:
         msg = f'There was an error downloading {url}. Status: {response.status_code}.'
