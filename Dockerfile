@@ -27,16 +27,16 @@ ENV MAMBA_USER=$NEW_MAMBA_USER
 
 WORKDIR /app
 
-# NOTE: For some reason, micromamba doesn't like the filename
-# "environment-lock.yml". It fails to parse it because it's missing some
-# special lockfile key.
-COPY environment-lock.yml ./environment.yml
-
-# Install dependencies to conda environment
-RUN micromamba install -y \
+# Install dependencies (plus pip) to conda environment
+COPY conda-lock.yml .
+RUN micromamba install --yes \
     # NOTE: -p is important to install to the "base" env
-    -p /opt/conda \
-    -f environment.yml
+    --prefix /opt/conda \
+    --file conda-lock.yml
+RUN micromamba install --yes \
+    --prefix /opt/conda \
+    --channel conda-forge \
+    pip
 RUN micromamba clean --all --yes
 
 # Install source
