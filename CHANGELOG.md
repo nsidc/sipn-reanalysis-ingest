@@ -1,3 +1,8 @@
+# v2.0.0 (2023-08-16)
+
+* Update to new RDA download URLs that don't require auth
+
+
 # v1.0.4 (2023-02-17)
 
 * Bugfix: Populate the HGT variable correctly
